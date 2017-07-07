@@ -1,0 +1,3562 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld"
+                       xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
+                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+    <NamedLayer>
+        <Name>rohrleitungen_linie</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Oel</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>medium</ogc:PropertyName>
+                            <ogc:Literal>Oel</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 4.00 2.00 4.00 2.00 4.00
+                            </CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Gas</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>medium</ogc:PropertyName>
+                            <ogc:Literal>Gas</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 4.00 2.00 4.00 2.00 4.00
+                            </CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>weitere</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>medium</ogc:PropertyName>
+                            <ogc:Literal>weitere</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 4.00 2.00 4.00 2.00 4.00
+                            </CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>rohrleitungen_label</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Rohrleitungsbeschriftung</Name>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>betreiber</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial</CssParameter>
+                            <CssParameter name="font-size">10</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>boflaeche</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Gebäude</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>0</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ffc8c8</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Strasse, Weg</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>1</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#dcdcdc</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Trottoir</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>2</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#dcdcdc</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Verkehrsinsel</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>3</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#dcdcdc</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bahn</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>4</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#f0e6c8</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Flugplatz</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>5</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#dcdcdc</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Wasserbecken</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>6</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#96c8ff</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>übrige befestigte</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>7</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#f0f0f0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Acker, Wiese, Weide</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>8</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#f0ffc8</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Reben</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>9</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ffffc8</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>übrige Intensivkultur</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>10</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ffffc8</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Gartenanlage</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>11</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#f0ffc8</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Hoch- /Flachmoor</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>12</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#c8fff0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>übrige humisierte</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>13</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#f0ffc8</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>stehendes Gewässer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>14</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#96c8ff</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>fliessendes Gewässer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>15</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#96c8ff</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Schilfgürtel</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>16</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#c8fff0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Wald</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>17</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#a0f0a0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Waldstrasse</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>18</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#a0f0a0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Wytweide dicht</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>19</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#c8f0a0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Wytweide offen</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>20</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#c8f0a0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>übrige bestockte</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>21</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#c8f0a0</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Fels</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>22</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Gletscher, Firn</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>23</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Geröll, Sand</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>24</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Abbau, Deponie</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>25</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>übrige vegetationslose Fläche</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>26</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>bobesymbol</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Wasserbecken</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art</ogc:PropertyName>
+                            <ogc:Literal>6</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Fliessrichtung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art</ogc:PropertyName>
+                            <ogc:Literal>15</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>grundstueck_label</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Grundstücksnummer</Name>
+                    <MaxScaleDenominator>2100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>nummer_m_deko</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>grundstueck_hilfslinien</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <MaxScaleDenominator>2100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>einzelobjekt_flaeche</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Mauer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>0</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>unterirdisches Gebäude</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>1</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#bdb8b8</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>übriger Gebäudeteil</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>2</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>unregelmässige Brandmauer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>3</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>eingedoltes öffentliches Gewässer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>4</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>wichtige Treppe</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>5</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Tunnel, Unterführung, Galerie</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>6</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Brücke Passarelle</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>7</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#dcdcdc</CssParameter>
+                        </Fill>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bahnsteig</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>8</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Brunnen</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>9</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Reservoir</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>10</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#bdb8b8</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Pfeiler</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>11</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Unterstand</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>12</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ec7983</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Perrondach</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>13</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ec7983</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Silo, Turm, Gasometer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>14</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ec7983</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Hochkamin</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>15</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Denkmal</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>16</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Mast, Antenne</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>17</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Aussichtsturm</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>18</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Uferverbauung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>19</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Schwelle</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>20</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Lawinenverbauung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>21</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>massiver Sockel</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>22</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Ruine, archäologisches Objekt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>23</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Landungssteg</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>24</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>einzelner Fels</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>25</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>schmale bestockte Fläche</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>26</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Rinnsal</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>27</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>schmaler Weg</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>28</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Hochspannungsfreileitung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>29</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Druckleitung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>30</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bahngeleise, Bahnachse</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>31</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Tramachse</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>32</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Tramgeleise</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>33</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Luftseilbahn</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>34</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Gondelbahn, Sesselbahn</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>35</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Materialseilbahn</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>36</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Skilift</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>37</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Fähre</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>38</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Grotte, Höhleneingang</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>39</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Achse</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>40</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>wichtiger Einzelbaum</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>41</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bildstock, Kruzifix</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>42</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Quelle</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>43</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bezugspunkt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>44</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Telefonkabine</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>45</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Brückenwaage</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>46</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Kulturgrenze AVaO</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>47</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Trottoir alt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>48</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Verkehrsinsel alt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>49</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Feinstruktur (Fussballfeld, Unterteilungen, etc)</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>50</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Jauchbehälter, Mistlege</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>51</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>liegenschaft</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Liegenschaft</Name>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.50</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>einzelobjekt_linie</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Mauer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>0</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>unterirdisches Gebäude</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>1</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">2.00 2.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>übriger Gebäudeteil</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>2</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>unregelmässige Brandmauer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>3</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>eingedoltes öffentliches Gewässer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>4</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">2.00 2.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>wichtige Treppe</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>5</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Tunnel, Unterführung, Galerie</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>6</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">2.00 2.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Brücke Passarelle</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>7</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bahnsteig</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>8</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Brunnen</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>9</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Reservoir</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>10</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">2.00 2.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Pfeiler</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>11</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Unterstand</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>12</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Perrondach</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>13</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Silo, Turm, Gasometer</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>14</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Hochkamin</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>15</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Denkmal</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>16</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Mast, Antenne</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>17</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Aussichtsturm</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>18</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Uferverbauung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>19</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Schwelle</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>20</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Lawinenverbauung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>21</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>massiver Sockel</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>22</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Ruine, archäologisches Objekt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>23</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Landungssteg</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>24</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>einzelner Fels</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>25</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>schmale bestockte Fläche</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>26</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Rinnsal</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>27</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>schmaler Weg</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>28</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>2100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Hochspannungsfreileitung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>29</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00 3.00 3.00
+                            </CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Druckleitung</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>30</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00 3.00 3.00
+                            </CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bahngeleise, Bahnachse</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>31</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Tramachse</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>32</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Tramgeleise</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>33</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Luftseilbahn</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>34</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Gondelbahn, Sesselbahn</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>35</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Materialseilbahn</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>36</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Skilift</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>37</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Fähre</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>38</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Grotte, Höhleneingang</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>39</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Achse</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>40</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">10.00 3.00 3.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>wichtiger Einzelbaum</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>41</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bildstock, Kruzifix</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>42</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Quelle</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>43</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bezugspunkt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>44</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Telefonkabine</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>45</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Brückenwaage</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>46</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Kulturgrenze AVaO</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>47</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Trottoir alt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>48</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Verkehrsinsel alt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>49</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Feinstruktur (Fussballfeld, Unterteilungen, etc)</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>50</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                            <CssParameter name="stroke-dasharray">5.00 3.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Jauchebehälter, Mistlege</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>51</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#404040</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>einzelobjekt_punkt</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Denkmal</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>16</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Mast, Antenne</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>17</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>einzelner Fels</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>25</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Fähre</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>38</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Grotte, Höhleneingang</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>39</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>wichtiger Einzelbaum</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>41</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bildstock, Kruzifix</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>42</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Quelle</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>43</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>einzelobjekt_linie_symbol</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Einzelobjekt Symbol Linienelement</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art</ogc:PropertyName>
+                            <ogc:Literal>27</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>einzelobjekt_flaeche_symbol</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Einzelobjekt Symbol Flächenelement</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art</ogc:PropertyName>
+                            <ogc:Literal>4</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>strassenname_label</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Strassenname</Name>
+                    <MaxScaleDenominator>2100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>name</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial</CssParameter>
+                            <CssParameter name="font-size">10</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#000000</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>grenzpunkte</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Markstein</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>0</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Kunststoffzeichen</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>1</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Bolzen</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>2</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Rohr</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>3</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Pfahl</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>4</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Kreuz</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>5</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>unversicherter Grenzpunkt</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>6</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>gemeindegrenzen</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Gemeindegrenzen</Name>
+                    <MaxScaleDenominator>500000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#cc0066</CssParameter>
+                            <CssParameter name="stroke-width">1.50</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>kantonsgrenze</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Kantonsgrenze</Name>
+                    <MinScaleDenominator>100001.000000</MinScaleDenominator>
+                    <MaxScaleDenominator>1000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#505050</CssParameter>
+                            <CssParameter name="stroke-width">3.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>landesgrenze</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Landesgrenze</Name>
+                    <MinScaleDenominator>200001.000000</MinScaleDenominator>
+                    <MaxScaleDenominator>500000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#6e6e6e</CssParameter>
+                            <CssParameter name="stroke-width">4.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>lfp1</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>LFP1 begehbar</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>0</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1500.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>LFP1 nicht begehbar</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>1</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1500.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>lfp2</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>LFP2 begehbar</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>0</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>LFP2 nicht begehbar</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>darstellung_code</ogc:PropertyName>
+                            <ogc:Literal>1</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>lfp3</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>LFP3 Markstein</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>0</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>LFP3 Kunststoffzeichen</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>1</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>LFP3 Bolzen</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>2</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>LFP3 Rohr</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>3</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>LFP3 Pfahl</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>4</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>LFP3 Kreuz</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>art_code</ogc:PropertyName>
+                            <ogc:Literal>5</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>hfp1</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>HFP1</Name>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>hfp2</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>HFP2</Name>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>hfp3</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>HFP3</Name>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>hgp</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>HGP</Name>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                    <PointSymbolizer>
+                    </PointSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>hausnummern_label</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Hausnummer</Name>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>1.0</AnchorPointX>
+                                    <AnchorPointY>1.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>1.0</AnchorPointX>
+                                    <AnchorPointY>1.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>1.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>1.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.0</AnchorPointX>
+                                    <AnchorPointY>1.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.0</AnchorPointX>
+                                    <AnchorPointY>1.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>1.0</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.0</AnchorPointX>
+                                    <AnchorPointY>0.5</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>1.0</AnchorPointX>
+                                    <AnchorPointY>0.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>1.0</AnchorPointX>
+                                    <AnchorPointY>0.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.5</AnchorPointX>
+                                    <AnchorPointY>0.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.0</AnchorPointX>
+                                    <AnchorPointY>0.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+                <Rule>
+                    <MaxScaleDenominator>1100.000000</MaxScaleDenominator>
+                    <PointSymbolizer>
+                        <Graphic>
+                            <Mark>
+                                <WellKnownName>square</WellKnownName>
+                                <Fill>
+                                    <CssParameter name="fill">#808080</CssParameter>
+                                </Fill>
+                            </Mark>
+                            <Size>1</Size>
+                        </Graphic>
+                    </PointSymbolizer>
+                    <TextSymbolizer>
+                        <Label>
+                            <ogc:PropertyName>hausnummer</ogc:PropertyName>
+                        </Label>
+                        <Font>
+                            <CssParameter name="font-family">arial_bold</CssParameter>
+                            <CssParameter name="font-size">9</CssParameter>
+                        </Font>
+                        <LabelPlacement>
+                            <PointPlacement>
+                                <AnchorPoint>
+                                    <AnchorPointX>0.0</AnchorPointX>
+                                    <AnchorPointY>0.0</AnchorPointY>
+                                </AnchorPoint>
+                            </PointPlacement>
+                        </LabelPlacement>
+                        <Fill>
+                            <CssParameter name="fill">#7c7c7c</CssParameter>
+                        </Fill>
+                    </TextSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>wegrecht</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Wegrecht</Name>
+                    <MaxScaleDenominator>1500.000000</MaxScaleDenominator>
+                    <LineSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.30</CssParameter>
+                            <CssParameter name="stroke-dasharray">8.00 8.00</CssParameter>
+                        </Stroke>
+                    </LineSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>selbstrecht</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <Name>Selbstrecht</Name>
+                    <MaxScaleDenominator>5700.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#bcc2bf</CssParameter>
+                            <CssParameter name="stroke-width">1.50</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+</StyledLayerDescriptor>
