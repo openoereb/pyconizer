@@ -11,8 +11,8 @@ from pyconizer.lib.api.sld import FactoryFromString
 
 
 square_points = "28,28 28,32 32,32 32,28 28,28"
-polygon_points = "10,10 54,10 54,54 54,10 10,10"
-line_points = "11,10 22,54 33,10 44,54"
+polygon_points = "10,10 10,54 54,54 54,10 10,10"
+line_points = "54,54 10,10"
 
 
 def process_fill_styling(symbolizer):
