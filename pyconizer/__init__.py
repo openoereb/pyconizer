@@ -8,88 +8,91 @@ from pyconizer.lib.api.sld import load_sld_content, extract_rules
 from pyconizer.lib.api.structure import Configuration, write, read, persist_layer_path, write_rule, \
     persist_mapping
 
-config = [
-    {
-        'url': 'https://wms.geo.admin.ch/?',
-        'layer': 'ch.bav.kataster-belasteter-standorte-oev.oereb',
-        'get_styles': {
-            'request': 'GetStyles',
-            'service': 'WMS',
-            'srs': 'EPSG:2056',
-            'version': '1.1.1'
-        },
-        'get_legend': {
-            'image_format': 'image/png',
-            'request': 'GetLegendGraphic',
-            'service': 'WMS',
-            'version': '1.1.1',
-            'width': 72,
-            'height': 36
-        }
-    }, {
-        'url': 'http://geowms.bl.ch/?',
-        'layer': 'liegenschaft',
-        'get_styles': {
-            'request': 'GetStyles',
-            'service': 'WMS',
-            'srs': 'EPSG:2056',
-            'version': '1.1.1'
-        },
-        'get_legend': {
-            'image_format': 'image/png',
-            'request': 'GetLegendGraphic',
-            'service': 'WMS',
-            'version': '1.1.1',
-            'width': 72,
-            'height': 36
-        }
-    }, {
-        'url': 'http://geowms.bl.ch/?',
-        'layer': 'np_nur_grundnutzung_group',
-        'get_styles': {
-            'request': 'GetStyles',
-            'service': 'WMS',
-            'srs': 'EPSG:2056',
-            'version': '1.1.1'
-        },
-        'get_legend': {
-            'image_format': 'image/png',
-            'request': 'GetLegendGraphic',
-            'service': 'WMS',
-            'version': '1.1.1',
-            'width': 72,
-            'height': 36
-        }
-    }, {
-        'url': 'http://geowms.bl.ch/?',
-        'layer': 'grundkarte_farbig_group',
-        'get_styles': {
-            'request': 'GetStyles',
-            'service': 'WMS',
-            'srs': 'EPSG:2056',
-            'version': '1.1.1'
-        },
-        'get_legend': {
-            'image_format': 'image/png',
-            'request': 'GetLegendGraphic',
-            'service': 'WMS',
-            'version': '1.1.1',
-            'width': 72,
-            'height': 36
-        }
-    }
-]
+# config = [
+#     {
+#         'url': 'https://wms.geo.admin.ch/?',
+#         'layer': 'ch.bav.kataster-belasteter-standorte-oev.oereb',
+#         'get_styles': {
+#             'request': 'GetStyles',
+#             'service': 'WMS',
+#             'srs': 'EPSG:2056',
+#             'version': '1.1.1'
+#         },
+#         'get_legend': {
+#             'image_format': 'image/png',
+#             'request': 'GetLegendGraphic',
+#             'service': 'WMS',
+#             'version': '1.1.1',
+#             'width': 72,
+#             'height': 36
+#         }
+#     }, {
+#         'url': 'http://geowms.bl.ch/?',
+#         'layer': 'liegenschaft',
+#         'get_styles': {
+#             'request': 'GetStyles',
+#             'service': 'WMS',
+#             'srs': 'EPSG:2056',
+#             'version': '1.1.1'
+#         },
+#         'get_legend': {
+#             'image_format': 'image/png',
+#             'request': 'GetLegendGraphic',
+#             'service': 'WMS',
+#             'version': '1.1.1',
+#             'width': 72,
+#             'height': 36
+#         }
+#     }, {
+#         'url': 'http://geowms.bl.ch/?',
+#         'layer': 'np_nur_grundnutzung_group',
+#         'get_styles': {
+#             'request': 'GetStyles',
+#             'service': 'WMS',
+#             'srs': 'EPSG:2056',
+#             'version': '1.1.1'
+#         },
+#         'get_legend': {
+#             'image_format': 'image/png',
+#             'request': 'GetLegendGraphic',
+#             'service': 'WMS',
+#             'version': '1.1.1',
+#             'width': 72,
+#             'height': 36
+#         }
+#     }, {
+#         'url': 'http://geowms.bl.ch/?',
+#         'layer': 'grundkarte_farbig_group',
+#         'get_styles': {
+#             'request': 'GetStyles',
+#             'service': 'WMS',
+#             'srs': 'EPSG:2056',
+#             'version': '1.1.1'
+#         },
+#         'get_legend': {
+#             'image_format': 'image/png',
+#             'request': 'GetLegendGraphic',
+#             'service': 'WMS',
+#             'version': '1.1.1',
+#             'width': 72,
+#             'height': 36
+#         }
+#     }
+# ]
+#
+# path = '/tmp/iconizer/icons/'
 
-path = '/tmp/iconizer/icons/'
 
-
-def create_icons_from_scratch(configuration, path, json_only=True):
+def create_icons_from_scratch(configuration, path, file_name='mapping.json', json_only=True):
     """
     This is probably the starting point. If you use this package for the first time you might want use this.
 
     Args:
         configuration (list of dict): The minimal configuration to construct all images from scratch
         path (str): The root path where all the stuff will be created in.
+        file_name (str): The name of the file which is used to save the configuration in. The files mime
+            type is always json. The only thing you can change is the name if you don't like the name
+            'mapping.json'.
         json_only (bool): Switch to create only a JSON file. This might be useful for test use. This is
             constructing the JSON from the passed configuration but do not downloads the image content.
     """
@@ -105,7 +108,7 @@ def create_icons_from_scratch(configuration, path, json_only=True):
         named_layers = extract_rules(sld_content)
         layer.get_legend.add_named_layers(named_layers)
         layer.get_legend.create_rule_urls(layer.url)
-    write(path, configuration, json_only=json_only)
+    write(path, configuration, file_name=file_name, json_only=json_only)
 
 
 def update_icon_content(path, layer_name, mapping_file_name='mapping.json', json_only=True):

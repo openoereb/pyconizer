@@ -2,3 +2,5 @@
 .venv
 .coverage
 pyconizer.egg-info
+.cache
+*.py[cod]

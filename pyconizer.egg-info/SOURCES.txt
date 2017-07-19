@@ -3,6 +3,7 @@ MANIFEST.in
 README.txt
 pytest.ini
 requirements.txt
+setup.cfg
 pyconizer/__init__.py
 pyconizer.egg-info/PKG-INFO
 pyconizer.egg-info/SOURCES.txt
