@@ -635,10 +635,8 @@ def write(path, config, file_name='mapping.json', json_only=True):
         json_only (bool): Switch to create only a JSON file. This might be useful for test use. This is
             constructing the JSON from the passed configuration but do not downloads the image content.
     """
-
+    download_all_legend_icons(config)
     if not json_only:
-        print 'call was not only for json creation, but also downloading images.'
-        download_all_legend_icons(config)
         for layer in config.layers:
             for named_layer in layer.get_legend.named_layers:
                 combined_path = persist_layer_path(path, layer.name, named_layer.name)
