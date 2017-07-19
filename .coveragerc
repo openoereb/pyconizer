@@ -1,0 +1,8 @@
+[run]
+omit =
+    pyconizer/lib/api/sld/v1_0_0/*
+    pyconizer/lib/api/svg/templates/*
+
+[html]
+directory = coverage_report
+title = pyconizer coverage report

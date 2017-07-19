@@ -1,0 +1,8 @@
+pytest
+pytest-cov
+pytest-ordering
+pyflakes
+flake8
+pycodestyle
+McCabe
+-e .
