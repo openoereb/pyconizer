@@ -5,7 +5,7 @@ import json
 import os
 import uuid
 
-from pyconizer import download_all_legend_icons
+from pyconizer.lib.api.image import download_all_legend_icons
 from pyconizer.lib import encode_correctly
 from pyconizer.lib.url import add_url_params
 
