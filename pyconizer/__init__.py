@@ -3,7 +3,7 @@ import base64
 import os
 import shutil
 
-from pyconizer.lib.api.image import download_all_legend_icons, download_legend_icon
+from pyconizer.lib.api.image import download_legend_icon
 from pyconizer.lib.api.sld import load_sld_content, extract_rules
 from pyconizer.lib.api.structure import Configuration, write, read, persist_layer_path, write_rule, \
     persist_mapping

@@ -8,6 +8,3 @@ def encode_correctly(string):
         # Must be encoded in UTF-8
         string.decode('utf8')
     return string
-
-
-

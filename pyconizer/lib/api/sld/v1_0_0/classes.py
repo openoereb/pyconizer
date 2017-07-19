@@ -13,7 +13,8 @@
 #   tmp.xsd
 #
 # Command line:
-#   /home/vvmruder/Projekte/PyCharm/pyramid_iconizer/.venv/bin/generateds -o "sld_1_0_0.py" -s "sld_1_0_0_sub_classes.py" --external-encoding="utf-8" tmp.xsd
+#   /home/vvmruder/Projekte/PyCharm/pyramid_iconizer/.venv/bin/generateds -o "sld_1_0_0.py"
+#   -s "sld_1_0_0_sub_classes.py" --external-encoding="utf-8" tmp.xsd
 #
 # Current working directory (os.getcwd()):
 #   pyramid_iconizer
@@ -24,11 +25,11 @@ import re as re_
 import base64
 import datetime as datetime_
 import warnings as warnings_
+
 try:
     from lxml import etree as etree_
 except ImportError:
     from xml.etree import ElementTree as etree_
-
 
 Validate_simpletypes_ = True
 if sys.version_info.major == 2:
@@ -48,6 +49,7 @@ def parsexml_(infile, parser=None, **kwargs):
             parser = etree_.XMLParser()
     doc = etree_.parse(infile, parser=parser, **kwargs)
     return doc
+
 
 #
 # Namespace prefix definition table (and other attributes, too)
@@ -85,36 +87,48 @@ except ImportError:
 try:
     from generatedssuper import GeneratedsSuper
 except ImportError as exp:
-    
+
     class GeneratedsSuper(object):
         tzoff_pattern = re_.compile(r'(\+|-)((0\d|1[0-3]):[0-5]\d|14:00)$')
+
         class _FixedOffsetTZ(datetime_.tzinfo):
             def __init__(self, offset, name):
                 self.__offset = datetime_.timedelta(minutes=offset)
                 self.__name = name
+
             def utcoffset(self, dt):
                 return self.__offset
+
             def tzname(self, dt):
                 return self.__name
+
             def dst(self, dt):
                 return None
+
         def gds_format_string(self, input_data, input_name=''):
             return input_data
+
         def gds_validate_string(self, input_data, node=None, input_name=''):
             if not input_data:
                 return ''
             else:
                 return input_data
+
         def gds_format_base64(self, input_data, input_name=''):
             return base64.b64encode(input_data)
+
         def gds_validate_base64(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_integer(self, input_data, input_name=''):
             return '%d' % input_data
+
         def gds_validate_integer(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_integer_list(self, input_data, input_name=''):
             return '%s' % ' '.join(input_data)
+
         def gds_validate_integer_list(
                 self, input_data, node=None, input_name=''):
             values = input_data.split()
@@ -124,12 +138,16 @@ except ImportError as exp:
                 except (TypeError, ValueError):
                     raise_parse_error(node, 'Requires sequence of integers')
             return values
+
         def gds_format_float(self, input_data, input_name=''):
             return ('%.15f' % input_data).rstrip('0')
+
         def gds_validate_float(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_float_list(self, input_data, input_name=''):
             return '%s' % ' '.join(input_data)
+
         def gds_validate_float_list(
                 self, input_data, node=None, input_name=''):
             values = input_data.split()
@@ -139,12 +157,16 @@ except ImportError as exp:
                 except (TypeError, ValueError):
                     raise_parse_error(node, 'Requires sequence of floats')
             return values
+
         def gds_format_double(self, input_data, input_name=''):
             return '%e' % input_data
+
         def gds_validate_double(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_double_list(self, input_data, input_name=''):
             return '%s' % ' '.join(input_data)
+
         def gds_validate_double_list(
                 self, input_data, node=None, input_name=''):
             values = input_data.split()
@@ -154,24 +176,30 @@ except ImportError as exp:
                 except (TypeError, ValueError):
                     raise_parse_error(node, 'Requires sequence of doubles')
             return values
+
         def gds_format_boolean(self, input_data, input_name=''):
             return ('%s' % input_data).lower()
+
         def gds_validate_boolean(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_boolean_list(self, input_data, input_name=''):
             return '%s' % ' '.join(input_data)
+
         def gds_validate_boolean_list(
                 self, input_data, node=None, input_name=''):
             values = input_data.split()
             for value in values:
-                if value not in ('true', '1', 'false', '0', ):
+                if value not in ('true', '1', 'false', '0',):
                     raise_parse_error(
                         node,
                         'Requires sequence of booleans '
                         '("true", "1", "false", "0")')
             return values
+
         def gds_validate_datetime(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_datetime(self, input_data, input_name=''):
             if input_data.microsecond == 0:
                 _svalue = '%04d-%02d-%02dT%02d:%02d:%02d' % (
@@ -208,6 +236,7 @@ except ImportError as exp:
                         minutes = (total_seconds - (hours * 3600)) // 60
                         _svalue += '{0:02d}:{1:02d}'.format(hours, minutes)
             return _svalue
+
         @classmethod
         def gds_parse_datetime(cls, input_data):
             tz = None
@@ -227,7 +256,7 @@ except ImportError as exp:
             time_parts = input_data.split('.')
             if len(time_parts) > 1:
                 micro_seconds = int(float('0.' + time_parts[1]) * 1000000)
-                input_data = '%s.%s' % (time_parts[0], micro_seconds, )
+                input_data = '%s.%s' % (time_parts[0], micro_seconds,)
                 dt = datetime_.datetime.strptime(
                     input_data, '%Y-%m-%dT%H:%M:%S.%f')
             else:
@@ -235,8 +264,10 @@ except ImportError as exp:
                     input_data, '%Y-%m-%dT%H:%M:%S')
             dt = dt.replace(tzinfo=tz)
             return dt
+
         def gds_validate_date(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_date(self, input_data, input_name=''):
             _svalue = '%04d-%02d-%02d' % (
                 input_data.year,
@@ -263,6 +294,7 @@ except ImportError as exp:
             except AttributeError:
                 pass
             return _svalue
+
         @classmethod
         def gds_parse_date(cls, input_data):
             tz = None
@@ -282,8 +314,10 @@ except ImportError as exp:
             dt = datetime_.datetime.strptime(input_data, '%Y-%m-%d')
             dt = dt.replace(tzinfo=tz)
             return dt.date()
+
         def gds_validate_time(self, input_data, node=None, input_name=''):
             return input_data
+
         def gds_format_time(self, input_data, input_name=''):
             if input_data.microsecond == 0:
                 _svalue = '%02d:%02d:%02d' % (
@@ -314,6 +348,7 @@ except ImportError as exp:
                         minutes = (total_seconds - (hours * 3600)) // 60
                         _svalue += '{0:02d}:{1:02d}'.format(hours, minutes)
             return _svalue
+
         def gds_validate_simple_patterns(self, patterns, target):
             # pat is a list of lists of strings/patterns.  We should:
             # - AND the outer elements
@@ -329,6 +364,7 @@ except ImportError as exp:
                     found1 = False
                     break
             return found1
+
         @classmethod
         def gds_parse_time(cls, input_data):
             tz = None
@@ -351,15 +387,19 @@ except ImportError as exp:
                 dt = datetime_.datetime.strptime(input_data, '%H:%M:%S')
             dt = dt.replace(tzinfo=tz)
             return dt.time()
+
         def gds_str_lower(self, instring):
             return instring.lower()
+
         def get_path_(self, node):
             path_list = []
             self.get_path_list_(node, path_list)
             path_list.reverse()
             path = '/'.join(path_list)
             return path
+
         Tag_strip_pattern_ = re_.compile(r'\{.*\}')
+
         def get_path_list_(self, node, path_list):
             if node is None:
                 return
@@ -367,6 +407,7 @@ except ImportError as exp:
             if tag:
                 path_list.append(tag)
             self.get_path_list_(node.getparent(), path_list)
+
         def get_class_obj_(self, node, default_class=None):
             class_obj1 = default_class
             if 'xsi' in node.nsmap:
@@ -379,17 +420,21 @@ except ImportError as exp:
                     if class_obj2 is not None:
                         class_obj1 = class_obj2
             return class_obj1
+
         def gds_build_any(self, node, type_name=None):
             return None
+
         @classmethod
         def gds_reverse_node_mapping(cls, mapping):
             return dict(((v, k) for k, v in mapping.iteritems()))
+
         @staticmethod
         def gds_encode(instring):
             if sys.version_info.major == 2:
                 return instring.encode(ExternalEncoding)
             else:
                 return instring
+
         @staticmethod
         def convert_unicode(instring):
             if isinstance(instring, str):
@@ -399,13 +444,16 @@ except ImportError as exp:
             else:
                 result = GeneratedsSuper.gds_encode(str(instring))
             return result
+
         def __eq__(self, other):
             if type(self) != type(other):
                 return False
             return self.__dict__ == other.__dict__
+
         def __ne__(self, other):
             return not self.__eq__(other)
-    
+
+
     def getSubclassFromModule_(module, class_):
         '''Get the subclass of a class from a specific module.'''
         name = class_.__name__ + 'Sub'
@@ -413,7 +461,6 @@ except ImportError as exp:
             return getattr(module, name)
         else:
             return None
-
 
 #
 # If you have installed IPython you can uncomment and use the following.
@@ -443,6 +490,7 @@ CDATA_pattern_ = re_.compile(r"<!\[CDATA\[.*?\]\]>", re_.DOTALL)
 # Change this to redirect the generated superclass module to use a
 # specific subclass module.
 CurrentSubclassModule_ = None
+
 
 #
 # Support/utility functions.
@@ -532,7 +580,7 @@ def find_attr_value_(attr_name, node):
         prefix, name = attr_parts
         namespace = node.nsmap.get(prefix)
         if namespace is not None:
-            value = attrs.get('{%s}%s' % (namespace, name, ))
+            value = attrs.get('{%s}%s' % (namespace, name,))
     return value
 
 
@@ -541,7 +589,7 @@ class GDSParseError(Exception):
 
 
 def raise_parse_error(node, msg):
-    msg = '%s (element %s/line %d)' % (msg, node.tag, node.sourceline, )
+    msg = '%s (element %s/line %d)' % (msg, node.tag, node.sourceline,)
     raise GDSParseError(msg)
 
 
@@ -561,19 +609,25 @@ class MixedContainer:
     TypeDouble = 6
     TypeBoolean = 7
     TypeBase64 = 8
+
     def __init__(self, category, content_type, name, value):
         self.category = category
         self.content_type = content_type
         self.name = name
         self.value = value
+
     def getCategory(self):
         return self.category
+
     def getContenttype(self, content_type):
         return self.content_type
+
     def getValue(self):
         return self.value
+
     def getName(self):
         return self.name
+
     def export(self, outfile, level, name, namespace,
                pretty_print=True):
         if self.category == MixedContainer.CategoryText:
@@ -582,20 +636,21 @@ class MixedContainer:
                 outfile.write(self.value)
         elif self.category == MixedContainer.CategorySimple:
             self.exportSimple(outfile, level, name)
-        else:    # category == MixedContainer.CategoryComplex
+        else:  # category == MixedContainer.CategoryComplex
             self.value.export(
                 outfile, level, namespace, name,
                 pretty_print=pretty_print)
+
     def exportSimple(self, outfile, level, name):
         if self.content_type == MixedContainer.TypeString:
             outfile.write('<%s>%s</%s>' % (
                 self.name, self.value, self.name))
         elif self.content_type == MixedContainer.TypeInteger or \
-                self.content_type == MixedContainer.TypeBoolean:
+                        self.content_type == MixedContainer.TypeBoolean:
             outfile.write('<%s>%d</%s>' % (
                 self.name, self.value, self.name))
         elif self.content_type == MixedContainer.TypeFloat or \
-                self.content_type == MixedContainer.TypeDecimal:
+                        self.content_type == MixedContainer.TypeDecimal:
             outfile.write('<%s>%f</%s>' % (
                 self.name, self.value, self.name))
         elif self.content_type == MixedContainer.TypeDouble:
@@ -606,6 +661,7 @@ class MixedContainer:
                 self.name,
                 base64.b64encode(self.value),
                 self.name))
+
     def to_etree(self, element):
         if self.category == MixedContainer.CategoryText:
             # Prevent exporting empty content as empty lines.
@@ -624,22 +680,24 @@ class MixedContainer:
             subelement = etree_.SubElement(
                 element, '%s' % self.name)
             subelement.text = self.to_etree_simple()
-        else:    # category == MixedContainer.CategoryComplex
+        else:  # category == MixedContainer.CategoryComplex
             self.value.to_etree(element)
+
     def to_etree_simple(self):
         if self.content_type == MixedContainer.TypeString:
             text = self.value
         elif (self.content_type == MixedContainer.TypeInteger or
-                self.content_type == MixedContainer.TypeBoolean):
+                      self.content_type == MixedContainer.TypeBoolean):
             text = '%d' % self.value
         elif (self.content_type == MixedContainer.TypeFloat or
-                self.content_type == MixedContainer.TypeDecimal):
+                      self.content_type == MixedContainer.TypeDecimal):
             text = '%f' % self.value
         elif self.content_type == MixedContainer.TypeDouble:
             text = '%g' % self.value
         elif self.content_type == MixedContainer.TypeBase64:
             text = '%s' % base64.b64encode(self.value)
         return text
+
     def exportLiteral(self, outfile, level, name):
         if self.category == MixedContainer.CategoryText:
             showIndent(outfile, level)
@@ -653,7 +711,7 @@ class MixedContainer:
                 'model_.MixedContainer(%d, %d, "%s", "%s"),\n' % (
                     self.category, self.content_type,
                     self.name, self.value))
-        else:    # category == MixedContainer.CategoryComplex
+        else:  # category == MixedContainer.CategoryComplex
             showIndent(outfile, level)
             outfile.write(
                 'model_.MixedContainer(%d, %d, "%s",\n' % (
@@ -665,17 +723,26 @@ class MixedContainer:
 
 class MemberSpec_(object):
     def __init__(self, name='', data_type='', container=0,
-            optional=0, child_attrs=None, choice=None):
+                 optional=0, child_attrs=None, choice=None):
         self.name = name
         self.data_type = data_type
         self.container = container
         self.child_attrs = child_attrs
         self.choice = choice
         self.optional = optional
-    def set_name(self, name): self.name = name
-    def get_name(self): return self.name
-    def set_data_type(self, data_type): self.data_type = data_type
-    def get_data_type_chain(self): return self.data_type
+
+    def set_name(self, name):
+        self.name = name
+
+    def get_name(self):
+        return self.name
+
+    def set_data_type(self, data_type):
+        self.data_type = data_type
+
+    def get_data_type_chain(self):
+        return self.data_type
+
     def get_data_type(self):
         if isinstance(self.data_type, list):
             if len(self.data_type) > 0:
@@ -684,20 +751,37 @@ class MemberSpec_(object):
                 return 'xs:string'
         else:
             return self.data_type
-    def set_container(self, container): self.container = container
-    def get_container(self): return self.container
-    def set_child_attrs(self, child_attrs): self.child_attrs = child_attrs
-    def get_child_attrs(self): return self.child_attrs
-    def set_choice(self, choice): self.choice = choice
-    def get_choice(self): return self.choice
-    def set_optional(self, optional): self.optional = optional
-    def get_optional(self): return self.optional
+
+    def set_container(self, container):
+        self.container = container
+
+    def get_container(self):
+        return self.container
+
+    def set_child_attrs(self, child_attrs):
+        self.child_attrs = child_attrs
+
+    def get_child_attrs(self):
+        return self.child_attrs
+
+    def set_choice(self, choice):
+        self.choice = choice
+
+    def get_choice(self):
+        return self.choice
+
+    def set_optional(self, optional):
+        self.optional = optional
+
+    def get_optional(self):
+        return self.optional
 
 
 def _cast(typ, value):
     if typ is None or value is None:
         return value
     return typ(value)
+
 
 #
 # Data representation classes.
@@ -709,6 +793,7 @@ class StyledLayerDescriptor(GeneratedsSuper):
     at the first level by NamedLayer and UserLayer elements."""
     subclass = None
     superclass = None
+
     def __init__(self, version=None, Name=None, Title=None, Abstract=None, NamedLayer=None, UserLayer=None):
         self.original_tagname_ = None
         self.version = _cast(None, version)
@@ -723,6 +808,7 @@ class StyledLayerDescriptor(GeneratedsSuper):
             self.UserLayer = []
         else:
             self.UserLayer = UserLayer
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -733,37 +819,77 @@ class StyledLayerDescriptor(GeneratedsSuper):
             return StyledLayerDescriptor.subclass(*args_, **kwargs_)
         else:
             return StyledLayerDescriptor(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Name(self): return self.Name
-    def set_Name(self, Name): self.Name = Name
-    def get_Title(self): return self.Title
-    def set_Title(self, Title): self.Title = Title
-    def get_Abstract(self): return self.Abstract
-    def set_Abstract(self, Abstract): self.Abstract = Abstract
-    def get_NamedLayer(self): return self.NamedLayer
-    def set_NamedLayer(self, NamedLayer): self.NamedLayer = NamedLayer
-    def add_NamedLayer(self, value): self.NamedLayer.append(value)
-    def insert_NamedLayer_at(self, index, value): self.NamedLayer.insert(index, value)
-    def replace_NamedLayer_at(self, index, value): self.NamedLayer[index] = value
-    def get_UserLayer(self): return self.UserLayer
-    def set_UserLayer(self, UserLayer): self.UserLayer = UserLayer
-    def add_UserLayer(self, value): self.UserLayer.append(value)
-    def insert_UserLayer_at(self, index, value): self.UserLayer.insert(index, value)
-    def replace_UserLayer_at(self, index, value): self.UserLayer[index] = value
-    def get_version(self): return self.version
-    def set_version(self, version): self.version = version
+
+    def get_Name(self):
+        return self.Name
+
+    def set_Name(self, Name):
+        self.Name = Name
+
+    def get_Title(self):
+        return self.Title
+
+    def set_Title(self, Title):
+        self.Title = Title
+
+    def get_Abstract(self):
+        return self.Abstract
+
+    def set_Abstract(self, Abstract):
+        self.Abstract = Abstract
+
+    def get_NamedLayer(self):
+        return self.NamedLayer
+
+    def set_NamedLayer(self, NamedLayer):
+        self.NamedLayer = NamedLayer
+
+    def add_NamedLayer(self, value):
+        self.NamedLayer.append(value)
+
+    def insert_NamedLayer_at(self, index, value):
+        self.NamedLayer.insert(index, value)
+
+    def replace_NamedLayer_at(self, index, value):
+        self.NamedLayer[index] = value
+
+    def get_UserLayer(self):
+        return self.UserLayer
+
+    def set_UserLayer(self, UserLayer):
+        self.UserLayer = UserLayer
+
+    def add_UserLayer(self, value):
+        self.UserLayer.append(value)
+
+    def insert_UserLayer_at(self, index, value):
+        self.UserLayer.insert(index, value)
+
+    def replace_UserLayer_at(self, index, value):
+        self.UserLayer[index] = value
+
+    def get_version(self):
+        return self.version
+
+    def set_version(self, version):
+        self.version = version
+
     def hasContent_(self):
         if (
-            self.Name is not None or
-            self.Title is not None or
-            self.Abstract is not None or
-            self.NamedLayer or
-            self.UserLayer
+                                    self.Name is not None or
+                                    self.Title is not None or
+                                self.Abstract is not None or
+                        self.NamedLayer or
+                    self.UserLayer
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='StyledLayerDescriptor', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='StyledLayerDescriptor',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('StyledLayerDescriptor')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -774,38 +900,51 @@ class StyledLayerDescriptor(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='StyledLayerDescriptor')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='StyledLayerDescriptor', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='StyledLayerDescriptor',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='StyledLayerDescriptor'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='StyledLayerDescriptor'):
         if self.version is not None and 'version' not in already_processed:
             already_processed.add('version')
-            outfile.write(' version=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.version), input_name='version')), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='StyledLayerDescriptor', fromsubclass_=False, pretty_print=True):
+            outfile.write(' version=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.version), input_name='version')),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='StyledLayerDescriptor',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sName>%s</%sName>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), namespace_, eol_))
+            outfile.write('<%sName>%s</%sName>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')),
+            namespace_, eol_))
         if self.Title is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sTitle>%s</%sTitle>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Title), input_name='Title')), namespace_, eol_))
+            outfile.write('<%sTitle>%s</%sTitle>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Title), input_name='Title')),
+            namespace_, eol_))
         if self.Abstract is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sAbstract>%s</%sAbstract>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Abstract), input_name='Abstract')), namespace_, eol_))
+            outfile.write('<%sAbstract>%s</%sAbstract>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.Abstract), input_name='Abstract')), namespace_, eol_))
         for NamedLayer_ in self.NamedLayer:
-            NamedLayer_.export(outfile, level, namespace_='sld:', name_='NamedLayer', pretty_print=pretty_print)
+            NamedLayer_.export(outfile, level, namespace_='sld:', name_='NamedLayer',
+                               pretty_print=pretty_print)
         for UserLayer_ in self.UserLayer:
             UserLayer_.export(outfile, level, namespace_='sld:', name_='UserLayer', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -813,11 +952,13 @@ class StyledLayerDescriptor(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('version', node)
         if value is not None and 'version' not in already_processed:
             already_processed.add('version')
             self.version = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Name':
             Name_ = child_.text
@@ -841,6 +982,8 @@ class StyledLayerDescriptor(GeneratedsSuper):
             obj_.build(child_)
             self.UserLayer.append(obj_)
             obj_.original_tagname_ = 'UserLayer'
+
+
 # end class StyledLayerDescriptor
 
 
@@ -848,6 +991,7 @@ class NamedLayer(GeneratedsSuper):
     """A NamedLayer is a layer of data that has a name advertised by a WMS."""
     subclass = None
     superclass = None
+
     def __init__(self, Name=None, LayerFeatureConstraints=None, NamedStyle=None, UserStyle=None):
         self.original_tagname_ = None
         self.Name = Name
@@ -860,6 +1004,7 @@ class NamedLayer(GeneratedsSuper):
             self.UserStyle = []
         else:
             self.UserStyle = UserStyle
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -870,32 +1015,64 @@ class NamedLayer(GeneratedsSuper):
             return NamedLayer.subclass(*args_, **kwargs_)
         else:
             return NamedLayer(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Name(self): return self.Name
-    def set_Name(self, Name): self.Name = Name
-    def get_LayerFeatureConstraints(self): return self.LayerFeatureConstraints
-    def set_LayerFeatureConstraints(self, LayerFeatureConstraints): self.LayerFeatureConstraints = LayerFeatureConstraints
-    def get_NamedStyle(self): return self.NamedStyle
-    def set_NamedStyle(self, NamedStyle): self.NamedStyle = NamedStyle
-    def add_NamedStyle(self, value): self.NamedStyle.append(value)
-    def insert_NamedStyle_at(self, index, value): self.NamedStyle.insert(index, value)
-    def replace_NamedStyle_at(self, index, value): self.NamedStyle[index] = value
-    def get_UserStyle(self): return self.UserStyle
-    def set_UserStyle(self, UserStyle): self.UserStyle = UserStyle
-    def add_UserStyle(self, value): self.UserStyle.append(value)
-    def insert_UserStyle_at(self, index, value): self.UserStyle.insert(index, value)
-    def replace_UserStyle_at(self, index, value): self.UserStyle[index] = value
+
+    def get_Name(self):
+        return self.Name
+
+    def set_Name(self, Name):
+        self.Name = Name
+
+    def get_LayerFeatureConstraints(self):
+        return self.LayerFeatureConstraints
+
+    def set_LayerFeatureConstraints(self, LayerFeatureConstraints):
+        self.LayerFeatureConstraints = LayerFeatureConstraints
+
+    def get_NamedStyle(self):
+        return self.NamedStyle
+
+    def set_NamedStyle(self, NamedStyle):
+        self.NamedStyle = NamedStyle
+
+    def add_NamedStyle(self, value):
+        self.NamedStyle.append(value)
+
+    def insert_NamedStyle_at(self, index, value):
+        self.NamedStyle.insert(index, value)
+
+    def replace_NamedStyle_at(self, index, value):
+        self.NamedStyle[index] = value
+
+    def get_UserStyle(self):
+        return self.UserStyle
+
+    def set_UserStyle(self, UserStyle):
+        self.UserStyle = UserStyle
+
+    def add_UserStyle(self, value):
+        self.UserStyle.append(value)
+
+    def insert_UserStyle_at(self, index, value):
+        self.UserStyle.insert(index, value)
+
+    def replace_UserStyle_at(self, index, value):
+        self.UserStyle[index] = value
+
     def hasContent_(self):
         if (
-            self.Name is not None or
-            self.LayerFeatureConstraints is not None or
-            self.NamedStyle or
-            self.UserStyle
+                                self.Name is not None or
+                                self.LayerFeatureConstraints is not None or
+                        self.NamedStyle or
+                    self.UserStyle
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='NamedLayer', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='NamedLayer',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('NamedLayer')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -906,32 +1083,41 @@ class NamedLayer(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='NamedLayer')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='NamedLayer', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='NamedLayer',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='NamedLayer'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='NamedLayer', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='NamedLayer', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sName>%s</%sName>%s' % ('sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), 'sld:', eol_))
+            outfile.write('<%sName>%s</%sName>%s' % (
+            'sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), 'sld:',
+            eol_))
         if self.LayerFeatureConstraints is not None:
-            self.LayerFeatureConstraints.export(outfile, level, namespace_='sld:', name_='LayerFeatureConstraints', pretty_print=pretty_print)
+            self.LayerFeatureConstraints.export(outfile, level, namespace_='sld:',
+                                                name_='LayerFeatureConstraints', pretty_print=pretty_print)
         for NamedStyle_ in self.NamedStyle:
-            NamedStyle_.export(outfile, level, namespace_='sld:', name_='NamedStyle', pretty_print=pretty_print)
+            NamedStyle_.export(outfile, level, namespace_='sld:', name_='NamedStyle',
+                               pretty_print=pretty_print)
         for UserStyle_ in self.UserStyle:
             UserStyle_.export(outfile, level, namespace_='sld:', name_='UserStyle', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -939,8 +1125,10 @@ class NamedLayer(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Name':
             Name_ = child_.text
@@ -961,6 +1149,8 @@ class NamedLayer(GeneratedsSuper):
             obj_.build(child_)
             self.UserStyle.append(obj_)
             obj_.original_tagname_ = 'UserStyle'
+
+
 # end class NamedLayer
 
 
@@ -968,9 +1158,11 @@ class NamedStyle(GeneratedsSuper):
     """A NamedStyle is used to refer to a style that has a name in a WMS."""
     subclass = None
     superclass = None
+
     def __init__(self, Name=None):
         self.original_tagname_ = None
         self.Name = Name
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -981,17 +1173,25 @@ class NamedStyle(GeneratedsSuper):
             return NamedStyle.subclass(*args_, **kwargs_)
         else:
             return NamedStyle(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Name(self): return self.Name
-    def set_Name(self, Name): self.Name = Name
+
+    def get_Name(self):
+        return self.Name
+
+    def set_Name(self, Name):
+        self.Name = Name
+
     def hasContent_(self):
         if (
-            self.Name is not None
+                    self.Name is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='NamedStyle', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='NamedStyle',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('NamedStyle')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1002,26 +1202,33 @@ class NamedStyle(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='NamedStyle')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='NamedStyle', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='NamedStyle',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='NamedStyle'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='NamedStyle', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='NamedStyle', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sName>%s</%sName>%s' % ('sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), 'sld:', eol_))
+            outfile.write('<%sName>%s</%sName>%s' % (
+            'sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), 'sld:',
+            eol_))
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1029,13 +1236,17 @@ class NamedStyle(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Name':
             Name_ = child_.text
             Name_ = self.gds_validate_string(Name_, node, 'Name')
             self.Name = Name_
+
+
 # end class NamedStyle
 
 
@@ -1044,6 +1255,7 @@ class UserLayer(GeneratedsSuper):
     data."""
     subclass = None
     superclass = None
+
     def __init__(self, Name=None, RemoteOWS=None, LayerFeatureConstraints=None, UserStyle=None):
         self.original_tagname_ = None
         self.Name = Name
@@ -1053,6 +1265,7 @@ class UserLayer(GeneratedsSuper):
             self.UserStyle = []
         else:
             self.UserStyle = UserStyle
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1063,29 +1276,55 @@ class UserLayer(GeneratedsSuper):
             return UserLayer.subclass(*args_, **kwargs_)
         else:
             return UserLayer(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Name(self): return self.Name
-    def set_Name(self, Name): self.Name = Name
-    def get_RemoteOWS(self): return self.RemoteOWS
-    def set_RemoteOWS(self, RemoteOWS): self.RemoteOWS = RemoteOWS
-    def get_LayerFeatureConstraints(self): return self.LayerFeatureConstraints
-    def set_LayerFeatureConstraints(self, LayerFeatureConstraints): self.LayerFeatureConstraints = LayerFeatureConstraints
-    def get_UserStyle(self): return self.UserStyle
-    def set_UserStyle(self, UserStyle): self.UserStyle = UserStyle
-    def add_UserStyle(self, value): self.UserStyle.append(value)
-    def insert_UserStyle_at(self, index, value): self.UserStyle.insert(index, value)
-    def replace_UserStyle_at(self, index, value): self.UserStyle[index] = value
+
+    def get_Name(self):
+        return self.Name
+
+    def set_Name(self, Name):
+        self.Name = Name
+
+    def get_RemoteOWS(self):
+        return self.RemoteOWS
+
+    def set_RemoteOWS(self, RemoteOWS):
+        self.RemoteOWS = RemoteOWS
+
+    def get_LayerFeatureConstraints(self):
+        return self.LayerFeatureConstraints
+
+    def set_LayerFeatureConstraints(self, LayerFeatureConstraints):
+        self.LayerFeatureConstraints = LayerFeatureConstraints
+
+    def get_UserStyle(self):
+        return self.UserStyle
+
+    def set_UserStyle(self, UserStyle):
+        self.UserStyle = UserStyle
+
+    def add_UserStyle(self, value):
+        self.UserStyle.append(value)
+
+    def insert_UserStyle_at(self, index, value):
+        self.UserStyle.insert(index, value)
+
+    def replace_UserStyle_at(self, index, value):
+        self.UserStyle[index] = value
+
     def hasContent_(self):
         if (
-            self.Name is not None or
-            self.RemoteOWS is not None or
-            self.LayerFeatureConstraints is not None or
-            self.UserStyle
+                                self.Name is not None or
+                                self.RemoteOWS is not None or
+                            self.LayerFeatureConstraints is not None or
+                    self.UserStyle
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='UserLayer', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='UserLayer',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('UserLayer')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1096,32 +1335,41 @@ class UserLayer(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='UserLayer')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='UserLayer', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='UserLayer',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='UserLayer'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='UserLayer', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='UserLayer', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sName>%s</%sName>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), namespace_, eol_))
+            outfile.write('<%sName>%s</%sName>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')),
+            namespace_, eol_))
         if self.RemoteOWS is not None:
-            self.RemoteOWS.export(outfile, level, namespace_='sld:', name_='RemoteOWS', pretty_print=pretty_print)
+            self.RemoteOWS.export(outfile, level, namespace_='sld:', name_='RemoteOWS',
+                                  pretty_print=pretty_print)
         if self.LayerFeatureConstraints is not None:
-            self.LayerFeatureConstraints.export(outfile, level, namespace_='sld:', name_='LayerFeatureConstraints', pretty_print=pretty_print)
+            self.LayerFeatureConstraints.export(outfile, level, namespace_='sld:',
+                                                name_='LayerFeatureConstraints', pretty_print=pretty_print)
         for UserStyle_ in self.UserStyle:
             UserStyle_.export(outfile, level, namespace_='sld:', name_='UserStyle', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1129,8 +1377,10 @@ class UserLayer(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Name':
             Name_ = child_.text
@@ -1151,6 +1401,8 @@ class UserLayer(GeneratedsSuper):
             obj_.build(child_)
             self.UserStyle.append(obj_)
             obj_.original_tagname_ = 'UserStyle'
+
+
 # end class UserLayer
 
 
@@ -1158,11 +1410,13 @@ class RemoteOWS(GeneratedsSuper):
     """A RemoteOWS gives a reference to a remote WFS/WCS/other-OWS server."""
     subclass = None
     superclass = None
+
     def __init__(self, Service=None, OnlineResource=None):
         self.original_tagname_ = None
         self.Service = Service
         self.validate_Service(self.Service)
         self.OnlineResource = OnlineResource
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1173,23 +1427,36 @@ class RemoteOWS(GeneratedsSuper):
             return RemoteOWS.subclass(*args_, **kwargs_)
         else:
             return RemoteOWS(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Service(self): return self.Service
-    def set_Service(self, Service): self.Service = Service
-    def get_OnlineResource(self): return self.OnlineResource
-    def set_OnlineResource(self, OnlineResource): self.OnlineResource = OnlineResource
+
+    def get_Service(self):
+        return self.Service
+
+    def set_Service(self, Service):
+        self.Service = Service
+
+    def get_OnlineResource(self):
+        return self.OnlineResource
+
+    def set_OnlineResource(self, OnlineResource):
+        self.OnlineResource = OnlineResource
+
     def validate_Service(self, value):
         # Validate type Service, a restriction on xsd:string.
         pass
+
     def hasContent_(self):
         if (
-            self.Service is not None or
-            self.OnlineResource is not None
+                        self.Service is not None or
+                        self.OnlineResource is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='RemoteOWS', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='RemoteOWS',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('RemoteOWS')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1200,28 +1467,36 @@ class RemoteOWS(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='RemoteOWS')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='RemoteOWS', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='RemoteOWS',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='RemoteOWS'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='RemoteOWS', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='RemoteOWS', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Service is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sService>%s</%sService>%s' % ('sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Service), input_name='Service')), 'sld:', eol_))
+            outfile.write('<%sService>%s</%sService>%s' % (
+            'sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Service), input_name='Service')),
+            'sld:', eol_))
         if self.OnlineResource is not None:
-            self.OnlineResource.export(outfile, level, namespace_='sld:', name_='OnlineResource', pretty_print=pretty_print)
+            self.OnlineResource.export(outfile, level, namespace_='sld:', name_='OnlineResource',
+                                       pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1229,8 +1504,10 @@ class RemoteOWS(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Service':
             Service_ = child_.text
@@ -1243,6 +1520,8 @@ class RemoteOWS(GeneratedsSuper):
             obj_.build(child_)
             self.OnlineResource = obj_
             obj_.original_tagname_ = 'OnlineResource'
+
+
 # end class RemoteOWS
 
 
@@ -1250,8 +1529,10 @@ class Service(GeneratedsSuper):
     """A Service refers to the type of a remote OWS server."""
     subclass = None
     superclass = None
+
     def __init__(self):
         self.original_tagname_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1262,7 +1543,9 @@ class Service(GeneratedsSuper):
             return Service.subclass(*args_, **kwargs_)
         else:
             return Service(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def hasContent_(self):
         if (
 
@@ -1270,7 +1553,9 @@ class Service(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Service', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Service',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Service')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1281,19 +1566,24 @@ class Service(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Service')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Service', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Service',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Service'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Service', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Service', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1301,10 +1591,14 @@ class Service(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class Service
 
 
@@ -1312,6 +1606,7 @@ class OnlineResource(GeneratedsSuper):
     """An OnlineResource is typically used to refer to an HTTP URL."""
     subclass = None
     superclass = None
+
     def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
@@ -1321,6 +1616,7 @@ class OnlineResource(GeneratedsSuper):
         self.title = _cast(None, title)
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1331,21 +1627,51 @@ class OnlineResource(GeneratedsSuper):
             return OnlineResource.subclass(*args_, **kwargs_)
         else:
             return OnlineResource(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
 
@@ -1353,7 +1679,9 @@ class OnlineResource(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='OnlineResource', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='OnlineResource',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('OnlineResource')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1364,39 +1692,44 @@ class OnlineResource(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='OnlineResource')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='OnlineResource', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='OnlineResource',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='OnlineResource'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='OnlineResource', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='OnlineResource', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1404,6 +1737,7 @@ class OnlineResource(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -1433,8 +1767,11 @@ class OnlineResource(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class OnlineResource
 
 
@@ -1443,12 +1780,14 @@ class LayerFeatureConstraints(GeneratedsSuper):
     referenced in a layer."""
     subclass = None
     superclass = None
+
     def __init__(self, FeatureTypeConstraint=None):
         self.original_tagname_ = None
         if FeatureTypeConstraint is None:
             self.FeatureTypeConstraint = []
         else:
             self.FeatureTypeConstraint = FeatureTypeConstraint
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1459,20 +1798,34 @@ class LayerFeatureConstraints(GeneratedsSuper):
             return LayerFeatureConstraints.subclass(*args_, **kwargs_)
         else:
             return LayerFeatureConstraints(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_FeatureTypeConstraint(self): return self.FeatureTypeConstraint
-    def set_FeatureTypeConstraint(self, FeatureTypeConstraint): self.FeatureTypeConstraint = FeatureTypeConstraint
-    def add_FeatureTypeConstraint(self, value): self.FeatureTypeConstraint.append(value)
-    def insert_FeatureTypeConstraint_at(self, index, value): self.FeatureTypeConstraint.insert(index, value)
-    def replace_FeatureTypeConstraint_at(self, index, value): self.FeatureTypeConstraint[index] = value
+
+    def get_FeatureTypeConstraint(self):
+        return self.FeatureTypeConstraint
+
+    def set_FeatureTypeConstraint(self, FeatureTypeConstraint):
+        self.FeatureTypeConstraint = FeatureTypeConstraint
+
+    def add_FeatureTypeConstraint(self, value):
+        self.FeatureTypeConstraint.append(value)
+
+    def insert_FeatureTypeConstraint_at(self, index, value):
+        self.FeatureTypeConstraint.insert(index, value)
+
+    def replace_FeatureTypeConstraint_at(self, index, value):
+        self.FeatureTypeConstraint[index] = value
+
     def hasContent_(self):
         if (
-            self.FeatureTypeConstraint
+                self.FeatureTypeConstraint
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LayerFeatureConstraints', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LayerFeatureConstraints',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LayerFeatureConstraints')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1483,25 +1836,32 @@ class LayerFeatureConstraints(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LayerFeatureConstraints')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LayerFeatureConstraints', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LayerFeatureConstraints',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LayerFeatureConstraints'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='LayerFeatureConstraints'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LayerFeatureConstraints', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LayerFeatureConstraints',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for FeatureTypeConstraint_ in self.FeatureTypeConstraint:
-            FeatureTypeConstraint_.export(outfile, level, namespace_='sld:', name_='FeatureTypeConstraint', pretty_print=pretty_print)
+            FeatureTypeConstraint_.export(outfile, level, namespace_='sld:', name_='FeatureTypeConstraint',
+                                          pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1509,14 +1869,18 @@ class LayerFeatureConstraints(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'FeatureTypeConstraint':
             obj_ = FeatureTypeConstraint.factory()
             obj_.build(child_)
             self.FeatureTypeConstraint.append(obj_)
             obj_.original_tagname_ = 'FeatureTypeConstraint'
+
+
 # end class LayerFeatureConstraints
 
 
@@ -1525,6 +1889,7 @@ class FeatureTypeConstraint(GeneratedsSuper):
     supplies fitlering."""
     subclass = None
     superclass = None
+
     def __init__(self, FeatureTypeName=None, Filter=None, Extent=None):
         self.original_tagname_ = None
         self.FeatureTypeName = FeatureTypeName
@@ -1533,6 +1898,7 @@ class FeatureTypeConstraint(GeneratedsSuper):
             self.Extent = []
         else:
             self.Extent = Extent
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1543,26 +1909,49 @@ class FeatureTypeConstraint(GeneratedsSuper):
             return FeatureTypeConstraint.subclass(*args_, **kwargs_)
         else:
             return FeatureTypeConstraint(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_FeatureTypeName(self): return self.FeatureTypeName
-    def set_FeatureTypeName(self, FeatureTypeName): self.FeatureTypeName = FeatureTypeName
-    def get_Filter(self): return self.Filter
-    def set_Filter(self, Filter): self.Filter = Filter
-    def get_Extent(self): return self.Extent
-    def set_Extent(self, Extent): self.Extent = Extent
-    def add_Extent(self, value): self.Extent.append(value)
-    def insert_Extent_at(self, index, value): self.Extent.insert(index, value)
-    def replace_Extent_at(self, index, value): self.Extent[index] = value
+
+    def get_FeatureTypeName(self):
+        return self.FeatureTypeName
+
+    def set_FeatureTypeName(self, FeatureTypeName):
+        self.FeatureTypeName = FeatureTypeName
+
+    def get_Filter(self):
+        return self.Filter
+
+    def set_Filter(self, Filter):
+        self.Filter = Filter
+
+    def get_Extent(self):
+        return self.Extent
+
+    def set_Extent(self, Extent):
+        self.Extent = Extent
+
+    def add_Extent(self, value):
+        self.Extent.append(value)
+
+    def insert_Extent_at(self, index, value):
+        self.Extent.insert(index, value)
+
+    def replace_Extent_at(self, index, value):
+        self.Extent[index] = value
+
     def hasContent_(self):
         if (
-            self.FeatureTypeName is not None or
-            self.Filter is not None or
-            self.Extent
+                            self.FeatureTypeName is not None or
+                            self.Filter is not None or
+                    self.Extent
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='FeatureTypeConstraint', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='FeatureTypeConstraint',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('FeatureTypeConstraint')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1573,30 +1962,38 @@ class FeatureTypeConstraint(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='FeatureTypeConstraint')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FeatureTypeConstraint', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FeatureTypeConstraint',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='FeatureTypeConstraint'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='FeatureTypeConstraint'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='FeatureTypeConstraint', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='FeatureTypeConstraint',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.FeatureTypeName is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sFeatureTypeName>%s</%sFeatureTypeName>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.FeatureTypeName), input_name='FeatureTypeName')), namespace_, eol_))
+            outfile.write('<%sFeatureTypeName>%s</%sFeatureTypeName>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.FeatureTypeName), input_name='FeatureTypeName')),
+                                                                           namespace_, eol_))
         if self.Filter is not None:
             self.Filter.export(outfile, level, namespace_='ogc:', name_='Filter', pretty_print=pretty_print)
         for Extent_ in self.Extent:
             Extent_.export(outfile, level, namespace_='sld:', name_='Extent', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1604,8 +2001,10 @@ class FeatureTypeConstraint(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'FeatureTypeName':
             FeatureTypeName_ = child_.text
@@ -1621,6 +2020,8 @@ class FeatureTypeConstraint(GeneratedsSuper):
             obj_.build(child_)
             self.Extent.append(obj_)
             obj_.original_tagname_ = 'Extent'
+
+
 # end class FeatureTypeConstraint
 
 
@@ -1628,10 +2029,12 @@ class Extent(GeneratedsSuper):
     """An Extent gives feature/coverage/raster/matrix dimension extent."""
     subclass = None
     superclass = None
+
     def __init__(self, Name=None, Value=None):
         self.original_tagname_ = None
         self.Name = Name
         self.Value = Value
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1642,20 +2045,32 @@ class Extent(GeneratedsSuper):
             return Extent.subclass(*args_, **kwargs_)
         else:
             return Extent(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Name(self): return self.Name
-    def set_Name(self, Name): self.Name = Name
-    def get_Value(self): return self.Value
-    def set_Value(self, Value): self.Value = Value
+
+    def get_Name(self):
+        return self.Name
+
+    def set_Name(self, Name):
+        self.Name = Name
+
+    def get_Value(self):
+        return self.Value
+
+    def set_Value(self, Value):
+        self.Value = Value
+
     def hasContent_(self):
         if (
-            self.Name is not None or
-            self.Value is not None
+                        self.Name is not None or
+                        self.Value is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Extent', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Extent',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Extent')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1666,29 +2081,38 @@ class Extent(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Extent')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Extent', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Extent',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Extent'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Extent', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Extent', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sName>%s</%sName>%s' % ('sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), 'sld:', eol_))
+            outfile.write('<%sName>%s</%sName>%s' % (
+            'sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), 'sld:',
+            eol_))
         if self.Value is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sValue>%s</%sValue>%s' % ('sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Value), input_name='Value')), 'sld:', eol_))
+            outfile.write('<%sValue>%s</%sValue>%s' % (
+            'sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Value), input_name='Value')),
+            'sld:', eol_))
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1696,8 +2120,10 @@ class Extent(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Name':
             Name_ = child_.text
@@ -1707,6 +2133,8 @@ class Extent(GeneratedsSuper):
             Value_ = child_.text
             Value_ = self.gds_validate_string(Value_, node, 'Value')
             self.Value = Value_
+
+
 # end class Extent
 
 
@@ -1715,6 +2143,7 @@ class UserStyle(GeneratedsSuper):
     equivalent to a WMS named style."""
     subclass = None
     superclass = None
+
     def __init__(self, Name=None, Title=None, Abstract=None, IsDefault=None, FeatureTypeStyle=None):
         self.original_tagname_ = None
         self.Name = Name
@@ -1725,6 +2154,7 @@ class UserStyle(GeneratedsSuper):
             self.FeatureTypeStyle = []
         else:
             self.FeatureTypeStyle = FeatureTypeStyle
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1735,32 +2165,62 @@ class UserStyle(GeneratedsSuper):
             return UserStyle.subclass(*args_, **kwargs_)
         else:
             return UserStyle(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Name(self): return self.Name
-    def set_Name(self, Name): self.Name = Name
-    def get_Title(self): return self.Title
-    def set_Title(self, Title): self.Title = Title
-    def get_Abstract(self): return self.Abstract
-    def set_Abstract(self, Abstract): self.Abstract = Abstract
-    def get_IsDefault(self): return self.IsDefault
-    def set_IsDefault(self, IsDefault): self.IsDefault = IsDefault
-    def get_FeatureTypeStyle(self): return self.FeatureTypeStyle
-    def set_FeatureTypeStyle(self, FeatureTypeStyle): self.FeatureTypeStyle = FeatureTypeStyle
-    def add_FeatureTypeStyle(self, value): self.FeatureTypeStyle.append(value)
-    def insert_FeatureTypeStyle_at(self, index, value): self.FeatureTypeStyle.insert(index, value)
-    def replace_FeatureTypeStyle_at(self, index, value): self.FeatureTypeStyle[index] = value
+
+    def get_Name(self):
+        return self.Name
+
+    def set_Name(self, Name):
+        self.Name = Name
+
+    def get_Title(self):
+        return self.Title
+
+    def set_Title(self, Title):
+        self.Title = Title
+
+    def get_Abstract(self):
+        return self.Abstract
+
+    def set_Abstract(self, Abstract):
+        self.Abstract = Abstract
+
+    def get_IsDefault(self):
+        return self.IsDefault
+
+    def set_IsDefault(self, IsDefault):
+        self.IsDefault = IsDefault
+
+    def get_FeatureTypeStyle(self):
+        return self.FeatureTypeStyle
+
+    def set_FeatureTypeStyle(self, FeatureTypeStyle):
+        self.FeatureTypeStyle = FeatureTypeStyle
+
+    def add_FeatureTypeStyle(self, value):
+        self.FeatureTypeStyle.append(value)
+
+    def insert_FeatureTypeStyle_at(self, index, value):
+        self.FeatureTypeStyle.insert(index, value)
+
+    def replace_FeatureTypeStyle_at(self, index, value):
+        self.FeatureTypeStyle[index] = value
+
     def hasContent_(self):
         if (
-            self.Name is not None or
-            self.Title is not None or
-            self.Abstract is not None or
-            self.IsDefault is not None or
-            self.FeatureTypeStyle
+                                    self.Name is not None or
+                                    self.Title is not None or
+                                self.Abstract is not None or
+                            self.IsDefault is not None or
+                    self.FeatureTypeStyle
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='UserStyle', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='UserStyle',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('UserStyle')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1771,37 +2231,49 @@ class UserStyle(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='UserStyle')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='UserStyle', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='UserStyle',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='UserStyle'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='UserStyle', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='UserStyle', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sName>%s</%sName>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), namespace_, eol_))
+            outfile.write('<%sName>%s</%sName>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')),
+            namespace_, eol_))
         if self.Title is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sTitle>%s</%sTitle>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Title), input_name='Title')), namespace_, eol_))
+            outfile.write('<%sTitle>%s</%sTitle>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Title), input_name='Title')),
+            namespace_, eol_))
         if self.Abstract is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sAbstract>%s</%sAbstract>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Abstract), input_name='Abstract')), namespace_, eol_))
+            outfile.write('<%sAbstract>%s</%sAbstract>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.Abstract), input_name='Abstract')), namespace_, eol_))
         if self.IsDefault is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sIsDefault>%s</%sIsDefault>%s' % (namespace_, self.gds_format_boolean(self.IsDefault, input_name='IsDefault'), namespace_, eol_))
+            outfile.write('<%sIsDefault>%s</%sIsDefault>%s' % (
+            namespace_, self.gds_format_boolean(self.IsDefault, input_name='IsDefault'), namespace_, eol_))
         for FeatureTypeStyle_ in self.FeatureTypeStyle:
-            FeatureTypeStyle_.export(outfile, level, namespace_='sld:', name_='FeatureTypeStyle', pretty_print=pretty_print)
+            FeatureTypeStyle_.export(outfile, level, namespace_='sld:', name_='FeatureTypeStyle',
+                                     pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1809,8 +2281,10 @@ class UserStyle(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Name':
             Name_ = child_.text
@@ -1839,6 +2313,8 @@ class UserStyle(GeneratedsSuper):
             obj_.build(child_)
             self.FeatureTypeStyle.append(obj_)
             obj_.original_tagname_ = 'FeatureTypeStyle'
+
+
 # end class UserStyle
 
 
@@ -1848,7 +2324,9 @@ class FeatureTypeStyle(GeneratedsSuper):
     handling from the 'feature' handling."""
     subclass = None
     superclass = None
-    def __init__(self, Name=None, Title=None, Abstract=None, FeatureTypeName=None, SemanticTypeIdentifier=None, Rule=None):
+
+    def __init__(self, Name=None, Title=None, Abstract=None, FeatureTypeName=None,
+                 SemanticTypeIdentifier=None, Rule=None):
         self.original_tagname_ = None
         self.Name = Name
         self.Title = Title
@@ -1862,6 +2340,7 @@ class FeatureTypeStyle(GeneratedsSuper):
             self.Rule = []
         else:
             self.Rule = Rule
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -1872,38 +2351,78 @@ class FeatureTypeStyle(GeneratedsSuper):
             return FeatureTypeStyle.subclass(*args_, **kwargs_)
         else:
             return FeatureTypeStyle(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Name(self): return self.Name
-    def set_Name(self, Name): self.Name = Name
-    def get_Title(self): return self.Title
-    def set_Title(self, Title): self.Title = Title
-    def get_Abstract(self): return self.Abstract
-    def set_Abstract(self, Abstract): self.Abstract = Abstract
-    def get_FeatureTypeName(self): return self.FeatureTypeName
-    def set_FeatureTypeName(self, FeatureTypeName): self.FeatureTypeName = FeatureTypeName
-    def get_SemanticTypeIdentifier(self): return self.SemanticTypeIdentifier
-    def set_SemanticTypeIdentifier(self, SemanticTypeIdentifier): self.SemanticTypeIdentifier = SemanticTypeIdentifier
-    def add_SemanticTypeIdentifier(self, value): self.SemanticTypeIdentifier.append(value)
-    def insert_SemanticTypeIdentifier_at(self, index, value): self.SemanticTypeIdentifier.insert(index, value)
-    def replace_SemanticTypeIdentifier_at(self, index, value): self.SemanticTypeIdentifier[index] = value
-    def get_Rule(self): return self.Rule
-    def set_Rule(self, Rule): self.Rule = Rule
-    def add_Rule(self, value): self.Rule.append(value)
-    def insert_Rule_at(self, index, value): self.Rule.insert(index, value)
-    def replace_Rule_at(self, index, value): self.Rule[index] = value
+
+    def get_Name(self):
+        return self.Name
+
+    def set_Name(self, Name):
+        self.Name = Name
+
+    def get_Title(self):
+        return self.Title
+
+    def set_Title(self, Title):
+        self.Title = Title
+
+    def get_Abstract(self):
+        return self.Abstract
+
+    def set_Abstract(self, Abstract):
+        self.Abstract = Abstract
+
+    def get_FeatureTypeName(self):
+        return self.FeatureTypeName
+
+    def set_FeatureTypeName(self, FeatureTypeName):
+        self.FeatureTypeName = FeatureTypeName
+
+    def get_SemanticTypeIdentifier(self):
+        return self.SemanticTypeIdentifier
+
+    def set_SemanticTypeIdentifier(self, SemanticTypeIdentifier):
+        self.SemanticTypeIdentifier = SemanticTypeIdentifier
+
+    def add_SemanticTypeIdentifier(self, value):
+        self.SemanticTypeIdentifier.append(value)
+
+    def insert_SemanticTypeIdentifier_at(self, index, value):
+        self.SemanticTypeIdentifier.insert(index, value)
+
+    def replace_SemanticTypeIdentifier_at(self, index, value):
+        self.SemanticTypeIdentifier[index] = value
+
+    def get_Rule(self):
+        return self.Rule
+
+    def set_Rule(self, Rule):
+        self.Rule = Rule
+
+    def add_Rule(self, value):
+        self.Rule.append(value)
+
+    def insert_Rule_at(self, index, value):
+        self.Rule.insert(index, value)
+
+    def replace_Rule_at(self, index, value):
+        self.Rule[index] = value
+
     def hasContent_(self):
         if (
-            self.Name is not None or
-            self.Title is not None or
-            self.Abstract is not None or
-            self.FeatureTypeName is not None or
-            self.SemanticTypeIdentifier or
-            self.Rule
+                                        self.Name is not None or
+                                        self.Title is not None or
+                                    self.Abstract is not None or
+                                self.FeatureTypeName is not None or
+                        self.SemanticTypeIdentifier or
+                    self.Rule
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='FeatureTypeStyle', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='FeatureTypeStyle',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('FeatureTypeStyle')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -1914,40 +2433,59 @@ class FeatureTypeStyle(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='FeatureTypeStyle')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FeatureTypeStyle', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FeatureTypeStyle',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='FeatureTypeStyle'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='FeatureTypeStyle'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='FeatureTypeStyle', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='FeatureTypeStyle', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sName>%s</%sName>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), namespace_, eol_))
+            outfile.write('<%sName>%s</%sName>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')),
+            namespace_, eol_))
         if self.Title is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sTitle>%s</%sTitle>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Title), input_name='Title')), namespace_, eol_))
+            outfile.write('<%sTitle>%s</%sTitle>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Title), input_name='Title')),
+            namespace_, eol_))
         if self.Abstract is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sAbstract>%s</%sAbstract>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Abstract), input_name='Abstract')), namespace_, eol_))
+            outfile.write('<%sAbstract>%s</%sAbstract>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.Abstract), input_name='Abstract')), namespace_, eol_))
         if self.FeatureTypeName is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sFeatureTypeName>%s</%sFeatureTypeName>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.FeatureTypeName), input_name='FeatureTypeName')), namespace_, eol_))
+            outfile.write('<%sFeatureTypeName>%s</%sFeatureTypeName>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.FeatureTypeName), input_name='FeatureTypeName')),
+                                                                           namespace_, eol_))
         for SemanticTypeIdentifier_ in self.SemanticTypeIdentifier:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sSemanticTypeIdentifier>%s</%sSemanticTypeIdentifier>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(SemanticTypeIdentifier_), input_name='SemanticTypeIdentifier')), namespace_, eol_))
+            outfile.write('<%sSemanticTypeIdentifier>%s</%sSemanticTypeIdentifier>%s' % (namespace_,
+                                                                                         self.gds_encode(
+                                                                                             self.gds_format_string(
+                                                                                                 quote_xml(
+                                                                                                     SemanticTypeIdentifier_),
+                                                                                                 input_name='SemanticTypeIdentifier')),
+                                                                                         namespace_, eol_))
         for Rule_ in self.Rule:
             Rule_.export(outfile, level, namespace_='sld:', name_='Rule', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -1955,8 +2493,10 @@ class FeatureTypeStyle(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Name':
             Name_ = child_.text
@@ -1976,13 +2516,16 @@ class FeatureTypeStyle(GeneratedsSuper):
             self.FeatureTypeName = FeatureTypeName_
         elif nodeName_ == 'SemanticTypeIdentifier':
             SemanticTypeIdentifier_ = child_.text
-            SemanticTypeIdentifier_ = self.gds_validate_string(SemanticTypeIdentifier_, node, 'SemanticTypeIdentifier')
+            SemanticTypeIdentifier_ = self.gds_validate_string(SemanticTypeIdentifier_, node,
+                                                               'SemanticTypeIdentifier')
             self.SemanticTypeIdentifier.append(SemanticTypeIdentifier_)
         elif nodeName_ == 'Rule':
             obj_ = Rule.factory()
             obj_.build(child_)
             self.Rule.append(obj_)
             obj_.original_tagname_ = 'Rule'
+
+
 # end class FeatureTypeStyle
 
 
@@ -1991,7 +2534,9 @@ class Rule(GeneratedsSuper):
     individual symbolizers used for rendering."""
     subclass = None
     superclass = None
-    def __init__(self, Name=None, Title=None, Abstract=None, LegendGraphic=None, Filter=None, ElseFilter=None, MinScaleDenominator=None, MaxScaleDenominator=None, Symbolizer=None):
+
+    def __init__(self, Name=None, Title=None, Abstract=None, LegendGraphic=None, Filter=None, ElseFilter=None,
+                 MinScaleDenominator=None, MaxScaleDenominator=None, Symbolizer=None):
         self.original_tagname_ = None
         self.Name = Name
         self.Title = Title
@@ -2005,6 +2550,7 @@ class Rule(GeneratedsSuper):
             self.Symbolizer = []
         else:
             self.Symbolizer = Symbolizer
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2015,44 +2561,91 @@ class Rule(GeneratedsSuper):
             return Rule.subclass(*args_, **kwargs_)
         else:
             return Rule(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Name(self): return self.Name
-    def set_Name(self, Name): self.Name = Name
-    def get_Title(self): return self.Title
-    def set_Title(self, Title): self.Title = Title
-    def get_Abstract(self): return self.Abstract
-    def set_Abstract(self, Abstract): self.Abstract = Abstract
-    def get_LegendGraphic(self): return self.LegendGraphic
-    def set_LegendGraphic(self, LegendGraphic): self.LegendGraphic = LegendGraphic
-    def get_Filter(self): return self.Filter
-    def set_Filter(self, Filter): self.Filter = Filter
-    def get_ElseFilter(self): return self.ElseFilter
-    def set_ElseFilter(self, ElseFilter): self.ElseFilter = ElseFilter
-    def get_MinScaleDenominator(self): return self.MinScaleDenominator
-    def set_MinScaleDenominator(self, MinScaleDenominator): self.MinScaleDenominator = MinScaleDenominator
-    def get_MaxScaleDenominator(self): return self.MaxScaleDenominator
-    def set_MaxScaleDenominator(self, MaxScaleDenominator): self.MaxScaleDenominator = MaxScaleDenominator
-    def get_Symbolizer(self): return self.Symbolizer
-    def set_Symbolizer(self, Symbolizer): self.Symbolizer = Symbolizer
-    def add_Symbolizer(self, value): self.Symbolizer.append(value)
-    def insert_Symbolizer_at(self, index, value): self.Symbolizer.insert(index, value)
-    def replace_Symbolizer_at(self, index, value): self.Symbolizer[index] = value
+
+    def get_Name(self):
+        return self.Name
+
+    def set_Name(self, Name):
+        self.Name = Name
+
+    def get_Title(self):
+        return self.Title
+
+    def set_Title(self, Title):
+        self.Title = Title
+
+    def get_Abstract(self):
+        return self.Abstract
+
+    def set_Abstract(self, Abstract):
+        self.Abstract = Abstract
+
+    def get_LegendGraphic(self):
+        return self.LegendGraphic
+
+    def set_LegendGraphic(self, LegendGraphic):
+        self.LegendGraphic = LegendGraphic
+
+    def get_Filter(self):
+        return self.Filter
+
+    def set_Filter(self, Filter):
+        self.Filter = Filter
+
+    def get_ElseFilter(self):
+        return self.ElseFilter
+
+    def set_ElseFilter(self, ElseFilter):
+        self.ElseFilter = ElseFilter
+
+    def get_MinScaleDenominator(self):
+        return self.MinScaleDenominator
+
+    def set_MinScaleDenominator(self, MinScaleDenominator):
+        self.MinScaleDenominator = MinScaleDenominator
+
+    def get_MaxScaleDenominator(self):
+        return self.MaxScaleDenominator
+
+    def set_MaxScaleDenominator(self, MaxScaleDenominator):
+        self.MaxScaleDenominator = MaxScaleDenominator
+
+    def get_Symbolizer(self):
+        return self.Symbolizer
+
+    def set_Symbolizer(self, Symbolizer):
+        self.Symbolizer = Symbolizer
+
+    def add_Symbolizer(self, value):
+        self.Symbolizer.append(value)
+
+    def insert_Symbolizer_at(self, index, value):
+        self.Symbolizer.insert(index, value)
+
+    def replace_Symbolizer_at(self, index, value):
+        self.Symbolizer[index] = value
+
     def hasContent_(self):
         if (
-            self.Name is not None or
-            self.Title is not None or
-            self.Abstract is not None or
-            self.LegendGraphic is not None or
-            self.Filter is not None or
-            self.ElseFilter is not None or
-            self.MinScaleDenominator is not None or
-            self.MaxScaleDenominator is not None or
-            self.Symbolizer
+                                                    self.Name is not None or
+                                                    self.Title is not None or
+                                                self.Abstract is not None or
+                                            self.LegendGraphic is not None or
+                                        self.Filter is not None or
+                                    self.ElseFilter is not None or
+                                self.MinScaleDenominator is not None or
+                            self.MaxScaleDenominator is not None or
+                    self.Symbolizer
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Rule', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Rule',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Rule')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2063,46 +2656,62 @@ class Rule(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Rule')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Rule', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Rule',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Rule'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Rule', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Rule', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sName>%s</%sName>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')), namespace_, eol_))
+            outfile.write('<%sName>%s</%sName>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Name), input_name='Name')),
+            namespace_, eol_))
         if self.Title is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sTitle>%s</%sTitle>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Title), input_name='Title')), namespace_, eol_))
+            outfile.write('<%sTitle>%s</%sTitle>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Title), input_name='Title')),
+            namespace_, eol_))
         if self.Abstract is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sAbstract>%s</%sAbstract>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Abstract), input_name='Abstract')), namespace_, eol_))
+            outfile.write('<%sAbstract>%s</%sAbstract>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.Abstract), input_name='Abstract')), namespace_, eol_))
         if self.LegendGraphic is not None:
-            self.LegendGraphic.export(outfile, level, namespace_='sld:', name_='LegendGraphic', pretty_print=pretty_print)
+            self.LegendGraphic.export(outfile, level, namespace_='sld:', name_='LegendGraphic',
+                                      pretty_print=pretty_print)
         if self.Filter is not None:
             self.Filter.export(outfile, level, namespace_='ogc:', name_='Filter', pretty_print=pretty_print)
         if self.ElseFilter is not None:
-            self.ElseFilter.export(outfile, level, namespace_='sld:', name_='ElseFilter', pretty_print=pretty_print)
+            self.ElseFilter.export(outfile, level, namespace_='sld:', name_='ElseFilter',
+                                   pretty_print=pretty_print)
         if self.MinScaleDenominator is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sMinScaleDenominator>%s</%sMinScaleDenominator>%s' % (namespace_, self.gds_format_double(self.MinScaleDenominator, input_name='MinScaleDenominator'), namespace_, eol_))
+            outfile.write('<%sMinScaleDenominator>%s</%sMinScaleDenominator>%s' % (
+            namespace_, self.gds_format_double(self.MinScaleDenominator, input_name='MinScaleDenominator'),
+            namespace_, eol_))
         if self.MaxScaleDenominator is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sMaxScaleDenominator>%s</%sMaxScaleDenominator>%s' % (namespace_, self.gds_format_double(self.MaxScaleDenominator, input_name='MaxScaleDenominator'), namespace_, eol_))
+            outfile.write('<%sMaxScaleDenominator>%s</%sMaxScaleDenominator>%s' % (
+            namespace_, self.gds_format_double(self.MaxScaleDenominator, input_name='MaxScaleDenominator'),
+            namespace_, eol_))
         for Symbolizer_ in self.Symbolizer:
             Symbolizer_.export(outfile, level, namespace_, name_='Symbolizer', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -2110,8 +2719,10 @@ class Rule(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Name':
             Name_ = child_.text
@@ -2200,15 +2811,19 @@ class Rule(GeneratedsSuper):
             obj_.build(child_)
             self.Symbolizer.append(obj_)
             obj_.original_tagname_ = 'RasterSymbolizer'
+
+
 # end class Rule
 
 
 class LegendGraphic(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, Graphic=None):
         self.original_tagname_ = None
         self.Graphic = Graphic
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2219,17 +2834,25 @@ class LegendGraphic(GeneratedsSuper):
             return LegendGraphic.subclass(*args_, **kwargs_)
         else:
             return LegendGraphic(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Graphic(self): return self.Graphic
-    def set_Graphic(self, Graphic): self.Graphic = Graphic
+
+    def get_Graphic(self):
+        return self.Graphic
+
+    def set_Graphic(self, Graphic):
+        self.Graphic = Graphic
+
     def hasContent_(self):
         if (
-            self.Graphic is not None
+                    self.Graphic is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LegendGraphic', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LegendGraphic',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LegendGraphic')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2240,25 +2863,30 @@ class LegendGraphic(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LegendGraphic')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LegendGraphic', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LegendGraphic',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LegendGraphic'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LegendGraphic', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LegendGraphic', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Graphic is not None:
             self.Graphic.export(outfile, level, namespace_='sld:', name_='Graphic', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -2266,22 +2894,28 @@ class LegendGraphic(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Graphic':
             obj_ = Graphic.factory()
             obj_.build(child_)
             self.Graphic = obj_
             obj_.original_tagname_ = 'Graphic'
+
+
 # end class LegendGraphic
 
 
 class ElseFilter(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self):
         self.original_tagname_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2292,7 +2926,9 @@ class ElseFilter(GeneratedsSuper):
             return ElseFilter.subclass(*args_, **kwargs_)
         else:
             return ElseFilter(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def hasContent_(self):
         if (
 
@@ -2300,7 +2936,9 @@ class ElseFilter(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ElseFilter', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ElseFilter',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ElseFilter')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2311,19 +2949,24 @@ class ElseFilter(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ElseFilter')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ElseFilter', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ElseFilter',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ElseFilter'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ElseFilter', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ElseFilter', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -2331,10 +2974,14 @@ class ElseFilter(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class ElseFilter
 
 
@@ -2344,9 +2991,11 @@ class SymbolizerType(GeneratedsSuper):
     symbol types are derived from this base type."""
     subclass = None
     superclass = None
+
     def __init__(self, extensiontype_=None):
         self.original_tagname_ = None
         self.extensiontype_ = extensiontype_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2357,9 +3006,15 @@ class SymbolizerType(GeneratedsSuper):
             return SymbolizerType.subclass(*args_, **kwargs_)
         else:
             return SymbolizerType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_extensiontype_(self): return self.extensiontype_
-    def set_extensiontype_(self, extensiontype_): self.extensiontype_ = extensiontype_
+
+    def get_extensiontype_(self):
+        return self.extensiontype_
+
+    def set_extensiontype_(self, extensiontype_):
+        self.extensiontype_ = extensiontype_
+
     def hasContent_(self):
         if (
 
@@ -2367,7 +3022,9 @@ class SymbolizerType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='SymbolizerType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='SymbolizerType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('SymbolizerType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2378,23 +3035,28 @@ class SymbolizerType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='SymbolizerType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='SymbolizerType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='SymbolizerType',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='SymbolizerType'):
         if self.extensiontype_ is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             outfile.write(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
             outfile.write(' xsi:type="%s"' % self.extensiontype_)
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='SymbolizerType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='SymbolizerType', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -2402,13 +3064,17 @@ class SymbolizerType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('xsi:type', node)
         if value is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             self.extensiontype_ = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class SymbolizerType
 
 
@@ -2417,11 +3083,13 @@ class LineSymbolizer(SymbolizerType):
     geometry."""
     subclass = None
     superclass = SymbolizerType
+
     def __init__(self, Geometry=None, Stroke=None):
         self.original_tagname_ = None
         super(LineSymbolizer, self).__init__()
         self.Geometry = Geometry
         self.Stroke = Stroke
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2432,21 +3100,33 @@ class LineSymbolizer(SymbolizerType):
             return LineSymbolizer.subclass(*args_, **kwargs_)
         else:
             return LineSymbolizer(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Geometry(self): return self.Geometry
-    def set_Geometry(self, Geometry): self.Geometry = Geometry
-    def get_Stroke(self): return self.Stroke
-    def set_Stroke(self, Stroke): self.Stroke = Stroke
+
+    def get_Geometry(self):
+        return self.Geometry
+
+    def set_Geometry(self, Geometry):
+        self.Geometry = Geometry
+
+    def get_Stroke(self):
+        return self.Stroke
+
+    def set_Stroke(self, Stroke):
+        self.Stroke = Stroke
+
     def hasContent_(self):
         if (
-            self.Geometry is not None or
-            self.Stroke is not None or
-            super(LineSymbolizer, self).hasContent_()
+                            self.Geometry is not None or
+                            self.Stroke is not None or
+                    super(LineSymbolizer, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LineSymbolizer', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LineSymbolizer',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LineSymbolizer')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2457,28 +3137,36 @@ class LineSymbolizer(SymbolizerType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LineSymbolizer')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LineSymbolizer', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LineSymbolizer',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LineSymbolizer'):
-        super(LineSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_, name_='LineSymbolizer')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LineSymbolizer', fromsubclass_=False, pretty_print=True):
-        super(LineSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(LineSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                     name_='LineSymbolizer')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LineSymbolizer', fromsubclass_=False,
+                       pretty_print=True):
+        super(LineSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                   pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Geometry is not None:
-            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry', pretty_print=pretty_print)
+            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry',
+                                 pretty_print=pretty_print)
         if self.Stroke is not None:
             self.Stroke.export(outfile, level, namespace_='sld:', name_='Stroke', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -2486,8 +3174,10 @@ class LineSymbolizer(SymbolizerType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(LineSymbolizer, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Geometry':
             obj_ = Geometry.factory()
@@ -2500,6 +3190,8 @@ class LineSymbolizer(SymbolizerType):
             self.Stroke = obj_
             obj_.original_tagname_ = 'Stroke'
         super(LineSymbolizer, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class LineSymbolizer
 
 
@@ -2508,9 +3200,11 @@ class Geometry(GeneratedsSuper):
     to be used for rendering."""
     subclass = None
     superclass = None
+
     def __init__(self, PropertyName=None):
         self.original_tagname_ = None
         self.PropertyName = PropertyName
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2521,17 +3215,26 @@ class Geometry(GeneratedsSuper):
             return Geometry.subclass(*args_, **kwargs_)
         else:
             return Geometry(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_PropertyName(self): return self.PropertyName
-    def set_PropertyName(self, PropertyName): self.PropertyName = PropertyName
+
+    def get_PropertyName(self):
+        return self.PropertyName
+
+    def set_PropertyName(self, PropertyName):
+        self.PropertyName = PropertyName
+
     def hasContent_(self):
         if (
-            self.PropertyName is not None
+                    self.PropertyName is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Geometry', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Geometry',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Geometry')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2542,25 +3245,31 @@ class Geometry(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Geometry')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Geometry', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Geometry',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Geometry'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Geometry', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Geometry', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.PropertyName is not None:
-            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName', pretty_print=pretty_print)
+            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName',
+                                     pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -2568,14 +3277,18 @@ class Geometry(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
             obj_.build(child_)
             self.PropertyName = obj_
             obj_.original_tagname_ = 'PropertyName'
+
+
 # end class Geometry
 
 
@@ -2587,6 +3300,7 @@ class Stroke(GeneratedsSuper):
     dasharray", and "stroke-dashoffset"."""
     subclass = None
     superclass = None
+
     def __init__(self, GraphicFill=None, GraphicStroke=None, CssParameter=None):
         self.original_tagname_ = None
         self.GraphicFill = GraphicFill
@@ -2595,6 +3309,7 @@ class Stroke(GeneratedsSuper):
             self.CssParameter = []
         else:
             self.CssParameter = CssParameter
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2605,26 +3320,48 @@ class Stroke(GeneratedsSuper):
             return Stroke.subclass(*args_, **kwargs_)
         else:
             return Stroke(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_GraphicFill(self): return self.GraphicFill
-    def set_GraphicFill(self, GraphicFill): self.GraphicFill = GraphicFill
-    def get_GraphicStroke(self): return self.GraphicStroke
-    def set_GraphicStroke(self, GraphicStroke): self.GraphicStroke = GraphicStroke
-    def get_CssParameter(self): return self.CssParameter
-    def set_CssParameter(self, CssParameter): self.CssParameter = CssParameter
-    def add_CssParameter(self, value): self.CssParameter.append(value)
-    def insert_CssParameter_at(self, index, value): self.CssParameter.insert(index, value)
-    def replace_CssParameter_at(self, index, value): self.CssParameter[index] = value
+
+    def get_GraphicFill(self):
+        return self.GraphicFill
+
+    def set_GraphicFill(self, GraphicFill):
+        self.GraphicFill = GraphicFill
+
+    def get_GraphicStroke(self):
+        return self.GraphicStroke
+
+    def set_GraphicStroke(self, GraphicStroke):
+        self.GraphicStroke = GraphicStroke
+
+    def get_CssParameter(self):
+        return self.CssParameter
+
+    def set_CssParameter(self, CssParameter):
+        self.CssParameter = CssParameter
+
+    def add_CssParameter(self, value):
+        self.CssParameter.append(value)
+
+    def insert_CssParameter_at(self, index, value):
+        self.CssParameter.insert(index, value)
+
+    def replace_CssParameter_at(self, index, value):
+        self.CssParameter[index] = value
+
     def hasContent_(self):
         if (
-            self.GraphicFill is not None or
-            self.GraphicStroke is not None or
-            self.CssParameter
+                            self.GraphicFill is not None or
+                            self.GraphicStroke is not None or
+                    self.CssParameter
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Stroke', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Stroke',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Stroke')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2635,29 +3372,37 @@ class Stroke(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Stroke')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Stroke', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Stroke',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Stroke'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Stroke', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Stroke', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.GraphicFill is not None:
-            self.GraphicFill.export(outfile, level, namespace_='sld:', name_='GraphicFill', pretty_print=pretty_print)
+            self.GraphicFill.export(outfile, level, namespace_='sld:', name_='GraphicFill',
+                                    pretty_print=pretty_print)
         if self.GraphicStroke is not None:
-            self.GraphicStroke.export(outfile, level, namespace_='sld:', name_='GraphicStroke', pretty_print=pretty_print)
+            self.GraphicStroke.export(outfile, level, namespace_='sld:', name_='GraphicStroke',
+                                      pretty_print=pretty_print)
         for CssParameter_ in self.CssParameter:
-            CssParameter_.export(outfile, level, namespace_='sld:', name_='CssParameter', pretty_print=pretty_print)
+            CssParameter_.export(outfile, level, namespace_='sld:', name_='CssParameter',
+                                 pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -2665,8 +3410,10 @@ class Stroke(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'GraphicFill':
             obj_ = GraphicFill.factory()
@@ -2683,6 +3430,8 @@ class Stroke(GeneratedsSuper):
             obj_.build(child_)
             self.CssParameter.append(obj_)
             obj_.original_tagname_ = 'CssParameter'
+
+
 # end class Stroke
 
 
@@ -2692,6 +3441,7 @@ class ParameterValueType(GeneratedsSuper):
     used with textual substitution for values."""
     subclass = None
     superclass = None
+
     def __init__(self, expression=None, valueOf_=None, mixedclass_=None, content_=None, extensiontype_=None):
         self.original_tagname_ = None
         if expression is None:
@@ -2709,6 +3459,7 @@ class ParameterValueType(GeneratedsSuper):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2719,25 +3470,48 @@ class ParameterValueType(GeneratedsSuper):
             return ParameterValueType.subclass(*args_, **kwargs_)
         else:
             return ParameterValueType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_expression(self): return self.expression
-    def set_expression(self, expression): self.expression = expression
-    def add_expression(self, value): self.expression.append(value)
-    def insert_expression_at(self, index, value): self.expression.insert(index, value)
-    def replace_expression_at(self, index, value): self.expression[index] = value
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
-    def get_extensiontype_(self): return self.extensiontype_
-    def set_extensiontype_(self, extensiontype_): self.extensiontype_ = extensiontype_
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
+
+    def add_expression(self, value):
+        self.expression.append(value)
+
+    def insert_expression_at(self, index, value):
+        self.expression.insert(index, value)
+
+    def replace_expression_at(self, index, value):
+        self.expression[index] = value
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
+    def get_extensiontype_(self):
+        return self.extensiontype_
+
+    def set_extensiontype_(self, extensiontype_):
+        self.extensiontype_ = extensiontype_
+
     def hasContent_(self):
         if (
-            self.expression or
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_
+                    self.expression or
+                    1 if type(self.valueOf_) in [int, float] else self.valueOf_
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ParameterValueType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ParameterValueType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ParameterValueType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2748,43 +3522,51 @@ class ParameterValueType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ParameterValueType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ParameterValueType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ParameterValueType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ParameterValueType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='ParameterValueType'):
         if self.extensiontype_ is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             outfile.write(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
             outfile.write(' xsi:type="%s"' % self.extensiontype_)
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ParameterValueType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ParameterValueType',
+                       fromsubclass_=False, pretty_print=True):
         if not fromsubclass_:
             for item_ in self.content_:
                 item_.export(outfile, level, item_.name, namespace_, pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('xsi:type', node)
         if value is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             self.extensiontype_ = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'expression':
             type_name_ = child_.attrib.get(
@@ -2804,86 +3586,88 @@ class ParameterValueType(GeneratedsSuper):
                 raise NotImplementedError(
                     'Class not implemented for <expression> element')
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'expression', obj_)
+                                    MixedContainer.TypeNone, 'expression', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_expression'):
-              self.add_expression(obj_.value)
+                self.add_expression(obj_.value)
             elif hasattr(self, 'set_expression'):
-              self.set_expression(obj_.value)
+                self.set_expression(obj_.value)
         elif nodeName_ == 'Add':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Add', obj_)
+                                    MixedContainer.TypeNone, 'Add', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Add'):
-              self.add_Add(obj_.value)
+                self.add_Add(obj_.value)
             elif hasattr(self, 'set_Add'):
-              self.set_Add(obj_.value)
+                self.set_Add(obj_.value)
         elif nodeName_ == 'Sub':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Sub', obj_)
+                                    MixedContainer.TypeNone, 'Sub', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Sub'):
-              self.add_Sub(obj_.value)
+                self.add_Sub(obj_.value)
             elif hasattr(self, 'set_Sub'):
-              self.set_Sub(obj_.value)
+                self.set_Sub(obj_.value)
         elif nodeName_ == 'Mul':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Mul', obj_)
+                                    MixedContainer.TypeNone, 'Mul', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Mul'):
-              self.add_Mul(obj_.value)
+                self.add_Mul(obj_.value)
             elif hasattr(self, 'set_Mul'):
-              self.set_Mul(obj_.value)
+                self.set_Mul(obj_.value)
         elif nodeName_ == 'Div':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Div', obj_)
+                                    MixedContainer.TypeNone, 'Div', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Div'):
-              self.add_Div(obj_.value)
+                self.add_Div(obj_.value)
             elif hasattr(self, 'set_Div'):
-              self.set_Div(obj_.value)
+                self.set_Div(obj_.value)
         elif nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'PropertyName', obj_)
+                                    MixedContainer.TypeNone, 'PropertyName', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_PropertyName'):
-              self.add_PropertyName(obj_.value)
+                self.add_PropertyName(obj_.value)
             elif hasattr(self, 'set_PropertyName'):
-              self.set_PropertyName(obj_.value)
+                self.set_PropertyName(obj_.value)
         elif nodeName_ == 'Function':
             obj_ = FunctionType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Function', obj_)
+                                    MixedContainer.TypeNone, 'Function', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Function'):
-              self.add_Function(obj_.value)
+                self.add_Function(obj_.value)
             elif hasattr(self, 'set_Function'):
-              self.set_Function(obj_.value)
+                self.set_Function(obj_.value)
         elif nodeName_ == 'Literal':
             obj_ = LiteralType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Literal', obj_)
+                                    MixedContainer.TypeNone, 'Literal', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Literal'):
-              self.add_Literal(obj_.value)
+                self.add_Literal(obj_.value)
             elif hasattr(self, 'set_Literal'):
-              self.set_Literal(obj_.value)
+                self.set_Literal(obj_.value)
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
+
+
 # end class ParameterValueType
 
 
@@ -2892,9 +3676,11 @@ class GraphicFill(GeneratedsSuper):
     for an area geometry."""
     subclass = None
     superclass = None
+
     def __init__(self, Graphic=None):
         self.original_tagname_ = None
         self.Graphic = Graphic
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2905,17 +3691,25 @@ class GraphicFill(GeneratedsSuper):
             return GraphicFill.subclass(*args_, **kwargs_)
         else:
             return GraphicFill(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Graphic(self): return self.Graphic
-    def set_Graphic(self, Graphic): self.Graphic = Graphic
+
+    def get_Graphic(self):
+        return self.Graphic
+
+    def set_Graphic(self, Graphic):
+        self.Graphic = Graphic
+
     def hasContent_(self):
         if (
-            self.Graphic is not None
+                    self.Graphic is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='GraphicFill', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='GraphicFill',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('GraphicFill')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -2926,25 +3720,30 @@ class GraphicFill(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='GraphicFill')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GraphicFill', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GraphicFill',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='GraphicFill'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='GraphicFill', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='GraphicFill', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Graphic is not None:
             self.Graphic.export(outfile, level, namespace_='sld:', name_='Graphic', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -2952,14 +3751,18 @@ class GraphicFill(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Graphic':
             obj_ = Graphic.factory()
             obj_.build(child_)
             self.Graphic = obj_
             obj_.original_tagname_ = 'Graphic'
+
+
 # end class GraphicFill
 
 
@@ -2968,9 +3771,11 @@ class GraphicStroke(GeneratedsSuper):
     used for stroking a line."""
     subclass = None
     superclass = None
+
     def __init__(self, Graphic=None):
         self.original_tagname_ = None
         self.Graphic = Graphic
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -2981,17 +3786,25 @@ class GraphicStroke(GeneratedsSuper):
             return GraphicStroke.subclass(*args_, **kwargs_)
         else:
             return GraphicStroke(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Graphic(self): return self.Graphic
-    def set_Graphic(self, Graphic): self.Graphic = Graphic
+
+    def get_Graphic(self):
+        return self.Graphic
+
+    def set_Graphic(self, Graphic):
+        self.Graphic = Graphic
+
     def hasContent_(self):
         if (
-            self.Graphic is not None
+                    self.Graphic is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='GraphicStroke', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='GraphicStroke',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('GraphicStroke')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3002,25 +3815,30 @@ class GraphicStroke(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='GraphicStroke')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GraphicStroke', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GraphicStroke',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='GraphicStroke'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='GraphicStroke', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='GraphicStroke', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Graphic is not None:
             self.Graphic.export(outfile, level, namespace_='sld:', name_='Graphic', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3028,14 +3846,18 @@ class GraphicStroke(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Graphic':
             obj_ = Graphic.factory()
             obj_.build(child_)
             self.Graphic = obj_
             obj_.original_tagname_ = 'Graphic'
+
+
 # end class GraphicStroke
 
 
@@ -3044,12 +3866,14 @@ class PolygonSymbolizer(SymbolizerType):
     geometry, including its interior fill and border stroke."""
     subclass = None
     superclass = SymbolizerType
+
     def __init__(self, Geometry=None, Fill=None, Stroke=None):
         self.original_tagname_ = None
         super(PolygonSymbolizer, self).__init__()
         self.Geometry = Geometry
         self.Fill = Fill
         self.Stroke = Stroke
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3060,24 +3884,40 @@ class PolygonSymbolizer(SymbolizerType):
             return PolygonSymbolizer.subclass(*args_, **kwargs_)
         else:
             return PolygonSymbolizer(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Geometry(self): return self.Geometry
-    def set_Geometry(self, Geometry): self.Geometry = Geometry
-    def get_Fill(self): return self.Fill
-    def set_Fill(self, Fill): self.Fill = Fill
-    def get_Stroke(self): return self.Stroke
-    def set_Stroke(self, Stroke): self.Stroke = Stroke
+
+    def get_Geometry(self):
+        return self.Geometry
+
+    def set_Geometry(self, Geometry):
+        self.Geometry = Geometry
+
+    def get_Fill(self):
+        return self.Fill
+
+    def set_Fill(self, Fill):
+        self.Fill = Fill
+
+    def get_Stroke(self):
+        return self.Stroke
+
+    def set_Stroke(self, Stroke):
+        self.Stroke = Stroke
+
     def hasContent_(self):
         if (
-            self.Geometry is not None or
-            self.Fill is not None or
-            self.Stroke is not None or
-            super(PolygonSymbolizer, self).hasContent_()
+                                self.Geometry is not None or
+                                self.Fill is not None or
+                            self.Stroke is not None or
+                    super(PolygonSymbolizer, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PolygonSymbolizer', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PolygonSymbolizer',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PolygonSymbolizer')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3088,30 +3928,39 @@ class PolygonSymbolizer(SymbolizerType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PolygonSymbolizer')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PolygonSymbolizer', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PolygonSymbolizer',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PolygonSymbolizer'):
-        super(PolygonSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_, name_='PolygonSymbolizer')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PolygonSymbolizer', fromsubclass_=False, pretty_print=True):
-        super(PolygonSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='PolygonSymbolizer'):
+        super(PolygonSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                        name_='PolygonSymbolizer')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PolygonSymbolizer',
+                       fromsubclass_=False, pretty_print=True):
+        super(PolygonSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                      pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Geometry is not None:
-            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry', pretty_print=pretty_print)
+            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry',
+                                 pretty_print=pretty_print)
         if self.Fill is not None:
             self.Fill.export(outfile, level, namespace_='sld:', name_='Fill', pretty_print=pretty_print)
         if self.Stroke is not None:
             self.Stroke.export(outfile, level, namespace_='sld:', name_='Stroke', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3119,8 +3968,10 @@ class PolygonSymbolizer(SymbolizerType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(PolygonSymbolizer, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Geometry':
             obj_ = Geometry.factory()
@@ -3138,6 +3989,8 @@ class PolygonSymbolizer(SymbolizerType):
             self.Stroke = obj_
             obj_.original_tagname_ = 'Stroke'
         super(PolygonSymbolizer, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class PolygonSymbolizer
 
 
@@ -3146,6 +3999,7 @@ class Fill(GeneratedsSuper):
     allowed CssParameters are: "fill" (color) and "fill-opacity"."""
     subclass = None
     superclass = None
+
     def __init__(self, GraphicFill=None, CssParameter=None):
         self.original_tagname_ = None
         self.GraphicFill = GraphicFill
@@ -3153,6 +4007,7 @@ class Fill(GeneratedsSuper):
             self.CssParameter = []
         else:
             self.CssParameter = CssParameter
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3163,23 +4018,41 @@ class Fill(GeneratedsSuper):
             return Fill.subclass(*args_, **kwargs_)
         else:
             return Fill(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_GraphicFill(self): return self.GraphicFill
-    def set_GraphicFill(self, GraphicFill): self.GraphicFill = GraphicFill
-    def get_CssParameter(self): return self.CssParameter
-    def set_CssParameter(self, CssParameter): self.CssParameter = CssParameter
-    def add_CssParameter(self, value): self.CssParameter.append(value)
-    def insert_CssParameter_at(self, index, value): self.CssParameter.insert(index, value)
-    def replace_CssParameter_at(self, index, value): self.CssParameter[index] = value
+
+    def get_GraphicFill(self):
+        return self.GraphicFill
+
+    def set_GraphicFill(self, GraphicFill):
+        self.GraphicFill = GraphicFill
+
+    def get_CssParameter(self):
+        return self.CssParameter
+
+    def set_CssParameter(self, CssParameter):
+        self.CssParameter = CssParameter
+
+    def add_CssParameter(self, value):
+        self.CssParameter.append(value)
+
+    def insert_CssParameter_at(self, index, value):
+        self.CssParameter.insert(index, value)
+
+    def replace_CssParameter_at(self, index, value):
+        self.CssParameter[index] = value
+
     def hasContent_(self):
         if (
-            self.GraphicFill is not None or
-            self.CssParameter
+                        self.GraphicFill is not None or
+                    self.CssParameter
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Fill', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Fill',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Fill')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3190,27 +4063,34 @@ class Fill(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Fill')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Fill', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Fill',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Fill'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Fill', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Fill', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.GraphicFill is not None:
-            self.GraphicFill.export(outfile, level, namespace_='sld:', name_='GraphicFill', pretty_print=pretty_print)
+            self.GraphicFill.export(outfile, level, namespace_='sld:', name_='GraphicFill',
+                                    pretty_print=pretty_print)
         for CssParameter_ in self.CssParameter:
-            CssParameter_.export(outfile, level, namespace_='sld:', name_='CssParameter', pretty_print=pretty_print)
+            CssParameter_.export(outfile, level, namespace_='sld:', name_='CssParameter',
+                                 pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3218,8 +4098,10 @@ class Fill(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'GraphicFill':
             obj_ = GraphicFill.factory()
@@ -3231,6 +4113,8 @@ class Fill(GeneratedsSuper):
             obj_.build(child_)
             self.CssParameter.append(obj_)
             obj_.original_tagname_ = 'CssParameter'
+
+
 # end class Fill
 
 
@@ -3239,11 +4123,13 @@ class PointSymbolizer(SymbolizerType):
     a point."""
     subclass = None
     superclass = SymbolizerType
+
     def __init__(self, Geometry=None, Graphic=None):
         self.original_tagname_ = None
         super(PointSymbolizer, self).__init__()
         self.Geometry = Geometry
         self.Graphic = Graphic
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3254,21 +4140,33 @@ class PointSymbolizer(SymbolizerType):
             return PointSymbolizer.subclass(*args_, **kwargs_)
         else:
             return PointSymbolizer(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Geometry(self): return self.Geometry
-    def set_Geometry(self, Geometry): self.Geometry = Geometry
-    def get_Graphic(self): return self.Graphic
-    def set_Graphic(self, Graphic): self.Graphic = Graphic
+
+    def get_Geometry(self):
+        return self.Geometry
+
+    def set_Geometry(self, Geometry):
+        self.Geometry = Geometry
+
+    def get_Graphic(self):
+        return self.Graphic
+
+    def set_Graphic(self, Graphic):
+        self.Graphic = Graphic
+
     def hasContent_(self):
         if (
-            self.Geometry is not None or
-            self.Graphic is not None or
-            super(PointSymbolizer, self).hasContent_()
+                            self.Geometry is not None or
+                            self.Graphic is not None or
+                    super(PointSymbolizer, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PointSymbolizer', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PointSymbolizer',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PointSymbolizer')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3279,28 +4177,36 @@ class PointSymbolizer(SymbolizerType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PointSymbolizer')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointSymbolizer', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointSymbolizer',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PointSymbolizer'):
-        super(PointSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_, name_='PointSymbolizer')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointSymbolizer', fromsubclass_=False, pretty_print=True):
-        super(PointSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(PointSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                      name_='PointSymbolizer')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointSymbolizer', fromsubclass_=False,
+                       pretty_print=True):
+        super(PointSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                    pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Geometry is not None:
-            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry', pretty_print=pretty_print)
+            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry',
+                                 pretty_print=pretty_print)
         if self.Graphic is not None:
             self.Graphic.export(outfile, level, namespace_='sld:', name_='Graphic', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3308,8 +4214,10 @@ class PointSymbolizer(SymbolizerType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(PointSymbolizer, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Geometry':
             obj_ = Geometry.factory()
@@ -3322,6 +4230,8 @@ class PointSymbolizer(SymbolizerType):
             self.Graphic = obj_
             obj_.original_tagname_ = 'Graphic'
         super(PointSymbolizer, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class PointSymbolizer
 
 
@@ -3330,6 +4240,7 @@ class Graphic(GeneratedsSuper):
     shape, size, and coloring."""
     subclass = None
     superclass = None
+
     def __init__(self, ExternalGraphic=None, Mark=None, Opacity=None, Size=None, Rotation=None):
         self.original_tagname_ = None
         if ExternalGraphic is None:
@@ -3343,6 +4254,7 @@ class Graphic(GeneratedsSuper):
         self.Opacity = Opacity
         self.Size = Size
         self.Rotation = Rotation
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3353,35 +4265,71 @@ class Graphic(GeneratedsSuper):
             return Graphic.subclass(*args_, **kwargs_)
         else:
             return Graphic(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_ExternalGraphic(self): return self.ExternalGraphic
-    def set_ExternalGraphic(self, ExternalGraphic): self.ExternalGraphic = ExternalGraphic
-    def add_ExternalGraphic(self, value): self.ExternalGraphic.append(value)
-    def insert_ExternalGraphic_at(self, index, value): self.ExternalGraphic.insert(index, value)
-    def replace_ExternalGraphic_at(self, index, value): self.ExternalGraphic[index] = value
-    def get_Mark(self): return self.Mark
-    def set_Mark(self, Mark): self.Mark = Mark
-    def add_Mark(self, value): self.Mark.append(value)
-    def insert_Mark_at(self, index, value): self.Mark.insert(index, value)
-    def replace_Mark_at(self, index, value): self.Mark[index] = value
-    def get_Opacity(self): return self.Opacity
-    def set_Opacity(self, Opacity): self.Opacity = Opacity
-    def get_Size(self): return self.Size
-    def set_Size(self, Size): self.Size = Size
-    def get_Rotation(self): return self.Rotation
-    def set_Rotation(self, Rotation): self.Rotation = Rotation
+
+    def get_ExternalGraphic(self):
+        return self.ExternalGraphic
+
+    def set_ExternalGraphic(self, ExternalGraphic):
+        self.ExternalGraphic = ExternalGraphic
+
+    def add_ExternalGraphic(self, value):
+        self.ExternalGraphic.append(value)
+
+    def insert_ExternalGraphic_at(self, index, value):
+        self.ExternalGraphic.insert(index, value)
+
+    def replace_ExternalGraphic_at(self, index, value):
+        self.ExternalGraphic[index] = value
+
+    def get_Mark(self):
+        return self.Mark
+
+    def set_Mark(self, Mark):
+        self.Mark = Mark
+
+    def add_Mark(self, value):
+        self.Mark.append(value)
+
+    def insert_Mark_at(self, index, value):
+        self.Mark.insert(index, value)
+
+    def replace_Mark_at(self, index, value):
+        self.Mark[index] = value
+
+    def get_Opacity(self):
+        return self.Opacity
+
+    def set_Opacity(self, Opacity):
+        self.Opacity = Opacity
+
+    def get_Size(self):
+        return self.Size
+
+    def set_Size(self, Size):
+        self.Size = Size
+
+    def get_Rotation(self):
+        return self.Rotation
+
+    def set_Rotation(self, Rotation):
+        self.Rotation = Rotation
+
     def hasContent_(self):
         if (
-            self.ExternalGraphic or
-            self.Mark or
-            self.Opacity is not None or
-            self.Size is not None or
-            self.Rotation is not None
+                                self.ExternalGraphic or
+                                self.Mark or
+                                self.Opacity is not None or
+                            self.Size is not None or
+                        self.Rotation is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Graphic', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Graphic',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Graphic')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3392,25 +4340,30 @@ class Graphic(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Graphic')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Graphic', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Graphic',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Graphic'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Graphic', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Graphic', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for ExternalGraphic_ in self.ExternalGraphic:
-            ExternalGraphic_.export(outfile, level, namespace_='sld:', name_='ExternalGraphic', pretty_print=pretty_print)
+            ExternalGraphic_.export(outfile, level, namespace_='sld:', name_='ExternalGraphic',
+                                    pretty_print=pretty_print)
         for Mark_ in self.Mark:
             Mark_.export(outfile, level, namespace_='sld:', name_='Mark', pretty_print=pretty_print)
         if self.Opacity is not None:
@@ -3418,7 +4371,9 @@ class Graphic(GeneratedsSuper):
         if self.Size is not None:
             self.Size.export(outfile, level, namespace_='sld:', name_='Size', pretty_print=pretty_print)
         if self.Rotation is not None:
-            self.Rotation.export(outfile, level, namespace_='sld:', name_='Rotation', pretty_print=pretty_print)
+            self.Rotation.export(outfile, level, namespace_='sld:', name_='Rotation',
+                                 pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3426,8 +4381,10 @@ class Graphic(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'ExternalGraphic':
             obj_ = ExternalGraphic.factory()
@@ -3457,6 +4414,8 @@ class Graphic(GeneratedsSuper):
             obj_.build(child_)
             self.Rotation = obj_
             obj_.original_tagname_ = 'Rotation'
+
+
 # end class Graphic
 
 
@@ -3465,10 +4424,12 @@ class ExternalGraphic(GeneratedsSuper):
     vector graphical object."""
     subclass = None
     superclass = None
+
     def __init__(self, OnlineResource=None, Format=None):
         self.original_tagname_ = None
         self.OnlineResource = OnlineResource
         self.Format = Format
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3479,20 +4440,32 @@ class ExternalGraphic(GeneratedsSuper):
             return ExternalGraphic.subclass(*args_, **kwargs_)
         else:
             return ExternalGraphic(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_OnlineResource(self): return self.OnlineResource
-    def set_OnlineResource(self, OnlineResource): self.OnlineResource = OnlineResource
-    def get_Format(self): return self.Format
-    def set_Format(self, Format): self.Format = Format
+
+    def get_OnlineResource(self):
+        return self.OnlineResource
+
+    def set_OnlineResource(self, OnlineResource):
+        self.OnlineResource = OnlineResource
+
+    def get_Format(self):
+        return self.Format
+
+    def set_Format(self, Format):
+        self.Format = Format
+
     def hasContent_(self):
         if (
-            self.OnlineResource is not None or
-            self.Format is not None
+                        self.OnlineResource is not None or
+                        self.Format is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ExternalGraphic', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ExternalGraphic',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ExternalGraphic')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3503,28 +4476,36 @@ class ExternalGraphic(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ExternalGraphic')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ExternalGraphic', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ExternalGraphic',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ExternalGraphic'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ExternalGraphic', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ExternalGraphic', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.OnlineResource is not None:
-            self.OnlineResource.export(outfile, level, namespace_='sld:', name_='OnlineResource', pretty_print=pretty_print)
+            self.OnlineResource.export(outfile, level, namespace_='sld:', name_='OnlineResource',
+                                       pretty_print=pretty_print)
         if self.Format is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sFormat>%s</%sFormat>%s' % ('sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Format), input_name='Format')), 'sld:', eol_))
+            outfile.write('<%sFormat>%s</%sFormat>%s' % (
+            'sld:', self.gds_encode(self.gds_format_string(quote_xml(self.Format), input_name='Format')),
+            'sld:', eol_))
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3532,8 +4513,10 @@ class ExternalGraphic(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'OnlineResource':
             obj_ = OnlineResource.factory()
@@ -3544,6 +4527,8 @@ class ExternalGraphic(GeneratedsSuper):
             Format_ = child_.text
             Format_ = self.gds_validate_string(Format_, node, 'Format')
             self.Format = Format_
+
+
 # end class ExternalGraphic
 
 
@@ -3551,11 +4536,13 @@ class Mark(GeneratedsSuper):
     """A "Mark" specifies a geometric shape and applies coloring to it."""
     subclass = None
     superclass = None
+
     def __init__(self, WellKnownName=None, Fill=None, Stroke=None):
         self.original_tagname_ = None
         self.WellKnownName = WellKnownName
         self.Fill = Fill
         self.Stroke = Stroke
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3566,23 +4553,39 @@ class Mark(GeneratedsSuper):
             return Mark.subclass(*args_, **kwargs_)
         else:
             return Mark(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_WellKnownName(self): return self.WellKnownName
-    def set_WellKnownName(self, WellKnownName): self.WellKnownName = WellKnownName
-    def get_Fill(self): return self.Fill
-    def set_Fill(self, Fill): self.Fill = Fill
-    def get_Stroke(self): return self.Stroke
-    def set_Stroke(self, Stroke): self.Stroke = Stroke
+
+    def get_WellKnownName(self):
+        return self.WellKnownName
+
+    def set_WellKnownName(self, WellKnownName):
+        self.WellKnownName = WellKnownName
+
+    def get_Fill(self):
+        return self.Fill
+
+    def set_Fill(self, Fill):
+        self.Fill = Fill
+
+    def get_Stroke(self):
+        return self.Stroke
+
+    def set_Stroke(self, Stroke):
+        self.Stroke = Stroke
+
     def hasContent_(self):
         if (
-            self.WellKnownName is not None or
-            self.Fill is not None or
-            self.Stroke is not None
+                            self.WellKnownName is not None or
+                            self.Fill is not None or
+                        self.Stroke is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Mark', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Mark',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Mark')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3593,30 +4596,37 @@ class Mark(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Mark')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Mark', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Mark',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Mark'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Mark', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Mark', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.WellKnownName is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sWellKnownName>%s</%sWellKnownName>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.WellKnownName), input_name='WellKnownName')), namespace_, eol_))
+            outfile.write('<%sWellKnownName>%s</%sWellKnownName>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.WellKnownName), input_name='WellKnownName')),
+                                                                       namespace_, eol_))
         if self.Fill is not None:
             self.Fill.export(outfile, level, namespace_='sld:', name_='Fill', pretty_print=pretty_print)
         if self.Stroke is not None:
             self.Stroke.export(outfile, level, namespace_='sld:', name_='Stroke', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3624,8 +4634,10 @@ class Mark(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'WellKnownName':
             WellKnownName_ = child_.text
@@ -3641,6 +4653,8 @@ class Mark(GeneratedsSuper):
             obj_.build(child_)
             self.Stroke = obj_
             obj_.original_tagname_ = 'Stroke'
+
+
 # end class Mark
 
 
@@ -3649,6 +4663,7 @@ class TextSymbolizer(SymbolizerType):
     various graphical parameters."""
     subclass = None
     superclass = SymbolizerType
+
     def __init__(self, Geometry=None, Label=None, Font=None, LabelPlacement=None, Halo=None, Fill=None):
         self.original_tagname_ = None
         super(TextSymbolizer, self).__init__()
@@ -3658,6 +4673,7 @@ class TextSymbolizer(SymbolizerType):
         self.LabelPlacement = LabelPlacement
         self.Halo = Halo
         self.Fill = Fill
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3668,33 +4684,61 @@ class TextSymbolizer(SymbolizerType):
             return TextSymbolizer.subclass(*args_, **kwargs_)
         else:
             return TextSymbolizer(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Geometry(self): return self.Geometry
-    def set_Geometry(self, Geometry): self.Geometry = Geometry
-    def get_Label(self): return self.Label
-    def set_Label(self, Label): self.Label = Label
-    def get_Font(self): return self.Font
-    def set_Font(self, Font): self.Font = Font
-    def get_LabelPlacement(self): return self.LabelPlacement
-    def set_LabelPlacement(self, LabelPlacement): self.LabelPlacement = LabelPlacement
-    def get_Halo(self): return self.Halo
-    def set_Halo(self, Halo): self.Halo = Halo
-    def get_Fill(self): return self.Fill
-    def set_Fill(self, Fill): self.Fill = Fill
+
+    def get_Geometry(self):
+        return self.Geometry
+
+    def set_Geometry(self, Geometry):
+        self.Geometry = Geometry
+
+    def get_Label(self):
+        return self.Label
+
+    def set_Label(self, Label):
+        self.Label = Label
+
+    def get_Font(self):
+        return self.Font
+
+    def set_Font(self, Font):
+        self.Font = Font
+
+    def get_LabelPlacement(self):
+        return self.LabelPlacement
+
+    def set_LabelPlacement(self, LabelPlacement):
+        self.LabelPlacement = LabelPlacement
+
+    def get_Halo(self):
+        return self.Halo
+
+    def set_Halo(self, Halo):
+        self.Halo = Halo
+
+    def get_Fill(self):
+        return self.Fill
+
+    def set_Fill(self, Fill):
+        self.Fill = Fill
+
     def hasContent_(self):
         if (
-            self.Geometry is not None or
-            self.Label is not None or
-            self.Font is not None or
-            self.LabelPlacement is not None or
-            self.Halo is not None or
-            self.Fill is not None or
-            super(TextSymbolizer, self).hasContent_()
+                                            self.Geometry is not None or
+                                            self.Label is not None or
+                                        self.Font is not None or
+                                    self.LabelPlacement is not None or
+                                self.Halo is not None or
+                            self.Fill is not None or
+                    super(TextSymbolizer, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='TextSymbolizer', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='TextSymbolizer',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('TextSymbolizer')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3705,36 +4749,45 @@ class TextSymbolizer(SymbolizerType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='TextSymbolizer')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='TextSymbolizer', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='TextSymbolizer',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='TextSymbolizer'):
-        super(TextSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_, name_='TextSymbolizer')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='TextSymbolizer', fromsubclass_=False, pretty_print=True):
-        super(TextSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(TextSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                     name_='TextSymbolizer')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='TextSymbolizer', fromsubclass_=False,
+                       pretty_print=True):
+        super(TextSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                   pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Geometry is not None:
-            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry', pretty_print=pretty_print)
+            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry',
+                                 pretty_print=pretty_print)
         if self.Label is not None:
             self.Label.export(outfile, level, namespace_='sld:', name_='Label', pretty_print=pretty_print)
         if self.Font is not None:
             self.Font.export(outfile, level, namespace_='sld:', name_='Font', pretty_print=pretty_print)
         if self.LabelPlacement is not None:
-            self.LabelPlacement.export(outfile, level, namespace_='sld:', name_='LabelPlacement', pretty_print=pretty_print)
+            self.LabelPlacement.export(outfile, level, namespace_='sld:', name_='LabelPlacement',
+                                       pretty_print=pretty_print)
         if self.Halo is not None:
             self.Halo.export(outfile, level, namespace_='sld:', name_='Halo', pretty_print=pretty_print)
         if self.Fill is not None:
             self.Fill.export(outfile, level, namespace_='sld:', name_='Fill', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3742,8 +4795,10 @@ class TextSymbolizer(SymbolizerType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(TextSymbolizer, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Geometry':
             obj_ = Geometry.factory()
@@ -3777,6 +4832,8 @@ class TextSymbolizer(SymbolizerType):
             self.Fill = obj_
             obj_.original_tagname_ = 'Fill'
         super(TextSymbolizer, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class TextSymbolizer
 
 
@@ -3786,12 +4843,14 @@ class Font(GeneratedsSuper):
     and "font-size"."""
     subclass = None
     superclass = None
+
     def __init__(self, CssParameter=None):
         self.original_tagname_ = None
         if CssParameter is None:
             self.CssParameter = []
         else:
             self.CssParameter = CssParameter
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3802,20 +4861,34 @@ class Font(GeneratedsSuper):
             return Font.subclass(*args_, **kwargs_)
         else:
             return Font(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_CssParameter(self): return self.CssParameter
-    def set_CssParameter(self, CssParameter): self.CssParameter = CssParameter
-    def add_CssParameter(self, value): self.CssParameter.append(value)
-    def insert_CssParameter_at(self, index, value): self.CssParameter.insert(index, value)
-    def replace_CssParameter_at(self, index, value): self.CssParameter[index] = value
+
+    def get_CssParameter(self):
+        return self.CssParameter
+
+    def set_CssParameter(self, CssParameter):
+        self.CssParameter = CssParameter
+
+    def add_CssParameter(self, value):
+        self.CssParameter.append(value)
+
+    def insert_CssParameter_at(self, index, value):
+        self.CssParameter.insert(index, value)
+
+    def replace_CssParameter_at(self, index, value):
+        self.CssParameter[index] = value
+
     def hasContent_(self):
         if (
-            self.CssParameter
+                self.CssParameter
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Font', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Font',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Font')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3826,25 +4899,31 @@ class Font(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Font')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Font', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Font',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Font'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Font', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Font', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for CssParameter_ in self.CssParameter:
-            CssParameter_.export(outfile, level, namespace_='sld:', name_='CssParameter', pretty_print=pretty_print)
+            CssParameter_.export(outfile, level, namespace_='sld:', name_='CssParameter',
+                                 pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3852,14 +4931,18 @@ class Font(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'CssParameter':
             obj_ = CssParameter.factory()
             obj_.build(child_)
             self.CssParameter.append(obj_)
             obj_.original_tagname_ = 'CssParameter'
+
+
 # end class Font
 
 
@@ -3869,10 +4952,12 @@ class LabelPlacement(GeneratedsSuper):
     aligned with CSS/SVG."""
     subclass = None
     superclass = None
+
     def __init__(self, PointPlacement=None, LinePlacement=None):
         self.original_tagname_ = None
         self.PointPlacement = PointPlacement
         self.LinePlacement = LinePlacement
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3883,20 +4968,32 @@ class LabelPlacement(GeneratedsSuper):
             return LabelPlacement.subclass(*args_, **kwargs_)
         else:
             return LabelPlacement(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_PointPlacement(self): return self.PointPlacement
-    def set_PointPlacement(self, PointPlacement): self.PointPlacement = PointPlacement
-    def get_LinePlacement(self): return self.LinePlacement
-    def set_LinePlacement(self, LinePlacement): self.LinePlacement = LinePlacement
+
+    def get_PointPlacement(self):
+        return self.PointPlacement
+
+    def set_PointPlacement(self, PointPlacement):
+        self.PointPlacement = PointPlacement
+
+    def get_LinePlacement(self):
+        return self.LinePlacement
+
+    def set_LinePlacement(self, LinePlacement):
+        self.LinePlacement = LinePlacement
+
     def hasContent_(self):
         if (
-            self.PointPlacement is not None or
-            self.LinePlacement is not None
+                        self.PointPlacement is not None or
+                        self.LinePlacement is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LabelPlacement', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LabelPlacement',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LabelPlacement')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3907,27 +5004,34 @@ class LabelPlacement(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LabelPlacement')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LabelPlacement', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LabelPlacement',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LabelPlacement'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LabelPlacement', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LabelPlacement', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.PointPlacement is not None:
-            self.PointPlacement.export(outfile, level, namespace_='sld:', name_='PointPlacement', pretty_print=pretty_print)
+            self.PointPlacement.export(outfile, level, namespace_='sld:', name_='PointPlacement',
+                                       pretty_print=pretty_print)
         if self.LinePlacement is not None:
-            self.LinePlacement.export(outfile, level, namespace_='sld:', name_='LinePlacement', pretty_print=pretty_print)
+            self.LinePlacement.export(outfile, level, namespace_='sld:', name_='LinePlacement',
+                                      pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -3935,8 +5039,10 @@ class LabelPlacement(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'PointPlacement':
             obj_ = PointPlacement.factory()
@@ -3948,6 +5054,8 @@ class LabelPlacement(GeneratedsSuper):
             obj_.build(child_)
             self.LinePlacement = obj_
             obj_.original_tagname_ = 'LinePlacement'
+
+
 # end class LabelPlacement
 
 
@@ -3956,11 +5064,13 @@ class PointPlacement(GeneratedsSuper):
     relative to a geometric point."""
     subclass = None
     superclass = None
+
     def __init__(self, AnchorPoint=None, Displacement=None, Rotation=None):
         self.original_tagname_ = None
         self.AnchorPoint = AnchorPoint
         self.Displacement = Displacement
         self.Rotation = Rotation
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -3971,23 +5081,39 @@ class PointPlacement(GeneratedsSuper):
             return PointPlacement.subclass(*args_, **kwargs_)
         else:
             return PointPlacement(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_AnchorPoint(self): return self.AnchorPoint
-    def set_AnchorPoint(self, AnchorPoint): self.AnchorPoint = AnchorPoint
-    def get_Displacement(self): return self.Displacement
-    def set_Displacement(self, Displacement): self.Displacement = Displacement
-    def get_Rotation(self): return self.Rotation
-    def set_Rotation(self, Rotation): self.Rotation = Rotation
+
+    def get_AnchorPoint(self):
+        return self.AnchorPoint
+
+    def set_AnchorPoint(self, AnchorPoint):
+        self.AnchorPoint = AnchorPoint
+
+    def get_Displacement(self):
+        return self.Displacement
+
+    def set_Displacement(self, Displacement):
+        self.Displacement = Displacement
+
+    def get_Rotation(self):
+        return self.Rotation
+
+    def set_Rotation(self, Rotation):
+        self.Rotation = Rotation
+
     def hasContent_(self):
         if (
-            self.AnchorPoint is not None or
-            self.Displacement is not None or
-            self.Rotation is not None
+                            self.AnchorPoint is not None or
+                            self.Displacement is not None or
+                        self.Rotation is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PointPlacement', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PointPlacement',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PointPlacement')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -3998,29 +5124,37 @@ class PointPlacement(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PointPlacement')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointPlacement', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointPlacement',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PointPlacement'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointPlacement', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointPlacement', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.AnchorPoint is not None:
-            self.AnchorPoint.export(outfile, level, namespace_='sld:', name_='AnchorPoint', pretty_print=pretty_print)
+            self.AnchorPoint.export(outfile, level, namespace_='sld:', name_='AnchorPoint',
+                                    pretty_print=pretty_print)
         if self.Displacement is not None:
-            self.Displacement.export(outfile, level, namespace_='sld:', name_='Displacement', pretty_print=pretty_print)
+            self.Displacement.export(outfile, level, namespace_='sld:', name_='Displacement',
+                                     pretty_print=pretty_print)
         if self.Rotation is not None:
-            self.Rotation.export(outfile, level, namespace_='sld:', name_='Rotation', pretty_print=pretty_print)
+            self.Rotation.export(outfile, level, namespace_='sld:', name_='Rotation',
+                                 pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4028,8 +5162,10 @@ class PointPlacement(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'AnchorPoint':
             obj_ = AnchorPoint.factory()
@@ -4047,6 +5183,8 @@ class PointPlacement(GeneratedsSuper):
             obj_.build(child_)
             self.Rotation = obj_
             obj_.original_tagname_ = 'Rotation'
+
+
 # end class PointPlacement
 
 
@@ -4056,10 +5194,12 @@ class AnchorPoint(GeneratedsSuper):
     geometry."""
     subclass = None
     superclass = None
+
     def __init__(self, AnchorPointX=None, AnchorPointY=None):
         self.original_tagname_ = None
         self.AnchorPointX = AnchorPointX
         self.AnchorPointY = AnchorPointY
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4070,20 +5210,32 @@ class AnchorPoint(GeneratedsSuper):
             return AnchorPoint.subclass(*args_, **kwargs_)
         else:
             return AnchorPoint(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_AnchorPointX(self): return self.AnchorPointX
-    def set_AnchorPointX(self, AnchorPointX): self.AnchorPointX = AnchorPointX
-    def get_AnchorPointY(self): return self.AnchorPointY
-    def set_AnchorPointY(self, AnchorPointY): self.AnchorPointY = AnchorPointY
+
+    def get_AnchorPointX(self):
+        return self.AnchorPointX
+
+    def set_AnchorPointX(self, AnchorPointX):
+        self.AnchorPointX = AnchorPointX
+
+    def get_AnchorPointY(self):
+        return self.AnchorPointY
+
+    def set_AnchorPointY(self, AnchorPointY):
+        self.AnchorPointY = AnchorPointY
+
     def hasContent_(self):
         if (
-            self.AnchorPointX is not None or
-            self.AnchorPointY is not None
+                        self.AnchorPointX is not None or
+                        self.AnchorPointY is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='AnchorPoint', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='AnchorPoint',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('AnchorPoint')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4094,27 +5246,34 @@ class AnchorPoint(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='AnchorPoint')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AnchorPoint', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AnchorPoint',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='AnchorPoint'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='AnchorPoint', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='AnchorPoint', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.AnchorPointX is not None:
-            self.AnchorPointX.export(outfile, level, namespace_='sld:', name_='AnchorPointX', pretty_print=pretty_print)
+            self.AnchorPointX.export(outfile, level, namespace_='sld:', name_='AnchorPointX',
+                                     pretty_print=pretty_print)
         if self.AnchorPointY is not None:
-            self.AnchorPointY.export(outfile, level, namespace_='sld:', name_='AnchorPointY', pretty_print=pretty_print)
+            self.AnchorPointY.export(outfile, level, namespace_='sld:', name_='AnchorPointY',
+                                     pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4122,8 +5281,10 @@ class AnchorPoint(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'AnchorPointX':
             class_obj_ = self.get_class_obj_(child_, ParameterValueType)
@@ -4137,6 +5298,8 @@ class AnchorPoint(GeneratedsSuper):
             obj_.build(child_)
             self.AnchorPointY = obj_
             obj_.original_tagname_ = 'AnchorPointY'
+
+
 # end class AnchorPoint
 
 
@@ -4145,10 +5308,12 @@ class Displacement(GeneratedsSuper):
     rendering a text label near a point."""
     subclass = None
     superclass = None
+
     def __init__(self, DisplacementX=None, DisplacementY=None):
         self.original_tagname_ = None
         self.DisplacementX = DisplacementX
         self.DisplacementY = DisplacementY
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4159,20 +5324,32 @@ class Displacement(GeneratedsSuper):
             return Displacement.subclass(*args_, **kwargs_)
         else:
             return Displacement(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_DisplacementX(self): return self.DisplacementX
-    def set_DisplacementX(self, DisplacementX): self.DisplacementX = DisplacementX
-    def get_DisplacementY(self): return self.DisplacementY
-    def set_DisplacementY(self, DisplacementY): self.DisplacementY = DisplacementY
+
+    def get_DisplacementX(self):
+        return self.DisplacementX
+
+    def set_DisplacementX(self, DisplacementX):
+        self.DisplacementX = DisplacementX
+
+    def get_DisplacementY(self):
+        return self.DisplacementY
+
+    def set_DisplacementY(self, DisplacementY):
+        self.DisplacementY = DisplacementY
+
     def hasContent_(self):
         if (
-            self.DisplacementX is not None or
-            self.DisplacementY is not None
+                        self.DisplacementX is not None or
+                        self.DisplacementY is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Displacement', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Displacement',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Displacement')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4183,27 +5360,34 @@ class Displacement(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Displacement')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Displacement', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Displacement',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Displacement'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Displacement', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Displacement', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.DisplacementX is not None:
-            self.DisplacementX.export(outfile, level, namespace_='sld:', name_='DisplacementX', pretty_print=pretty_print)
+            self.DisplacementX.export(outfile, level, namespace_='sld:', name_='DisplacementX',
+                                      pretty_print=pretty_print)
         if self.DisplacementY is not None:
-            self.DisplacementY.export(outfile, level, namespace_='sld:', name_='DisplacementY', pretty_print=pretty_print)
+            self.DisplacementY.export(outfile, level, namespace_='sld:', name_='DisplacementY',
+                                      pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4211,8 +5395,10 @@ class Displacement(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'DisplacementX':
             class_obj_ = self.get_class_obj_(child_, ParameterValueType)
@@ -4226,6 +5412,8 @@ class Displacement(GeneratedsSuper):
             obj_.build(child_)
             self.DisplacementY = obj_
             obj_.original_tagname_ = 'DisplacementY'
+
+
 # end class Displacement
 
 
@@ -4234,9 +5422,11 @@ class LinePlacement(GeneratedsSuper):
     relative to a linear geometry."""
     subclass = None
     superclass = None
+
     def __init__(self, PerpendicularOffset=None):
         self.original_tagname_ = None
         self.PerpendicularOffset = PerpendicularOffset
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4247,17 +5437,25 @@ class LinePlacement(GeneratedsSuper):
             return LinePlacement.subclass(*args_, **kwargs_)
         else:
             return LinePlacement(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_PerpendicularOffset(self): return self.PerpendicularOffset
-    def set_PerpendicularOffset(self, PerpendicularOffset): self.PerpendicularOffset = PerpendicularOffset
+
+    def get_PerpendicularOffset(self):
+        return self.PerpendicularOffset
+
+    def set_PerpendicularOffset(self, PerpendicularOffset):
+        self.PerpendicularOffset = PerpendicularOffset
+
     def hasContent_(self):
         if (
-            self.PerpendicularOffset is not None
+                    self.PerpendicularOffset is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LinePlacement', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LinePlacement',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LinePlacement')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4268,25 +5466,31 @@ class LinePlacement(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LinePlacement')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LinePlacement', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LinePlacement',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LinePlacement'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LinePlacement', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LinePlacement', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.PerpendicularOffset is not None:
-            self.PerpendicularOffset.export(outfile, level, namespace_='sld:', name_='PerpendicularOffset', pretty_print=pretty_print)
+            self.PerpendicularOffset.export(outfile, level, namespace_='sld:', name_='PerpendicularOffset',
+                                            pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4294,8 +5498,10 @@ class LinePlacement(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'PerpendicularOffset':
             class_obj_ = self.get_class_obj_(child_, ParameterValueType)
@@ -4303,6 +5509,8 @@ class LinePlacement(GeneratedsSuper):
             obj_.build(child_)
             self.PerpendicularOffset = obj_
             obj_.original_tagname_ = 'PerpendicularOffset'
+
+
 # end class LinePlacement
 
 
@@ -4311,10 +5519,12 @@ class Halo(GeneratedsSuper):
     text label to make the label easier to read over a background."""
     subclass = None
     superclass = None
+
     def __init__(self, Radius=None, Fill=None):
         self.original_tagname_ = None
         self.Radius = Radius
         self.Fill = Fill
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4325,20 +5535,32 @@ class Halo(GeneratedsSuper):
             return Halo.subclass(*args_, **kwargs_)
         else:
             return Halo(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Radius(self): return self.Radius
-    def set_Radius(self, Radius): self.Radius = Radius
-    def get_Fill(self): return self.Fill
-    def set_Fill(self, Fill): self.Fill = Fill
+
+    def get_Radius(self):
+        return self.Radius
+
+    def set_Radius(self, Radius):
+        self.Radius = Radius
+
+    def get_Fill(self):
+        return self.Fill
+
+    def set_Fill(self, Fill):
+        self.Fill = Fill
+
     def hasContent_(self):
         if (
-            self.Radius is not None or
-            self.Fill is not None
+                        self.Radius is not None or
+                        self.Fill is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Halo', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Halo',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Halo')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4349,19 +5571,23 @@ class Halo(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Halo')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Halo', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Halo',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Halo'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Halo', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Halo', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -4370,6 +5596,7 @@ class Halo(GeneratedsSuper):
             self.Radius.export(outfile, level, namespace_='sld:', name_='Radius', pretty_print=pretty_print)
         if self.Fill is not None:
             self.Fill.export(outfile, level, namespace_='sld:', name_='Fill', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4377,8 +5604,10 @@ class Halo(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Radius':
             class_obj_ = self.get_class_obj_(child_, ParameterValueType)
@@ -4391,6 +5620,8 @@ class Halo(GeneratedsSuper):
             obj_.build(child_)
             self.Fill = obj_
             obj_.original_tagname_ = 'Fill'
+
+
 # end class Halo
 
 
@@ -4399,7 +5630,9 @@ class RasterSymbolizer(SymbolizerType):
     matrix-coverage data (e.g., satellite images, DEMs)."""
     subclass = None
     superclass = SymbolizerType
-    def __init__(self, Geometry=None, Opacity=None, ChannelSelection=None, OverlapBehavior=None, ColorMap=None, ContrastEnhancement=None, ShadedRelief=None, ImageOutline=None):
+
+    def __init__(self, Geometry=None, Opacity=None, ChannelSelection=None, OverlapBehavior=None,
+                 ColorMap=None, ContrastEnhancement=None, ShadedRelief=None, ImageOutline=None):
         self.original_tagname_ = None
         super(RasterSymbolizer, self).__init__()
         self.Geometry = Geometry
@@ -4410,6 +5643,7 @@ class RasterSymbolizer(SymbolizerType):
         self.ContrastEnhancement = ContrastEnhancement
         self.ShadedRelief = ShadedRelief
         self.ImageOutline = ImageOutline
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4420,39 +5654,75 @@ class RasterSymbolizer(SymbolizerType):
             return RasterSymbolizer.subclass(*args_, **kwargs_)
         else:
             return RasterSymbolizer(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Geometry(self): return self.Geometry
-    def set_Geometry(self, Geometry): self.Geometry = Geometry
-    def get_Opacity(self): return self.Opacity
-    def set_Opacity(self, Opacity): self.Opacity = Opacity
-    def get_ChannelSelection(self): return self.ChannelSelection
-    def set_ChannelSelection(self, ChannelSelection): self.ChannelSelection = ChannelSelection
-    def get_OverlapBehavior(self): return self.OverlapBehavior
-    def set_OverlapBehavior(self, OverlapBehavior): self.OverlapBehavior = OverlapBehavior
-    def get_ColorMap(self): return self.ColorMap
-    def set_ColorMap(self, ColorMap): self.ColorMap = ColorMap
-    def get_ContrastEnhancement(self): return self.ContrastEnhancement
-    def set_ContrastEnhancement(self, ContrastEnhancement): self.ContrastEnhancement = ContrastEnhancement
-    def get_ShadedRelief(self): return self.ShadedRelief
-    def set_ShadedRelief(self, ShadedRelief): self.ShadedRelief = ShadedRelief
-    def get_ImageOutline(self): return self.ImageOutline
-    def set_ImageOutline(self, ImageOutline): self.ImageOutline = ImageOutline
+
+    def get_Geometry(self):
+        return self.Geometry
+
+    def set_Geometry(self, Geometry):
+        self.Geometry = Geometry
+
+    def get_Opacity(self):
+        return self.Opacity
+
+    def set_Opacity(self, Opacity):
+        self.Opacity = Opacity
+
+    def get_ChannelSelection(self):
+        return self.ChannelSelection
+
+    def set_ChannelSelection(self, ChannelSelection):
+        self.ChannelSelection = ChannelSelection
+
+    def get_OverlapBehavior(self):
+        return self.OverlapBehavior
+
+    def set_OverlapBehavior(self, OverlapBehavior):
+        self.OverlapBehavior = OverlapBehavior
+
+    def get_ColorMap(self):
+        return self.ColorMap
+
+    def set_ColorMap(self, ColorMap):
+        self.ColorMap = ColorMap
+
+    def get_ContrastEnhancement(self):
+        return self.ContrastEnhancement
+
+    def set_ContrastEnhancement(self, ContrastEnhancement):
+        self.ContrastEnhancement = ContrastEnhancement
+
+    def get_ShadedRelief(self):
+        return self.ShadedRelief
+
+    def set_ShadedRelief(self, ShadedRelief):
+        self.ShadedRelief = ShadedRelief
+
+    def get_ImageOutline(self):
+        return self.ImageOutline
+
+    def set_ImageOutline(self, ImageOutline):
+        self.ImageOutline = ImageOutline
+
     def hasContent_(self):
         if (
-            self.Geometry is not None or
-            self.Opacity is not None or
-            self.ChannelSelection is not None or
-            self.OverlapBehavior is not None or
-            self.ColorMap is not None or
-            self.ContrastEnhancement is not None or
-            self.ShadedRelief is not None or
-            self.ImageOutline is not None or
-            super(RasterSymbolizer, self).hasContent_()
+                                                    self.Geometry is not None or
+                                                    self.Opacity is not None or
+                                                self.ChannelSelection is not None or
+                                            self.OverlapBehavior is not None or
+                                        self.ColorMap is not None or
+                                    self.ContrastEnhancement is not None or
+                                self.ShadedRelief is not None or
+                            self.ImageOutline is not None or
+                    super(RasterSymbolizer, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='RasterSymbolizer', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='RasterSymbolizer',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('RasterSymbolizer')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4463,40 +5733,55 @@ class RasterSymbolizer(SymbolizerType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='RasterSymbolizer')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='RasterSymbolizer', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='RasterSymbolizer',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='RasterSymbolizer'):
-        super(RasterSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_, name_='RasterSymbolizer')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='RasterSymbolizer', fromsubclass_=False, pretty_print=True):
-        super(RasterSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='RasterSymbolizer'):
+        super(RasterSymbolizer, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                       name_='RasterSymbolizer')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='RasterSymbolizer', fromsubclass_=False,
+                       pretty_print=True):
+        super(RasterSymbolizer, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                     pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Geometry is not None:
-            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry', pretty_print=pretty_print)
+            self.Geometry.export(outfile, level, namespace_='sld:', name_='Geometry',
+                                 pretty_print=pretty_print)
         if self.Opacity is not None:
             self.Opacity.export(outfile, level, namespace_='sld:', name_='Opacity', pretty_print=pretty_print)
         if self.ChannelSelection is not None:
-            self.ChannelSelection.export(outfile, level, namespace_='sld:', name_='ChannelSelection', pretty_print=pretty_print)
+            self.ChannelSelection.export(outfile, level, namespace_='sld:', name_='ChannelSelection',
+                                         pretty_print=pretty_print)
         if self.OverlapBehavior is not None:
-            self.OverlapBehavior.export(outfile, level, namespace_='sld:', name_='OverlapBehavior', pretty_print=pretty_print)
+            self.OverlapBehavior.export(outfile, level, namespace_='sld:', name_='OverlapBehavior',
+                                        pretty_print=pretty_print)
         if self.ColorMap is not None:
-            self.ColorMap.export(outfile, level, namespace_='sld:', name_='ColorMap', pretty_print=pretty_print)
+            self.ColorMap.export(outfile, level, namespace_='sld:', name_='ColorMap',
+                                 pretty_print=pretty_print)
         if self.ContrastEnhancement is not None:
-            self.ContrastEnhancement.export(outfile, level, namespace_='sld:', name_='ContrastEnhancement', pretty_print=pretty_print)
+            self.ContrastEnhancement.export(outfile, level, namespace_='sld:', name_='ContrastEnhancement',
+                                            pretty_print=pretty_print)
         if self.ShadedRelief is not None:
-            self.ShadedRelief.export(outfile, level, namespace_='sld:', name_='ShadedRelief', pretty_print=pretty_print)
+            self.ShadedRelief.export(outfile, level, namespace_='sld:', name_='ShadedRelief',
+                                     pretty_print=pretty_print)
         if self.ImageOutline is not None:
-            self.ImageOutline.export(outfile, level, namespace_='sld:', name_='ImageOutline', pretty_print=pretty_print)
+            self.ImageOutline.export(outfile, level, namespace_='sld:', name_='ImageOutline',
+                                     pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4504,8 +5789,10 @@ class RasterSymbolizer(SymbolizerType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(RasterSymbolizer, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Geometry':
             obj_ = Geometry.factory()
@@ -4549,6 +5836,8 @@ class RasterSymbolizer(SymbolizerType):
             self.ImageOutline = obj_
             obj_.original_tagname_ = 'ImageOutline'
         super(RasterSymbolizer, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class RasterSymbolizer
 
 
@@ -4557,12 +5846,14 @@ class ChannelSelection(GeneratedsSuper):
     multi-spectral raster source. """
     subclass = None
     superclass = None
+
     def __init__(self, RedChannel=None, GreenChannel=None, BlueChannel=None, GrayChannel=None):
         self.original_tagname_ = None
         self.RedChannel = RedChannel
         self.GreenChannel = GreenChannel
         self.BlueChannel = BlueChannel
         self.GrayChannel = GrayChannel
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4573,26 +5864,46 @@ class ChannelSelection(GeneratedsSuper):
             return ChannelSelection.subclass(*args_, **kwargs_)
         else:
             return ChannelSelection(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_RedChannel(self): return self.RedChannel
-    def set_RedChannel(self, RedChannel): self.RedChannel = RedChannel
-    def get_GreenChannel(self): return self.GreenChannel
-    def set_GreenChannel(self, GreenChannel): self.GreenChannel = GreenChannel
-    def get_BlueChannel(self): return self.BlueChannel
-    def set_BlueChannel(self, BlueChannel): self.BlueChannel = BlueChannel
-    def get_GrayChannel(self): return self.GrayChannel
-    def set_GrayChannel(self, GrayChannel): self.GrayChannel = GrayChannel
+
+    def get_RedChannel(self):
+        return self.RedChannel
+
+    def set_RedChannel(self, RedChannel):
+        self.RedChannel = RedChannel
+
+    def get_GreenChannel(self):
+        return self.GreenChannel
+
+    def set_GreenChannel(self, GreenChannel):
+        self.GreenChannel = GreenChannel
+
+    def get_BlueChannel(self):
+        return self.BlueChannel
+
+    def set_BlueChannel(self, BlueChannel):
+        self.BlueChannel = BlueChannel
+
+    def get_GrayChannel(self):
+        return self.GrayChannel
+
+    def set_GrayChannel(self, GrayChannel):
+        self.GrayChannel = GrayChannel
+
     def hasContent_(self):
         if (
-            self.RedChannel is not None or
-            self.GreenChannel is not None or
-            self.BlueChannel is not None or
-            self.GrayChannel is not None
+                                self.RedChannel is not None or
+                                self.GreenChannel is not None or
+                            self.BlueChannel is not None or
+                        self.GrayChannel is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ChannelSelection', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ChannelSelection',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ChannelSelection')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4603,31 +5914,41 @@ class ChannelSelection(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ChannelSelection')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ChannelSelection', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ChannelSelection',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ChannelSelection'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='ChannelSelection'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ChannelSelection', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ChannelSelection', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.RedChannel is not None:
-            self.RedChannel.export(outfile, level, namespace_='sld:', name_='RedChannel', pretty_print=pretty_print)
+            self.RedChannel.export(outfile, level, namespace_='sld:', name_='RedChannel',
+                                   pretty_print=pretty_print)
         if self.GreenChannel is not None:
-            self.GreenChannel.export(outfile, level, namespace_='sld:', name_='GreenChannel', pretty_print=pretty_print)
+            self.GreenChannel.export(outfile, level, namespace_='sld:', name_='GreenChannel',
+                                     pretty_print=pretty_print)
         if self.BlueChannel is not None:
-            self.BlueChannel.export(outfile, level, namespace_='sld:', name_='BlueChannel', pretty_print=pretty_print)
+            self.BlueChannel.export(outfile, level, namespace_='sld:', name_='BlueChannel',
+                                    pretty_print=pretty_print)
         if self.GrayChannel is not None:
-            self.GrayChannel.export(outfile, level, namespace_='sld:', name_='GrayChannel', pretty_print=pretty_print)
+            self.GrayChannel.export(outfile, level, namespace_='sld:', name_='GrayChannel',
+                                    pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4635,8 +5956,10 @@ class ChannelSelection(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'RedChannel':
             obj_ = SelectedChannelType.factory()
@@ -4658,16 +5981,20 @@ class ChannelSelection(GeneratedsSuper):
             obj_.build(child_)
             self.GrayChannel = obj_
             obj_.original_tagname_ = 'GrayChannel'
+
+
 # end class ChannelSelection
 
 
 class SelectedChannelType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, SourceChannelName=None, ContrastEnhancement=None):
         self.original_tagname_ = None
         self.SourceChannelName = SourceChannelName
         self.ContrastEnhancement = ContrastEnhancement
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4678,20 +6005,32 @@ class SelectedChannelType(GeneratedsSuper):
             return SelectedChannelType.subclass(*args_, **kwargs_)
         else:
             return SelectedChannelType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_SourceChannelName(self): return self.SourceChannelName
-    def set_SourceChannelName(self, SourceChannelName): self.SourceChannelName = SourceChannelName
-    def get_ContrastEnhancement(self): return self.ContrastEnhancement
-    def set_ContrastEnhancement(self, ContrastEnhancement): self.ContrastEnhancement = ContrastEnhancement
+
+    def get_SourceChannelName(self):
+        return self.SourceChannelName
+
+    def set_SourceChannelName(self, SourceChannelName):
+        self.SourceChannelName = SourceChannelName
+
+    def get_ContrastEnhancement(self):
+        return self.ContrastEnhancement
+
+    def set_ContrastEnhancement(self, ContrastEnhancement):
+        self.ContrastEnhancement = ContrastEnhancement
+
     def hasContent_(self):
         if (
-            self.SourceChannelName is not None or
-            self.ContrastEnhancement is not None
+                        self.SourceChannelName is not None or
+                        self.ContrastEnhancement is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='SelectedChannelType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='SelectedChannelType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('SelectedChannelType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4702,28 +6041,37 @@ class SelectedChannelType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='SelectedChannelType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='SelectedChannelType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='SelectedChannelType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='SelectedChannelType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='SelectedChannelType'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='SelectedChannelType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='SelectedChannelType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.SourceChannelName is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sSourceChannelName>%s</%sSourceChannelName>%s' % ('sld:', self.gds_encode(self.gds_format_string(quote_xml(self.SourceChannelName), input_name='SourceChannelName')), 'sld:', eol_))
+            outfile.write('<%sSourceChannelName>%s</%sSourceChannelName>%s' % ('sld:', self.gds_encode(
+                self.gds_format_string(quote_xml(self.SourceChannelName), input_name='SourceChannelName')),
+                                                                               'sld:', eol_))
         if self.ContrastEnhancement is not None:
-            self.ContrastEnhancement.export(outfile, level, namespace_='sld:', name_='ContrastEnhancement', pretty_print=pretty_print)
+            self.ContrastEnhancement.export(outfile, level, namespace_='sld:', name_='ContrastEnhancement',
+                                            pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4731,8 +6079,10 @@ class SelectedChannelType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'SourceChannelName':
             SourceChannelName_ = child_.text
@@ -4743,6 +6093,8 @@ class SelectedChannelType(GeneratedsSuper):
             obj_.build(child_)
             self.ContrastEnhancement = obj_
             obj_.original_tagname_ = 'ContrastEnhancement'
+
+
 # end class SelectedChannelType
 
 
@@ -4752,12 +6104,14 @@ class OverlapBehavior(GeneratedsSuper):
     satellite-image scenes. """
     subclass = None
     superclass = None
+
     def __init__(self, LATEST_ON_TOP=None, EARLIEST_ON_TOP=None, AVERAGE=None, RANDOM=None):
         self.original_tagname_ = None
         self.LATEST_ON_TOP = LATEST_ON_TOP
         self.EARLIEST_ON_TOP = EARLIEST_ON_TOP
         self.AVERAGE = AVERAGE
         self.RANDOM = RANDOM
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4768,26 +6122,46 @@ class OverlapBehavior(GeneratedsSuper):
             return OverlapBehavior.subclass(*args_, **kwargs_)
         else:
             return OverlapBehavior(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_LATEST_ON_TOP(self): return self.LATEST_ON_TOP
-    def set_LATEST_ON_TOP(self, LATEST_ON_TOP): self.LATEST_ON_TOP = LATEST_ON_TOP
-    def get_EARLIEST_ON_TOP(self): return self.EARLIEST_ON_TOP
-    def set_EARLIEST_ON_TOP(self, EARLIEST_ON_TOP): self.EARLIEST_ON_TOP = EARLIEST_ON_TOP
-    def get_AVERAGE(self): return self.AVERAGE
-    def set_AVERAGE(self, AVERAGE): self.AVERAGE = AVERAGE
-    def get_RANDOM(self): return self.RANDOM
-    def set_RANDOM(self, RANDOM): self.RANDOM = RANDOM
+
+    def get_LATEST_ON_TOP(self):
+        return self.LATEST_ON_TOP
+
+    def set_LATEST_ON_TOP(self, LATEST_ON_TOP):
+        self.LATEST_ON_TOP = LATEST_ON_TOP
+
+    def get_EARLIEST_ON_TOP(self):
+        return self.EARLIEST_ON_TOP
+
+    def set_EARLIEST_ON_TOP(self, EARLIEST_ON_TOP):
+        self.EARLIEST_ON_TOP = EARLIEST_ON_TOP
+
+    def get_AVERAGE(self):
+        return self.AVERAGE
+
+    def set_AVERAGE(self, AVERAGE):
+        self.AVERAGE = AVERAGE
+
+    def get_RANDOM(self):
+        return self.RANDOM
+
+    def set_RANDOM(self, RANDOM):
+        self.RANDOM = RANDOM
+
     def hasContent_(self):
         if (
-            self.LATEST_ON_TOP is not None or
-            self.EARLIEST_ON_TOP is not None or
-            self.AVERAGE is not None or
-            self.RANDOM is not None
+                                self.LATEST_ON_TOP is not None or
+                                self.EARLIEST_ON_TOP is not None or
+                            self.AVERAGE is not None or
+                        self.RANDOM is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='OverlapBehavior', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='OverlapBehavior',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('OverlapBehavior')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4798,31 +6172,38 @@ class OverlapBehavior(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='OverlapBehavior')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='OverlapBehavior', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='OverlapBehavior',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='OverlapBehavior'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='OverlapBehavior', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='OverlapBehavior', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.LATEST_ON_TOP is not None:
-            self.LATEST_ON_TOP.export(outfile, level, namespace_='sld:', name_='LATEST_ON_TOP', pretty_print=pretty_print)
+            self.LATEST_ON_TOP.export(outfile, level, namespace_='sld:', name_='LATEST_ON_TOP',
+                                      pretty_print=pretty_print)
         if self.EARLIEST_ON_TOP is not None:
-            self.EARLIEST_ON_TOP.export(outfile, level, namespace_='sld:', name_='EARLIEST_ON_TOP', pretty_print=pretty_print)
+            self.EARLIEST_ON_TOP.export(outfile, level, namespace_='sld:', name_='EARLIEST_ON_TOP',
+                                        pretty_print=pretty_print)
         if self.AVERAGE is not None:
             self.AVERAGE.export(outfile, level, namespace_='sld:', name_='AVERAGE', pretty_print=pretty_print)
         if self.RANDOM is not None:
             self.RANDOM.export(outfile, level, namespace_='sld:', name_='RANDOM', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4830,8 +6211,10 @@ class OverlapBehavior(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'LATEST_ON_TOP':
             obj_ = LATEST_ON_TOP.factory()
@@ -4853,14 +6236,18 @@ class OverlapBehavior(GeneratedsSuper):
             obj_.build(child_)
             self.RANDOM = obj_
             obj_.original_tagname_ = 'RANDOM'
+
+
 # end class OverlapBehavior
 
 
 class LATEST_ON_TOP(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self):
         self.original_tagname_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4871,7 +6258,9 @@ class LATEST_ON_TOP(GeneratedsSuper):
             return LATEST_ON_TOP.subclass(*args_, **kwargs_)
         else:
             return LATEST_ON_TOP(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def hasContent_(self):
         if (
 
@@ -4879,7 +6268,9 @@ class LATEST_ON_TOP(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LATEST_ON_TOP', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LATEST_ON_TOP',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LATEST_ON_TOP')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4890,19 +6281,24 @@ class LATEST_ON_TOP(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LATEST_ON_TOP')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LATEST_ON_TOP', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LATEST_ON_TOP',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LATEST_ON_TOP'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LATEST_ON_TOP', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LATEST_ON_TOP', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4910,18 +6306,24 @@ class LATEST_ON_TOP(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class LATEST_ON_TOP
 
 
 class EARLIEST_ON_TOP(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self):
         self.original_tagname_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4932,7 +6334,9 @@ class EARLIEST_ON_TOP(GeneratedsSuper):
             return EARLIEST_ON_TOP.subclass(*args_, **kwargs_)
         else:
             return EARLIEST_ON_TOP(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def hasContent_(self):
         if (
 
@@ -4940,7 +6344,9 @@ class EARLIEST_ON_TOP(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='EARLIEST_ON_TOP', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='EARLIEST_ON_TOP',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('EARLIEST_ON_TOP')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -4951,19 +6357,24 @@ class EARLIEST_ON_TOP(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='EARLIEST_ON_TOP')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='EARLIEST_ON_TOP', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='EARLIEST_ON_TOP',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='EARLIEST_ON_TOP'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='EARLIEST_ON_TOP', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='EARLIEST_ON_TOP', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -4971,18 +6382,24 @@ class EARLIEST_ON_TOP(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class EARLIEST_ON_TOP
 
 
 class AVERAGE(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self):
         self.original_tagname_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -4993,7 +6410,9 @@ class AVERAGE(GeneratedsSuper):
             return AVERAGE.subclass(*args_, **kwargs_)
         else:
             return AVERAGE(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def hasContent_(self):
         if (
 
@@ -5001,7 +6420,9 @@ class AVERAGE(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='AVERAGE', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='AVERAGE',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('AVERAGE')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5012,19 +6433,24 @@ class AVERAGE(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='AVERAGE')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AVERAGE', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AVERAGE',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='AVERAGE'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='AVERAGE', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='AVERAGE', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5032,18 +6458,24 @@ class AVERAGE(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class AVERAGE
 
 
 class RANDOM(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self):
         self.original_tagname_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5054,7 +6486,9 @@ class RANDOM(GeneratedsSuper):
             return RANDOM.subclass(*args_, **kwargs_)
         else:
             return RANDOM(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def hasContent_(self):
         if (
 
@@ -5062,7 +6496,9 @@ class RANDOM(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='RANDOM', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='RANDOM',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('RANDOM')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5073,19 +6509,24 @@ class RANDOM(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='RANDOM')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='RANDOM', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='RANDOM',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='RANDOM'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='RANDOM', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='RANDOM', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5093,10 +6534,14 @@ class RANDOM(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class RANDOM
 
 
@@ -5105,12 +6550,14 @@ class ColorMap(GeneratedsSuper):
     source or the mapping of numeric pixel values to colors."""
     subclass = None
     superclass = None
+
     def __init__(self, ColorMapEntry=None):
         self.original_tagname_ = None
         if ColorMapEntry is None:
             self.ColorMapEntry = []
         else:
             self.ColorMapEntry = ColorMapEntry
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5121,20 +6568,34 @@ class ColorMap(GeneratedsSuper):
             return ColorMap.subclass(*args_, **kwargs_)
         else:
             return ColorMap(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_ColorMapEntry(self): return self.ColorMapEntry
-    def set_ColorMapEntry(self, ColorMapEntry): self.ColorMapEntry = ColorMapEntry
-    def add_ColorMapEntry(self, value): self.ColorMapEntry.append(value)
-    def insert_ColorMapEntry_at(self, index, value): self.ColorMapEntry.insert(index, value)
-    def replace_ColorMapEntry_at(self, index, value): self.ColorMapEntry[index] = value
+
+    def get_ColorMapEntry(self):
+        return self.ColorMapEntry
+
+    def set_ColorMapEntry(self, ColorMapEntry):
+        self.ColorMapEntry = ColorMapEntry
+
+    def add_ColorMapEntry(self, value):
+        self.ColorMapEntry.append(value)
+
+    def insert_ColorMapEntry_at(self, index, value):
+        self.ColorMapEntry.insert(index, value)
+
+    def replace_ColorMapEntry_at(self, index, value):
+        self.ColorMapEntry[index] = value
+
     def hasContent_(self):
         if (
-            self.ColorMapEntry
+                self.ColorMapEntry
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ColorMap', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ColorMap',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ColorMap')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5145,25 +6606,31 @@ class ColorMap(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ColorMap')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ColorMap', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ColorMap',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ColorMap'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ColorMap', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ColorMap', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for ColorMapEntry_ in self.ColorMapEntry:
-            ColorMapEntry_.export(outfile, level, namespace_='sld:', name_='ColorMapEntry', pretty_print=pretty_print)
+            ColorMapEntry_.export(outfile, level, namespace_='sld:', name_='ColorMapEntry',
+                                  pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5171,26 +6638,32 @@ class ColorMap(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'ColorMapEntry':
             obj_ = ColorMapEntry.factory()
             obj_.build(child_)
             self.ColorMapEntry.append(obj_)
             obj_.original_tagname_ = 'ColorMapEntry'
+
+
 # end class ColorMap
 
 
 class ColorMapEntry(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, color=None, opacity=None, quantity=None, label=None):
         self.original_tagname_ = None
         self.color = _cast(None, color)
         self.opacity = _cast(float, opacity)
         self.quantity = _cast(float, quantity)
         self.label = _cast(None, label)
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5201,15 +6674,33 @@ class ColorMapEntry(GeneratedsSuper):
             return ColorMapEntry.subclass(*args_, **kwargs_)
         else:
             return ColorMapEntry(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_color(self): return self.color
-    def set_color(self, color): self.color = color
-    def get_opacity(self): return self.opacity
-    def set_opacity(self, opacity): self.opacity = opacity
-    def get_quantity(self): return self.quantity
-    def set_quantity(self, quantity): self.quantity = quantity
-    def get_label(self): return self.label
-    def set_label(self, label): self.label = label
+
+    def get_color(self):
+        return self.color
+
+    def set_color(self, color):
+        self.color = color
+
+    def get_opacity(self):
+        return self.opacity
+
+    def set_opacity(self, opacity):
+        self.opacity = opacity
+
+    def get_quantity(self):
+        return self.quantity
+
+    def set_quantity(self, quantity):
+        self.quantity = quantity
+
+    def get_label(self):
+        return self.label
+
+    def set_label(self, label):
+        self.label = label
+
     def hasContent_(self):
         if (
 
@@ -5217,7 +6708,9 @@ class ColorMapEntry(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ColorMapEntry', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ColorMapEntry',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ColorMapEntry')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5228,19 +6721,22 @@ class ColorMapEntry(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ColorMapEntry')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ColorMapEntry', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ColorMapEntry',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ColorMapEntry'):
         if self.color is not None and 'color' not in already_processed:
             already_processed.add('color')
-            outfile.write(' color=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.color), input_name='color')), ))
+            outfile.write(' color=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.color), input_name='color')),))
         if self.opacity is not None and 'opacity' not in already_processed:
             already_processed.add('opacity')
             outfile.write(' opacity="%s"' % self.gds_format_double(self.opacity, input_name='opacity'))
@@ -5249,9 +6745,13 @@ class ColorMapEntry(GeneratedsSuper):
             outfile.write(' quantity="%s"' % self.gds_format_double(self.quantity, input_name='quantity'))
         if self.label is not None and 'label' not in already_processed:
             already_processed.add('label')
-            outfile.write(' label=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.label), input_name='label')), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ColorMapEntry', fromsubclass_=False, pretty_print=True):
+            outfile.write(' label=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.label), input_name='label')),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ColorMapEntry', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5259,6 +6759,7 @@ class ColorMapEntry(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('color', node)
         if value is not None and 'color' not in already_processed:
@@ -5282,8 +6783,11 @@ class ColorMapEntry(GeneratedsSuper):
         if value is not None and 'label' not in already_processed:
             already_processed.add('label')
             self.label = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class ColorMapEntry
 
 
@@ -5294,11 +6798,13 @@ class ContrastEnhancement(GeneratedsSuper):
     more visible. """
     subclass = None
     superclass = None
+
     def __init__(self, Normalize=None, Histogram=None, GammaValue=None):
         self.original_tagname_ = None
         self.Normalize = Normalize
         self.Histogram = Histogram
         self.GammaValue = GammaValue
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5309,23 +6815,39 @@ class ContrastEnhancement(GeneratedsSuper):
             return ContrastEnhancement.subclass(*args_, **kwargs_)
         else:
             return ContrastEnhancement(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Normalize(self): return self.Normalize
-    def set_Normalize(self, Normalize): self.Normalize = Normalize
-    def get_Histogram(self): return self.Histogram
-    def set_Histogram(self, Histogram): self.Histogram = Histogram
-    def get_GammaValue(self): return self.GammaValue
-    def set_GammaValue(self, GammaValue): self.GammaValue = GammaValue
+
+    def get_Normalize(self):
+        return self.Normalize
+
+    def set_Normalize(self, Normalize):
+        self.Normalize = Normalize
+
+    def get_Histogram(self):
+        return self.Histogram
+
+    def set_Histogram(self, Histogram):
+        self.Histogram = Histogram
+
+    def get_GammaValue(self):
+        return self.GammaValue
+
+    def set_GammaValue(self, GammaValue):
+        self.GammaValue = GammaValue
+
     def hasContent_(self):
         if (
-            self.Normalize is not None or
-            self.Histogram is not None or
-            self.GammaValue is not None
+                            self.Normalize is not None or
+                            self.Histogram is not None or
+                        self.GammaValue is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ContrastEnhancement', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ContrastEnhancement',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ContrastEnhancement')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5336,30 +6858,39 @@ class ContrastEnhancement(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ContrastEnhancement')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ContrastEnhancement', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ContrastEnhancement',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ContrastEnhancement'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='ContrastEnhancement'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ContrastEnhancement', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ContrastEnhancement',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Normalize is not None:
-            self.Normalize.export(outfile, level, namespace_='sld:', name_='Normalize', pretty_print=pretty_print)
+            self.Normalize.export(outfile, level, namespace_='sld:', name_='Normalize',
+                                  pretty_print=pretty_print)
         if self.Histogram is not None:
-            self.Histogram.export(outfile, level, namespace_='sld:', name_='Histogram', pretty_print=pretty_print)
+            self.Histogram.export(outfile, level, namespace_='sld:', name_='Histogram',
+                                  pretty_print=pretty_print)
         if self.GammaValue is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sGammaValue>%s</%sGammaValue>%s' % (namespace_, self.gds_format_double(self.GammaValue, input_name='GammaValue'), namespace_, eol_))
+            outfile.write('<%sGammaValue>%s</%sGammaValue>%s' % (
+            namespace_, self.gds_format_double(self.GammaValue, input_name='GammaValue'), namespace_, eol_))
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5367,8 +6898,10 @@ class ContrastEnhancement(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Normalize':
             obj_ = Normalize.factory()
@@ -5388,14 +6921,18 @@ class ContrastEnhancement(GeneratedsSuper):
                 raise_parse_error(child_, 'requires float or double: %s' % exp)
             fval_ = self.gds_validate_float(fval_, node, 'GammaValue')
             self.GammaValue = fval_
+
+
 # end class ContrastEnhancement
 
 
 class Normalize(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self):
         self.original_tagname_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5406,7 +6943,9 @@ class Normalize(GeneratedsSuper):
             return Normalize.subclass(*args_, **kwargs_)
         else:
             return Normalize(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def hasContent_(self):
         if (
 
@@ -5414,7 +6953,9 @@ class Normalize(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Normalize', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Normalize',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Normalize')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5425,19 +6966,24 @@ class Normalize(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Normalize')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Normalize', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Normalize',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Normalize'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Normalize', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Normalize', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5445,18 +6991,24 @@ class Normalize(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class Normalize
 
 
 class Histogram(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self):
         self.original_tagname_ = None
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5467,7 +7019,9 @@ class Histogram(GeneratedsSuper):
             return Histogram.subclass(*args_, **kwargs_)
         else:
             return Histogram(*args_, **kwargs_)
+
     factory = staticmethod(factory)
+
     def hasContent_(self):
         if (
 
@@ -5475,7 +7029,9 @@ class Histogram(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='Histogram', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='Histogram',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('Histogram')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5486,19 +7042,24 @@ class Histogram(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='Histogram')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Histogram', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='Histogram',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='Histogram'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='Histogram', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='Histogram', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5506,10 +7067,14 @@ class Histogram(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class Histogram
 
 
@@ -5519,10 +7084,12 @@ class ShadedRelief(GeneratedsSuper):
     dimensional effect and to make elevation changes more visible. """
     subclass = None
     superclass = None
+
     def __init__(self, BrightnessOnly=None, ReliefFactor=None):
         self.original_tagname_ = None
         self.BrightnessOnly = BrightnessOnly
         self.ReliefFactor = ReliefFactor
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5533,20 +7100,32 @@ class ShadedRelief(GeneratedsSuper):
             return ShadedRelief.subclass(*args_, **kwargs_)
         else:
             return ShadedRelief(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_BrightnessOnly(self): return self.BrightnessOnly
-    def set_BrightnessOnly(self, BrightnessOnly): self.BrightnessOnly = BrightnessOnly
-    def get_ReliefFactor(self): return self.ReliefFactor
-    def set_ReliefFactor(self, ReliefFactor): self.ReliefFactor = ReliefFactor
+
+    def get_BrightnessOnly(self):
+        return self.BrightnessOnly
+
+    def set_BrightnessOnly(self, BrightnessOnly):
+        self.BrightnessOnly = BrightnessOnly
+
+    def get_ReliefFactor(self):
+        return self.ReliefFactor
+
+    def set_ReliefFactor(self, ReliefFactor):
+        self.ReliefFactor = ReliefFactor
+
     def hasContent_(self):
         if (
-            self.BrightnessOnly is not None or
-            self.ReliefFactor is not None
+                        self.BrightnessOnly is not None or
+                        self.ReliefFactor is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ShadedRelief', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ShadedRelief',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ShadedRelief')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5557,29 +7136,38 @@ class ShadedRelief(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ShadedRelief')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ShadedRelief', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ShadedRelief',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ShadedRelief'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ShadedRelief', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ShadedRelief', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.BrightnessOnly is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sBrightnessOnly>%s</%sBrightnessOnly>%s' % (namespace_, self.gds_format_boolean(self.BrightnessOnly, input_name='BrightnessOnly'), namespace_, eol_))
+            outfile.write('<%sBrightnessOnly>%s</%sBrightnessOnly>%s' % (
+            namespace_, self.gds_format_boolean(self.BrightnessOnly, input_name='BrightnessOnly'), namespace_,
+            eol_))
         if self.ReliefFactor is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sReliefFactor>%s</%sReliefFactor>%s' % (namespace_, self.gds_format_double(self.ReliefFactor, input_name='ReliefFactor'), namespace_, eol_))
+            outfile.write('<%sReliefFactor>%s</%sReliefFactor>%s' % (
+            namespace_, self.gds_format_double(self.ReliefFactor, input_name='ReliefFactor'), namespace_,
+            eol_))
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5587,8 +7175,10 @@ class ShadedRelief(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'BrightnessOnly':
             sval_ = child_.text
@@ -5608,6 +7198,8 @@ class ShadedRelief(GeneratedsSuper):
                 raise_parse_error(child_, 'requires float or double: %s' % exp)
             fval_ = self.gds_validate_float(fval_, node, 'ReliefFactor')
             self.ReliefFactor = fval_
+
+
 # end class ShadedRelief
 
 
@@ -5617,10 +7209,12 @@ class ImageOutline(GeneratedsSuper):
     outlined to make the individual-image locations visible. """
     subclass = None
     superclass = None
+
     def __init__(self, LineSymbolizer=None, PolygonSymbolizer=None):
         self.original_tagname_ = None
         self.LineSymbolizer = LineSymbolizer
         self.PolygonSymbolizer = PolygonSymbolizer
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5631,20 +7225,32 @@ class ImageOutline(GeneratedsSuper):
             return ImageOutline.subclass(*args_, **kwargs_)
         else:
             return ImageOutline(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_LineSymbolizer(self): return self.LineSymbolizer
-    def set_LineSymbolizer(self, LineSymbolizer): self.LineSymbolizer = LineSymbolizer
-    def get_PolygonSymbolizer(self): return self.PolygonSymbolizer
-    def set_PolygonSymbolizer(self, PolygonSymbolizer): self.PolygonSymbolizer = PolygonSymbolizer
+
+    def get_LineSymbolizer(self):
+        return self.LineSymbolizer
+
+    def set_LineSymbolizer(self, LineSymbolizer):
+        self.LineSymbolizer = LineSymbolizer
+
+    def get_PolygonSymbolizer(self):
+        return self.PolygonSymbolizer
+
+    def set_PolygonSymbolizer(self, PolygonSymbolizer):
+        self.PolygonSymbolizer = PolygonSymbolizer
+
     def hasContent_(self):
         if (
-            self.LineSymbolizer is not None or
-            self.PolygonSymbolizer is not None
+                        self.LineSymbolizer is not None or
+                        self.PolygonSymbolizer is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ImageOutline', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ImageOutline',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ImageOutline')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5655,27 +7261,34 @@ class ImageOutline(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ImageOutline')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ImageOutline', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ImageOutline',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ImageOutline'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ImageOutline', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ImageOutline', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.LineSymbolizer is not None:
-            self.LineSymbolizer.export(outfile, level, namespace_='sld:', name_='LineSymbolizer', pretty_print=pretty_print)
+            self.LineSymbolizer.export(outfile, level, namespace_='sld:', name_='LineSymbolizer',
+                                       pretty_print=pretty_print)
         if self.PolygonSymbolizer is not None:
-            self.PolygonSymbolizer.export(outfile, level, namespace_='sld:', name_='PolygonSymbolizer', pretty_print=pretty_print)
+            self.PolygonSymbolizer.export(outfile, level, namespace_='sld:', name_='PolygonSymbolizer',
+                                          pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5683,8 +7296,10 @@ class ImageOutline(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'LineSymbolizer':
             obj_ = LineSymbolizer.factory()
@@ -5696,6 +7311,8 @@ class ImageOutline(GeneratedsSuper):
             obj_.build(child_)
             self.PolygonSymbolizer = obj_
             obj_.original_tagname_ = 'PolygonSymbolizer'
+
+
 # end class ImageOutline
 
 
@@ -5704,7 +7321,9 @@ class simple(GeneratedsSuper):
     simple links."""
     subclass = None
     superclass = None
-    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, anytypeobjs_=None, valueOf_=None, mixedclass_=None, content_=None):
+
+    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None,
+                 anytypeobjs_=None, valueOf_=None, mixedclass_=None, content_=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.href = _cast(None, href)
@@ -5727,6 +7346,7 @@ class simple(GeneratedsSuper):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5737,36 +7357,80 @@ class simple(GeneratedsSuper):
             return simple.subclass(*args_, **kwargs_)
         else:
             return simple(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_anytypeobjs_(self): return self.anytypeobjs_
-    def set_anytypeobjs_(self, anytypeobjs_): self.anytypeobjs_ = anytypeobjs_
-    def add_anytypeobjs_(self, value): self.anytypeobjs_.append(value)
-    def insert_anytypeobjs_(self, index, value): self._anytypeobjs_[index] = value
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_anytypeobjs_(self):
+        return self.anytypeobjs_
+
+    def set_anytypeobjs_(self, anytypeobjs_):
+        self.anytypeobjs_ = anytypeobjs_
+
+    def add_anytypeobjs_(self, value):
+        self.anytypeobjs_.append(value)
+
+    def insert_anytypeobjs_(self, index, value):
+        self._anytypeobjs_[index] = value
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            self.anytypeobjs_ or
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_
+                    self.anytypeobjs_ or
+                    1 if type(self.valueOf_) in [int, float] else self.valueOf_
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='simple', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='simple',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('simple')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5777,54 +7441,60 @@ class simple(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='simple')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='simple', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='simple',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='simple'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='simple', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='simple', fromsubclass_=False,
+                       pretty_print=True):
         if not fromsubclass_:
             for item_ in self.content_:
                 item_.export(outfile, level, item_.name, namespace_, pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -5854,21 +7524,24 @@ class simple(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == '':
             obj_ = __ANY__.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, '', obj_)
+                                    MixedContainer.TypeNone, '', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_'):
-              self.add_(obj_.value)
+                self.add_(obj_.value)
             elif hasattr(self, 'set_'):
-              self.set_(obj_.value)
+                self.set_(obj_.value)
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
+
+
 # end class simple
 
 
@@ -5880,7 +7553,9 @@ class extended(GeneratedsSuper):
     the right things will happen."""
     subclass = None
     superclass = None
-    def __init__(self, type_=None, role=None, title_attr=None, title=None, resource=None, locator=None, arc=None):
+
+    def __init__(self, type_=None, role=None, title_attr=None, title=None, resource=None, locator=None,
+                 arc=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.role = _cast(None, role)
@@ -5901,6 +7576,7 @@ class extended(GeneratedsSuper):
             self.arc = []
         else:
             self.arc = arc
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -5911,44 +7587,101 @@ class extended(GeneratedsSuper):
             return extended.subclass(*args_, **kwargs_)
         else:
             return extended(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def add_title(self, value): self.title.append(value)
-    def insert_title_at(self, index, value): self.title.insert(index, value)
-    def replace_title_at(self, index, value): self.title[index] = value
-    def get_resource(self): return self.resource
-    def set_resource(self, resource): self.resource = resource
-    def add_resource(self, value): self.resource.append(value)
-    def insert_resource_at(self, index, value): self.resource.insert(index, value)
-    def replace_resource_at(self, index, value): self.resource[index] = value
-    def get_locator(self): return self.locator
-    def set_locator(self, locator): self.locator = locator
-    def add_locator(self, value): self.locator.append(value)
-    def insert_locator_at(self, index, value): self.locator.insert(index, value)
-    def replace_locator_at(self, index, value): self.locator[index] = value
-    def get_arc(self): return self.arc
-    def set_arc(self, arc): self.arc = arc
-    def add_arc(self, value): self.arc.append(value)
-    def insert_arc_at(self, index, value): self.arc.insert(index, value)
-    def replace_arc_at(self, index, value): self.arc[index] = value
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_title_attr(self): return self.title_attr
-    def set_title_attr(self, title_attr): self.title_attr = title_attr
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def add_title(self, value):
+        self.title.append(value)
+
+    def insert_title_at(self, index, value):
+        self.title.insert(index, value)
+
+    def replace_title_at(self, index, value):
+        self.title[index] = value
+
+    def get_resource(self):
+        return self.resource
+
+    def set_resource(self, resource):
+        self.resource = resource
+
+    def add_resource(self, value):
+        self.resource.append(value)
+
+    def insert_resource_at(self, index, value):
+        self.resource.insert(index, value)
+
+    def replace_resource_at(self, index, value):
+        self.resource[index] = value
+
+    def get_locator(self):
+        return self.locator
+
+    def set_locator(self, locator):
+        self.locator = locator
+
+    def add_locator(self, value):
+        self.locator.append(value)
+
+    def insert_locator_at(self, index, value):
+        self.locator.insert(index, value)
+
+    def replace_locator_at(self, index, value):
+        self.locator[index] = value
+
+    def get_arc(self):
+        return self.arc
+
+    def set_arc(self, arc):
+        self.arc = arc
+
+    def add_arc(self, value):
+        self.arc.append(value)
+
+    def insert_arc_at(self, index, value):
+        self.arc.insert(index, value)
+
+    def replace_arc_at(self, index, value):
+        self.arc[index] = value
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_title_attr(self):
+        return self.title_attr
+
+    def set_title_attr(self, title_attr):
+        self.title_attr = title_attr
+
     def hasContent_(self):
         if (
-            self.title or
-            self.resource or
-            self.locator or
-            self.arc
+                            self.title or
+                            self.resource or
+                        self.locator or
+                    self.arc
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='extended', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='extended',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('extended')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -5959,27 +7692,31 @@ class extended(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='extended')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='extended', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='extended',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='extended'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.title_attr is not None and 'title_attr' not in already_processed:
             already_processed.add('title_attr')
-            outfile.write(' title=%s' % (quote_attrib(self.title_attr), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='extended', fromsubclass_=False, pretty_print=True):
+            outfile.write(' title=%s' % (quote_attrib(self.title_attr),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='extended', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -5992,6 +7729,7 @@ class extended(GeneratedsSuper):
             locator_.export(outfile, level, namespace_, name_='locator', pretty_print=pretty_print)
         for arc_ in self.arc:
             arc_.export(outfile, level, namespace_, name_='arc', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -5999,6 +7737,7 @@ class extended(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -6012,6 +7751,7 @@ class extended(GeneratedsSuper):
         if value is not None and 'title_attr' not in already_processed:
             already_processed.add('title_attr')
             self.title_attr = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'title':
             type_name_ = child_.attrib.get(
@@ -6089,13 +7829,17 @@ class extended(GeneratedsSuper):
                     'Class not implemented for <arc> element')
             self.arc.append(obj_)
             obj_.original_tagname_ = 'arc'
+
+
 # end class extended
 
 
 class titleEltType(GeneratedsSuper):
     subclass = None
     superclass = None
-    def __init__(self, type_=None, lang=None, anytypeobjs_=None, valueOf_=None, mixedclass_=None, content_=None):
+
+    def __init__(self, type_=None, lang=None, anytypeobjs_=None, valueOf_=None, mixedclass_=None,
+                 content_=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.lang = _cast(None, lang)
@@ -6113,6 +7857,7 @@ class titleEltType(GeneratedsSuper):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6123,26 +7868,50 @@ class titleEltType(GeneratedsSuper):
             return titleEltType.subclass(*args_, **kwargs_)
         else:
             return titleEltType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_anytypeobjs_(self): return self.anytypeobjs_
-    def set_anytypeobjs_(self, anytypeobjs_): self.anytypeobjs_ = anytypeobjs_
-    def add_anytypeobjs_(self, value): self.anytypeobjs_.append(value)
-    def insert_anytypeobjs_(self, index, value): self._anytypeobjs_[index] = value
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_lang(self): return self.lang
-    def set_lang(self, lang): self.lang = lang
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_anytypeobjs_(self):
+        return self.anytypeobjs_
+
+    def set_anytypeobjs_(self, anytypeobjs_):
+        self.anytypeobjs_ = anytypeobjs_
+
+    def add_anytypeobjs_(self, value):
+        self.anytypeobjs_.append(value)
+
+    def insert_anytypeobjs_(self, index, value):
+        self._anytypeobjs_[index] = value
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_lang(self):
+        return self.lang
+
+    def set_lang(self, lang):
+        self.lang = lang
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            self.anytypeobjs_ or
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_
+                    self.anytypeobjs_ or
+                    1 if type(self.valueOf_) in [int, float] else self.valueOf_
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='titleEltType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='titleEltType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('titleEltType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -6153,39 +7922,46 @@ class titleEltType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='titleEltType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='titleEltType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='titleEltType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='titleEltType'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.lang is not None and 'lang' not in already_processed:
             already_processed.add('lang')
-            outfile.write(' lang=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.lang), input_name='lang')), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='titleEltType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' lang=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.lang), input_name='lang')),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='titleEltType', fromsubclass_=False,
+                       pretty_print=True):
         if not fromsubclass_:
             for item_ in self.content_:
                 item_.export(outfile, level, item_.name, namespace_, pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -6195,28 +7971,33 @@ class titleEltType(GeneratedsSuper):
         if value is not None and 'lang' not in already_processed:
             already_processed.add('lang')
             self.lang = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == '':
             obj_ = __ANY__.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, '', obj_)
+                                    MixedContainer.TypeNone, '', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_'):
-              self.add_(obj_.value)
+                self.add_(obj_.value)
             elif hasattr(self, 'set_'):
-              self.set_(obj_.value)
+                self.set_(obj_.value)
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
+
+
 # end class titleEltType
 
 
 class resourceType(GeneratedsSuper):
     subclass = None
     superclass = None
-    def __init__(self, type_=None, role=None, title=None, label=None, anytypeobjs_=None, valueOf_=None, mixedclass_=None, content_=None):
+
+    def __init__(self, type_=None, role=None, title=None, label=None, anytypeobjs_=None, valueOf_=None,
+                 mixedclass_=None, content_=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.role = _cast(None, role)
@@ -6236,6 +8017,7 @@ class resourceType(GeneratedsSuper):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6246,30 +8028,62 @@ class resourceType(GeneratedsSuper):
             return resourceType.subclass(*args_, **kwargs_)
         else:
             return resourceType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_anytypeobjs_(self): return self.anytypeobjs_
-    def set_anytypeobjs_(self, anytypeobjs_): self.anytypeobjs_ = anytypeobjs_
-    def add_anytypeobjs_(self, value): self.anytypeobjs_.append(value)
-    def insert_anytypeobjs_(self, index, value): self._anytypeobjs_[index] = value
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_label(self): return self.label
-    def set_label(self, label): self.label = label
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_anytypeobjs_(self):
+        return self.anytypeobjs_
+
+    def set_anytypeobjs_(self, anytypeobjs_):
+        self.anytypeobjs_ = anytypeobjs_
+
+    def add_anytypeobjs_(self, value):
+        self.anytypeobjs_.append(value)
+
+    def insert_anytypeobjs_(self, index, value):
+        self._anytypeobjs_[index] = value
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_label(self):
+        return self.label
+
+    def set_label(self, label):
+        self.label = label
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            self.anytypeobjs_ or
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_
+                    self.anytypeobjs_ or
+                    1 if type(self.valueOf_) in [int, float] else self.valueOf_
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='resourceType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='resourceType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('resourceType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -6280,45 +8094,51 @@ class resourceType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='resourceType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='resourceType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='resourceType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='resourceType'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.label is not None and 'label' not in already_processed:
             already_processed.add('label')
-            outfile.write(' label=%s' % (quote_attrib(self.label), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='resourceType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' label=%s' % (quote_attrib(self.label),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='resourceType', fromsubclass_=False,
+                       pretty_print=True):
         if not fromsubclass_:
             for item_ in self.content_:
                 item_.export(outfile, level, item_.name, namespace_, pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -6336,27 +8156,31 @@ class resourceType(GeneratedsSuper):
         if value is not None and 'label' not in already_processed:
             already_processed.add('label')
             self.label = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == '':
             obj_ = __ANY__.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, '', obj_)
+                                    MixedContainer.TypeNone, '', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_'):
-              self.add_(obj_.value)
+                self.add_(obj_.value)
             elif hasattr(self, 'set_'):
-              self.set_(obj_.value)
+                self.set_(obj_.value)
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
+
+
 # end class resourceType
 
 
 class locatorType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, type_=None, href=None, role=None, title_attr=None, label=None, title=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
@@ -6368,6 +8192,7 @@ class locatorType(GeneratedsSuper):
             self.title = []
         else:
             self.title = title
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6378,30 +8203,65 @@ class locatorType(GeneratedsSuper):
             return locatorType.subclass(*args_, **kwargs_)
         else:
             return locatorType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def add_title(self, value): self.title.append(value)
-    def insert_title_at(self, index, value): self.title.insert(index, value)
-    def replace_title_at(self, index, value): self.title[index] = value
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_title_attr(self): return self.title_attr
-    def set_title_attr(self, title_attr): self.title_attr = title_attr
-    def get_label(self): return self.label
-    def set_label(self, label): self.label = label
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def add_title(self, value):
+        self.title.append(value)
+
+    def insert_title_at(self, index, value):
+        self.title.insert(index, value)
+
+    def replace_title_at(self, index, value):
+        self.title[index] = value
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_title_attr(self):
+        return self.title_attr
+
+    def set_title_attr(self, title_attr):
+        self.title_attr = title_attr
+
+    def get_label(self):
+        return self.label
+
+    def set_label(self, label):
+        self.label = label
+
     def hasContent_(self):
         if (
-            self.title
+                self.title
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='locatorType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='locatorType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('locatorType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -6412,39 +8272,44 @@ class locatorType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='locatorType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='locatorType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='locatorType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='locatorType'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.title_attr is not None and 'title_attr' not in already_processed:
             already_processed.add('title_attr')
-            outfile.write(' title=%s' % (quote_attrib(self.title_attr), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title_attr),))
         if self.label is not None and 'label' not in already_processed:
             already_processed.add('label')
-            outfile.write(' label=%s' % (quote_attrib(self.label), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='locatorType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' label=%s' % (quote_attrib(self.label),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='locatorType', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for title_ in self.title:
             title_.export(outfile, level, namespace_, name_='title', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -6452,6 +8317,7 @@ class locatorType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -6473,6 +8339,7 @@ class locatorType(GeneratedsSuper):
         if value is not None and 'label' not in already_processed:
             already_processed.add('label')
             self.label = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'title':
             type_name_ = child_.attrib.get(
@@ -6493,13 +8360,17 @@ class locatorType(GeneratedsSuper):
                     'Class not implemented for <title> element')
             self.title.append(obj_)
             obj_.original_tagname_ = 'title'
+
+
 # end class locatorType
 
 
 class arcType(GeneratedsSuper):
     subclass = None
     superclass = None
-    def __init__(self, type_=None, arcrole=None, title_attr=None, show=None, actuate=None, from_=None, to=None, title=None):
+
+    def __init__(self, type_=None, arcrole=None, title_attr=None, show=None, actuate=None, from_=None,
+                 to=None, title=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.arcrole = _cast(None, arcrole)
@@ -6512,6 +8383,7 @@ class arcType(GeneratedsSuper):
             self.title = []
         else:
             self.title = title
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6522,34 +8394,77 @@ class arcType(GeneratedsSuper):
             return arcType.subclass(*args_, **kwargs_)
         else:
             return arcType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def add_title(self, value): self.title.append(value)
-    def insert_title_at(self, index, value): self.title.insert(index, value)
-    def replace_title_at(self, index, value): self.title[index] = value
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title_attr(self): return self.title_attr
-    def set_title_attr(self, title_attr): self.title_attr = title_attr
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
-    def get_from(self): return self.from_
-    def set_from(self, from_): self.from_ = from_
-    def get_to(self): return self.to
-    def set_to(self, to): self.to = to
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def add_title(self, value):
+        self.title.append(value)
+
+    def insert_title_at(self, index, value):
+        self.title.insert(index, value)
+
+    def replace_title_at(self, index, value):
+        self.title[index] = value
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title_attr(self):
+        return self.title_attr
+
+    def set_title_attr(self, title_attr):
+        self.title_attr = title_attr
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
+    def get_from(self):
+        return self.from_
+
+    def set_from(self, from_):
+        self.from_ = from_
+
+    def get_to(self):
+        return self.to
+
+    def set_to(self, to):
+        self.to = to
+
     def hasContent_(self):
         if (
-            self.title
+                self.title
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='arcType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='arcType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('arcType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -6560,45 +8475,50 @@ class arcType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='arcType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='arcType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='arcType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='arcType'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title_attr is not None and 'title_attr' not in already_processed:
             already_processed.add('title_attr')
-            outfile.write(' title=%s' % (quote_attrib(self.title_attr), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title_attr),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
         if self.from_ is not None and 'from_' not in already_processed:
             already_processed.add('from_')
-            outfile.write(' from=%s' % (quote_attrib(self.from_), ))
+            outfile.write(' from=%s' % (quote_attrib(self.from_),))
         if self.to is not None and 'to' not in already_processed:
             already_processed.add('to')
-            outfile.write(' to=%s' % (quote_attrib(self.to), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='arcType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' to=%s' % (quote_attrib(self.to),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='arcType', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for title_ in self.title:
             title_.export(outfile, level, namespace_, name_='title', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -6606,6 +8526,7 @@ class arcType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -6635,6 +8556,7 @@ class arcType(GeneratedsSuper):
         if value is not None and 'to' not in already_processed:
             already_processed.add('to')
             self.to = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'title':
             type_name_ = child_.attrib.get(
@@ -6655,15 +8577,19 @@ class arcType(GeneratedsSuper):
                     'Class not implemented for <title> element')
             self.title.append(obj_)
             obj_.original_tagname_ = 'title'
+
+
 # end class arcType
 
 
 class ComparisonOpsType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, extensiontype_=None):
         self.original_tagname_ = None
         self.extensiontype_ = extensiontype_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6674,9 +8600,15 @@ class ComparisonOpsType(GeneratedsSuper):
             return ComparisonOpsType.subclass(*args_, **kwargs_)
         else:
             return ComparisonOpsType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_extensiontype_(self): return self.extensiontype_
-    def set_extensiontype_(self, extensiontype_): self.extensiontype_ = extensiontype_
+
+    def get_extensiontype_(self):
+        return self.extensiontype_
+
+    def set_extensiontype_(self, extensiontype_):
+        self.extensiontype_ = extensiontype_
+
     def hasContent_(self):
         if (
 
@@ -6684,7 +8616,9 @@ class ComparisonOpsType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ComparisonOpsType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ComparisonOpsType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ComparisonOpsType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -6695,23 +8629,29 @@ class ComparisonOpsType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ComparisonOpsType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ComparisonOpsType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='ComparisonOpsType',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ComparisonOpsType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='ComparisonOpsType'):
         if self.extensiontype_ is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             outfile.write(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
             outfile.write(' xsi:type="%s"' % self.extensiontype_)
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ComparisonOpsType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ComparisonOpsType',
+                       fromsubclass_=False, pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -6719,22 +8659,28 @@ class ComparisonOpsType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('xsi:type', node)
         if value is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             self.extensiontype_ = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class ComparisonOpsType
 
 
 class SpatialOpsType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, extensiontype_=None):
         self.original_tagname_ = None
         self.extensiontype_ = extensiontype_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6745,9 +8691,15 @@ class SpatialOpsType(GeneratedsSuper):
             return SpatialOpsType.subclass(*args_, **kwargs_)
         else:
             return SpatialOpsType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_extensiontype_(self): return self.extensiontype_
-    def set_extensiontype_(self, extensiontype_): self.extensiontype_ = extensiontype_
+
+    def get_extensiontype_(self):
+        return self.extensiontype_
+
+    def set_extensiontype_(self, extensiontype_):
+        self.extensiontype_ = extensiontype_
+
     def hasContent_(self):
         if (
 
@@ -6755,7 +8707,9 @@ class SpatialOpsType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='SpatialOpsType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='SpatialOpsType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('SpatialOpsType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -6766,23 +8720,28 @@ class SpatialOpsType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='SpatialOpsType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='SpatialOpsType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='SpatialOpsType',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='SpatialOpsType'):
         if self.extensiontype_ is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             outfile.write(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
             outfile.write(' xsi:type="%s"' % self.extensiontype_)
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='SpatialOpsType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='SpatialOpsType', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -6790,22 +8749,28 @@ class SpatialOpsType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('xsi:type', node)
         if value is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             self.extensiontype_ = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class SpatialOpsType
 
 
 class LogicOpsType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, extensiontype_=None):
         self.original_tagname_ = None
         self.extensiontype_ = extensiontype_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6816,9 +8781,15 @@ class LogicOpsType(GeneratedsSuper):
             return LogicOpsType.subclass(*args_, **kwargs_)
         else:
             return LogicOpsType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_extensiontype_(self): return self.extensiontype_
-    def set_extensiontype_(self, extensiontype_): self.extensiontype_ = extensiontype_
+
+    def get_extensiontype_(self):
+        return self.extensiontype_
+
+    def set_extensiontype_(self, extensiontype_):
+        self.extensiontype_ = extensiontype_
+
     def hasContent_(self):
         if (
 
@@ -6826,7 +8797,9 @@ class LogicOpsType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LogicOpsType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LogicOpsType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LogicOpsType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -6837,23 +8810,28 @@ class LogicOpsType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LogicOpsType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LogicOpsType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LogicOpsType',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LogicOpsType'):
         if self.extensiontype_ is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             outfile.write(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
             outfile.write(' xsi:type="%s"' % self.extensiontype_)
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LogicOpsType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LogicOpsType', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -6861,19 +8839,24 @@ class LogicOpsType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('xsi:type', node)
         if value is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             self.extensiontype_ = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class LogicOpsType
 
 
 class FilterType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, spatialOps=None, comparisonOps=None, logicOps=None, FeatureId=None):
         self.original_tagname_ = None
         self.spatialOps = spatialOps
@@ -6883,6 +8866,7 @@ class FilterType(GeneratedsSuper):
             self.FeatureId = []
         else:
             self.FeatureId = FeatureId
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -6893,29 +8877,56 @@ class FilterType(GeneratedsSuper):
             return FilterType.subclass(*args_, **kwargs_)
         else:
             return FilterType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_spatialOps(self): return self.spatialOps
-    def set_spatialOps(self, spatialOps): self.spatialOps = spatialOps
-    def get_comparisonOps(self): return self.comparisonOps
-    def set_comparisonOps(self, comparisonOps): self.comparisonOps = comparisonOps
-    def get_logicOps(self): return self.logicOps
-    def set_logicOps(self, logicOps): self.logicOps = logicOps
-    def get_FeatureId(self): return self.FeatureId
-    def set_FeatureId(self, FeatureId): self.FeatureId = FeatureId
-    def add_FeatureId(self, value): self.FeatureId.append(value)
-    def insert_FeatureId_at(self, index, value): self.FeatureId.insert(index, value)
-    def replace_FeatureId_at(self, index, value): self.FeatureId[index] = value
+
+    def get_spatialOps(self):
+        return self.spatialOps
+
+    def set_spatialOps(self, spatialOps):
+        self.spatialOps = spatialOps
+
+    def get_comparisonOps(self):
+        return self.comparisonOps
+
+    def set_comparisonOps(self, comparisonOps):
+        self.comparisonOps = comparisonOps
+
+    def get_logicOps(self):
+        return self.logicOps
+
+    def set_logicOps(self, logicOps):
+        self.logicOps = logicOps
+
+    def get_FeatureId(self):
+        return self.FeatureId
+
+    def set_FeatureId(self, FeatureId):
+        self.FeatureId = FeatureId
+
+    def add_FeatureId(self, value):
+        self.FeatureId.append(value)
+
+    def insert_FeatureId_at(self, index, value):
+        self.FeatureId.insert(index, value)
+
+    def replace_FeatureId_at(self, index, value):
+        self.FeatureId[index] = value
+
     def hasContent_(self):
         if (
-            self.spatialOps is not None or
-            self.comparisonOps is not None or
-            self.logicOps is not None or
-            self.FeatureId
+                                self.spatialOps is not None or
+                                self.comparisonOps is not None or
+                            self.logicOps is not None or
+                    self.FeatureId
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='FilterType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='FilterType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('FilterType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -6926,19 +8937,23 @@ class FilterType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='FilterType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FilterType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FilterType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='FilterType'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='FilterType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='FilterType', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -6946,11 +8961,13 @@ class FilterType(GeneratedsSuper):
         if self.spatialOps is not None:
             self.spatialOps.export(outfile, level, namespace_, name_='spatialOps', pretty_print=pretty_print)
         if self.comparisonOps is not None:
-            self.comparisonOps.export(outfile, level, namespace_, name_='comparisonOps', pretty_print=pretty_print)
+            self.comparisonOps.export(outfile, level, namespace_, name_='comparisonOps',
+                                      pretty_print=pretty_print)
         if self.logicOps is not None:
             self.logicOps.export(outfile, level, namespace_, name_='logicOps', pretty_print=pretty_print)
         for FeatureId_ in self.FeatureId:
             FeatureId_.export(outfile, level, namespace_='ogc:', name_='FeatureId', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -6958,8 +8975,10 @@ class FilterType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'spatialOps':
             type_name_ = child_.attrib.get(
@@ -7138,15 +9157,19 @@ class FilterType(GeneratedsSuper):
             obj_.build(child_)
             self.FeatureId.append(obj_)
             obj_.original_tagname_ = 'FeatureId'
+
+
 # end class FilterType
 
 
 class FeatureIdType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, fid=None):
         self.original_tagname_ = None
         self.fid = _cast(None, fid)
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -7157,9 +9180,15 @@ class FeatureIdType(GeneratedsSuper):
             return FeatureIdType.subclass(*args_, **kwargs_)
         else:
             return FeatureIdType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_fid(self): return self.fid
-    def set_fid(self, fid): self.fid = fid
+
+    def get_fid(self):
+        return self.fid
+
+    def set_fid(self, fid):
+        self.fid = fid
+
     def hasContent_(self):
         if (
 
@@ -7167,7 +9196,9 @@ class FeatureIdType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='FeatureIdType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='FeatureIdType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('FeatureIdType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -7178,21 +9209,27 @@ class FeatureIdType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='FeatureIdType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FeatureIdType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FeatureIdType',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='FeatureIdType'):
         if self.fid is not None and 'fid' not in already_processed:
             already_processed.add('fid')
-            outfile.write(' fid=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.fid), input_name='fid')), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='FeatureIdType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' fid=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.fid), input_name='fid')),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='FeatureIdType', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -7200,19 +9237,24 @@ class FeatureIdType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('fid', node)
         if value is not None and 'fid' not in already_processed:
             already_processed.add('fid')
             self.fid = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class FeatureIdType
 
 
 class BinaryComparisonOpType(ComparisonOpsType):
     subclass = None
     superclass = ComparisonOpsType
+
     def __init__(self, expression=None):
         self.original_tagname_ = None
         super(BinaryComparisonOpType, self).__init__()
@@ -7220,6 +9262,7 @@ class BinaryComparisonOpType(ComparisonOpsType):
             self.expression = []
         else:
             self.expression = expression
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -7230,21 +9273,36 @@ class BinaryComparisonOpType(ComparisonOpsType):
             return BinaryComparisonOpType.subclass(*args_, **kwargs_)
         else:
             return BinaryComparisonOpType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_expression(self): return self.expression
-    def set_expression(self, expression): self.expression = expression
-    def add_expression(self, value): self.expression.append(value)
-    def insert_expression_at(self, index, value): self.expression.insert(index, value)
-    def replace_expression_at(self, index, value): self.expression[index] = value
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
+
+    def add_expression(self, value):
+        self.expression.append(value)
+
+    def insert_expression_at(self, index, value):
+        self.expression.insert(index, value)
+
+    def replace_expression_at(self, index, value):
+        self.expression[index] = value
+
     def hasContent_(self):
         if (
-            self.expression or
-            super(BinaryComparisonOpType, self).hasContent_()
+                    self.expression or
+                    super(BinaryComparisonOpType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='BinaryComparisonOpType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='BinaryComparisonOpType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('BinaryComparisonOpType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -7255,26 +9313,34 @@ class BinaryComparisonOpType(ComparisonOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='BinaryComparisonOpType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BinaryComparisonOpType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BinaryComparisonOpType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='BinaryComparisonOpType'):
-        super(BinaryComparisonOpType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='BinaryComparisonOpType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='BinaryComparisonOpType', fromsubclass_=False, pretty_print=True):
-        super(BinaryComparisonOpType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='BinaryComparisonOpType'):
+        super(BinaryComparisonOpType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                             name_='BinaryComparisonOpType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='BinaryComparisonOpType',
+                       fromsubclass_=False, pretty_print=True):
+        super(BinaryComparisonOpType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                           pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for expression_ in self.expression:
             expression_.export(outfile, level, namespace_, name_='expression', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -7282,8 +9348,10 @@ class BinaryComparisonOpType(ComparisonOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(BinaryComparisonOpType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'expression':
             type_name_ = child_.attrib.get(
@@ -7340,12 +9408,15 @@ class BinaryComparisonOpType(ComparisonOpsType):
             self.expression.append(obj_)
             obj_.original_tagname_ = 'Literal'
         super(BinaryComparisonOpType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class BinaryComparisonOpType
 
 
 class PropertyIsLikeType(ComparisonOpsType):
     subclass = None
     superclass = ComparisonOpsType
+
     def __init__(self, wildCard=None, singleChar=None, escape=None, PropertyName=None, Literal=None):
         self.original_tagname_ = None
         super(PropertyIsLikeType, self).__init__()
@@ -7354,6 +9425,7 @@ class PropertyIsLikeType(ComparisonOpsType):
         self.escape = _cast(None, escape)
         self.PropertyName = PropertyName
         self.Literal = Literal
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -7364,27 +9436,52 @@ class PropertyIsLikeType(ComparisonOpsType):
             return PropertyIsLikeType.subclass(*args_, **kwargs_)
         else:
             return PropertyIsLikeType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_PropertyName(self): return self.PropertyName
-    def set_PropertyName(self, PropertyName): self.PropertyName = PropertyName
-    def get_Literal(self): return self.Literal
-    def set_Literal(self, Literal): self.Literal = Literal
-    def get_wildCard(self): return self.wildCard
-    def set_wildCard(self, wildCard): self.wildCard = wildCard
-    def get_singleChar(self): return self.singleChar
-    def set_singleChar(self, singleChar): self.singleChar = singleChar
-    def get_escape(self): return self.escape
-    def set_escape(self, escape): self.escape = escape
+
+    def get_PropertyName(self):
+        return self.PropertyName
+
+    def set_PropertyName(self, PropertyName):
+        self.PropertyName = PropertyName
+
+    def get_Literal(self):
+        return self.Literal
+
+    def set_Literal(self, Literal):
+        self.Literal = Literal
+
+    def get_wildCard(self):
+        return self.wildCard
+
+    def set_wildCard(self, wildCard):
+        self.wildCard = wildCard
+
+    def get_singleChar(self):
+        return self.singleChar
+
+    def set_singleChar(self, singleChar):
+        self.singleChar = singleChar
+
+    def get_escape(self):
+        return self.escape
+
+    def set_escape(self, escape):
+        self.escape = escape
+
     def hasContent_(self):
         if (
-            self.PropertyName is not None or
-            self.Literal is not None or
-            super(PropertyIsLikeType, self).hasContent_()
+                            self.PropertyName is not None or
+                            self.Literal is not None or
+                    super(PropertyIsLikeType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PropertyIsLikeType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PropertyIsLikeType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PropertyIsLikeType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -7395,37 +9492,49 @@ class PropertyIsLikeType(ComparisonOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PropertyIsLikeType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PropertyIsLikeType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PropertyIsLikeType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PropertyIsLikeType'):
-        super(PropertyIsLikeType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='PropertyIsLikeType')
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='PropertyIsLikeType'):
+        super(PropertyIsLikeType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                         name_='PropertyIsLikeType')
         if self.wildCard is not None and 'wildCard' not in already_processed:
             already_processed.add('wildCard')
-            outfile.write(' wildCard=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.wildCard), input_name='wildCard')), ))
+            outfile.write(' wildCard=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.wildCard), input_name='wildCard')),))
         if self.singleChar is not None and 'singleChar' not in already_processed:
             already_processed.add('singleChar')
-            outfile.write(' singleChar=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.singleChar), input_name='singleChar')), ))
+            outfile.write(' singleChar=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.singleChar), input_name='singleChar')),))
         if self.escape is not None and 'escape' not in already_processed:
             already_processed.add('escape')
-            outfile.write(' escape=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.escape), input_name='escape')), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PropertyIsLikeType', fromsubclass_=False, pretty_print=True):
-        super(PropertyIsLikeType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write(' escape=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.escape), input_name='escape')),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PropertyIsLikeType',
+                       fromsubclass_=False, pretty_print=True):
+        super(PropertyIsLikeType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                       pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.PropertyName is not None:
-            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName', pretty_print=pretty_print)
+            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName',
+                                     pretty_print=pretty_print)
         if self.Literal is not None:
             self.Literal.export(outfile, level, namespace_='ogc:', name_='Literal', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -7433,6 +9542,7 @@ class PropertyIsLikeType(ComparisonOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('wildCard', node)
         if value is not None and 'wildCard' not in already_processed:
@@ -7447,6 +9557,7 @@ class PropertyIsLikeType(ComparisonOpsType):
             already_processed.add('escape')
             self.escape = value
         super(PropertyIsLikeType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
@@ -7459,17 +9570,21 @@ class PropertyIsLikeType(ComparisonOpsType):
             self.Literal = obj_
             obj_.original_tagname_ = 'Literal'
         super(PropertyIsLikeType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class PropertyIsLikeType
 
 
 class PropertyIsNullType(ComparisonOpsType):
     subclass = None
     superclass = ComparisonOpsType
+
     def __init__(self, PropertyName=None, Literal=None):
         self.original_tagname_ = None
         super(PropertyIsNullType, self).__init__()
         self.PropertyName = PropertyName
         self.Literal = Literal
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -7480,21 +9595,34 @@ class PropertyIsNullType(ComparisonOpsType):
             return PropertyIsNullType.subclass(*args_, **kwargs_)
         else:
             return PropertyIsNullType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_PropertyName(self): return self.PropertyName
-    def set_PropertyName(self, PropertyName): self.PropertyName = PropertyName
-    def get_Literal(self): return self.Literal
-    def set_Literal(self, Literal): self.Literal = Literal
+
+    def get_PropertyName(self):
+        return self.PropertyName
+
+    def set_PropertyName(self, PropertyName):
+        self.PropertyName = PropertyName
+
+    def get_Literal(self):
+        return self.Literal
+
+    def set_Literal(self, Literal):
+        self.Literal = Literal
+
     def hasContent_(self):
         if (
-            self.PropertyName is not None or
-            self.Literal is not None or
-            super(PropertyIsNullType, self).hasContent_()
+                            self.PropertyName is not None or
+                            self.Literal is not None or
+                    super(PropertyIsNullType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PropertyIsNullType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PropertyIsNullType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PropertyIsNullType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -7505,28 +9633,37 @@ class PropertyIsNullType(ComparisonOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PropertyIsNullType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PropertyIsNullType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PropertyIsNullType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PropertyIsNullType'):
-        super(PropertyIsNullType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='PropertyIsNullType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PropertyIsNullType', fromsubclass_=False, pretty_print=True):
-        super(PropertyIsNullType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='PropertyIsNullType'):
+        super(PropertyIsNullType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                         name_='PropertyIsNullType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PropertyIsNullType',
+                       fromsubclass_=False, pretty_print=True):
+        super(PropertyIsNullType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                       pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.PropertyName is not None:
-            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName', pretty_print=pretty_print)
+            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName',
+                                     pretty_print=pretty_print)
         if self.Literal is not None:
             self.Literal.export(outfile, level, namespace_='ogc:', name_='Literal', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -7534,8 +9671,10 @@ class PropertyIsNullType(ComparisonOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(PropertyIsNullType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
@@ -7548,18 +9687,22 @@ class PropertyIsNullType(ComparisonOpsType):
             self.Literal = obj_
             obj_.original_tagname_ = 'Literal'
         super(PropertyIsNullType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class PropertyIsNullType
 
 
 class PropertyIsBetweenType(ComparisonOpsType):
     subclass = None
     superclass = ComparisonOpsType
+
     def __init__(self, expression=None, LowerBoundary=None, UpperBoundary=None):
         self.original_tagname_ = None
         super(PropertyIsBetweenType, self).__init__()
         self.expression = expression
         self.LowerBoundary = LowerBoundary
         self.UpperBoundary = UpperBoundary
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -7570,24 +9713,41 @@ class PropertyIsBetweenType(ComparisonOpsType):
             return PropertyIsBetweenType.subclass(*args_, **kwargs_)
         else:
             return PropertyIsBetweenType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_expression(self): return self.expression
-    def set_expression(self, expression): self.expression = expression
-    def get_LowerBoundary(self): return self.LowerBoundary
-    def set_LowerBoundary(self, LowerBoundary): self.LowerBoundary = LowerBoundary
-    def get_UpperBoundary(self): return self.UpperBoundary
-    def set_UpperBoundary(self, UpperBoundary): self.UpperBoundary = UpperBoundary
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
+
+    def get_LowerBoundary(self):
+        return self.LowerBoundary
+
+    def set_LowerBoundary(self, LowerBoundary):
+        self.LowerBoundary = LowerBoundary
+
+    def get_UpperBoundary(self):
+        return self.UpperBoundary
+
+    def set_UpperBoundary(self, UpperBoundary):
+        self.UpperBoundary = UpperBoundary
+
     def hasContent_(self):
         if (
-            self.expression is not None or
-            self.LowerBoundary is not None or
-            self.UpperBoundary is not None or
-            super(PropertyIsBetweenType, self).hasContent_()
+                                self.expression is not None or
+                                self.LowerBoundary is not None or
+                            self.UpperBoundary is not None or
+                    super(PropertyIsBetweenType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PropertyIsBetweenType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PropertyIsBetweenType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PropertyIsBetweenType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -7598,20 +9758,27 @@ class PropertyIsBetweenType(ComparisonOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PropertyIsBetweenType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PropertyIsBetweenType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PropertyIsBetweenType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PropertyIsBetweenType'):
-        super(PropertyIsBetweenType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='PropertyIsBetweenType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PropertyIsBetweenType', fromsubclass_=False, pretty_print=True):
-        super(PropertyIsBetweenType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='PropertyIsBetweenType'):
+        super(PropertyIsBetweenType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                            name_='PropertyIsBetweenType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PropertyIsBetweenType',
+                       fromsubclass_=False, pretty_print=True):
+        super(PropertyIsBetweenType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                          pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
@@ -7619,9 +9786,12 @@ class PropertyIsBetweenType(ComparisonOpsType):
         if self.expression is not None:
             self.expression.export(outfile, level, namespace_, name_='expression', pretty_print=pretty_print)
         if self.LowerBoundary is not None:
-            self.LowerBoundary.export(outfile, level, namespace_, name_='LowerBoundary', pretty_print=pretty_print)
+            self.LowerBoundary.export(outfile, level, namespace_, name_='LowerBoundary',
+                                      pretty_print=pretty_print)
         if self.UpperBoundary is not None:
-            self.UpperBoundary.export(outfile, level, namespace_, name_='UpperBoundary', pretty_print=pretty_print)
+            self.UpperBoundary.export(outfile, level, namespace_, name_='UpperBoundary',
+                                      pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -7629,8 +9799,10 @@ class PropertyIsBetweenType(ComparisonOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(PropertyIsBetweenType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'expression':
             type_name_ = child_.attrib.get(
@@ -7697,15 +9869,19 @@ class PropertyIsBetweenType(ComparisonOpsType):
             self.UpperBoundary = obj_
             obj_.original_tagname_ = 'UpperBoundary'
         super(PropertyIsBetweenType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class PropertyIsBetweenType
 
 
 class LowerBoundaryType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, expression=None):
         self.original_tagname_ = None
         self.expression = expression
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -7716,17 +9892,26 @@ class LowerBoundaryType(GeneratedsSuper):
             return LowerBoundaryType.subclass(*args_, **kwargs_)
         else:
             return LowerBoundaryType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_expression(self): return self.expression
-    def set_expression(self, expression): self.expression = expression
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
+
     def hasContent_(self):
         if (
-            self.expression is not None
+                    self.expression is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LowerBoundaryType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LowerBoundaryType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LowerBoundaryType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -7737,25 +9922,31 @@ class LowerBoundaryType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LowerBoundaryType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LowerBoundaryType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LowerBoundaryType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LowerBoundaryType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='LowerBoundaryType'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LowerBoundaryType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LowerBoundaryType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.expression is not None:
             self.expression.export(outfile, level, namespace_, name_='expression', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -7763,8 +9954,10 @@ class LowerBoundaryType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'expression':
             type_name_ = child_.attrib.get(
@@ -7820,15 +10013,19 @@ class LowerBoundaryType(GeneratedsSuper):
             obj_.build(child_)
             self.expression = obj_
             obj_.original_tagname_ = 'Literal'
+
+
 # end class LowerBoundaryType
 
 
 class UpperBoundaryType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, expression=None):
         self.original_tagname_ = None
         self.expression = expression
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -7839,17 +10036,26 @@ class UpperBoundaryType(GeneratedsSuper):
             return UpperBoundaryType.subclass(*args_, **kwargs_)
         else:
             return UpperBoundaryType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_expression(self): return self.expression
-    def set_expression(self, expression): self.expression = expression
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
+
     def hasContent_(self):
         if (
-            self.expression is not None
+                    self.expression is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='UpperBoundaryType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='UpperBoundaryType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('UpperBoundaryType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -7860,25 +10066,31 @@ class UpperBoundaryType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='UpperBoundaryType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='UpperBoundaryType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='UpperBoundaryType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='UpperBoundaryType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='UpperBoundaryType'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='UpperBoundaryType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='UpperBoundaryType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.expression is not None:
             self.expression.export(outfile, level, namespace_, name_='expression', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -7886,8 +10098,10 @@ class UpperBoundaryType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'expression':
             type_name_ = child_.attrib.get(
@@ -7943,18 +10157,22 @@ class UpperBoundaryType(GeneratedsSuper):
             obj_.build(child_)
             self.expression = obj_
             obj_.original_tagname_ = 'Literal'
+
+
 # end class UpperBoundaryType
 
 
 class BinarySpatialOpType(SpatialOpsType):
     subclass = None
     superclass = SpatialOpsType
+
     def __init__(self, PropertyName=None, _Geometry=None, Box=None):
         self.original_tagname_ = None
         super(BinarySpatialOpType, self).__init__()
         self.PropertyName = PropertyName
         self._Geometry = _Geometry
         self.Box = Box
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -7965,24 +10183,41 @@ class BinarySpatialOpType(SpatialOpsType):
             return BinarySpatialOpType.subclass(*args_, **kwargs_)
         else:
             return BinarySpatialOpType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_PropertyName(self): return self.PropertyName
-    def set_PropertyName(self, PropertyName): self.PropertyName = PropertyName
-    def get__Geometry(self): return self._Geometry
-    def set__Geometry(self, _Geometry): self._Geometry = _Geometry
-    def get_Box(self): return self.Box
-    def set_Box(self, Box): self.Box = Box
+
+    def get_PropertyName(self):
+        return self.PropertyName
+
+    def set_PropertyName(self, PropertyName):
+        self.PropertyName = PropertyName
+
+    def get__Geometry(self):
+        return self._Geometry
+
+    def set__Geometry(self, _Geometry):
+        self._Geometry = _Geometry
+
+    def get_Box(self):
+        return self.Box
+
+    def set_Box(self, Box):
+        self.Box = Box
+
     def hasContent_(self):
         if (
-            self.PropertyName is not None or
-            self._Geometry is not None or
-            self.Box is not None or
-            super(BinarySpatialOpType, self).hasContent_()
+                                self.PropertyName is not None or
+                                self._Geometry is not None or
+                            self.Box is not None or
+                    super(BinarySpatialOpType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='BinarySpatialOpType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='BinarySpatialOpType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('BinarySpatialOpType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -7993,30 +10228,39 @@ class BinarySpatialOpType(SpatialOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='BinarySpatialOpType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BinarySpatialOpType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BinarySpatialOpType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='BinarySpatialOpType'):
-        super(BinarySpatialOpType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='BinarySpatialOpType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='BinarySpatialOpType', fromsubclass_=False, pretty_print=True):
-        super(BinarySpatialOpType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='BinarySpatialOpType'):
+        super(BinarySpatialOpType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                          name_='BinarySpatialOpType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='BinarySpatialOpType',
+                       fromsubclass_=False, pretty_print=True):
+        super(BinarySpatialOpType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                        pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.PropertyName is not None:
-            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName', pretty_print=pretty_print)
+            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName',
+                                     pretty_print=pretty_print)
         if self._Geometry is not None:
             self._Geometry.export(outfile, level, namespace_, name_='_Geometry', pretty_print=pretty_print)
         if self.Box is not None:
             self.Box.export(outfile, level, namespace_='gml:', name_='Box', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -8024,8 +10268,10 @@ class BinarySpatialOpType(SpatialOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(BinarySpatialOpType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
@@ -8147,17 +10393,21 @@ class BinarySpatialOpType(SpatialOpsType):
             self.Box = obj_
             obj_.original_tagname_ = 'Box'
         super(BinarySpatialOpType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class BinarySpatialOpType
 
 
 class BBOXType(SpatialOpsType):
     subclass = None
     superclass = SpatialOpsType
+
     def __init__(self, PropertyName=None, Box=None):
         self.original_tagname_ = None
         super(BBOXType, self).__init__()
         self.PropertyName = PropertyName
         self.Box = Box
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -8168,21 +10418,34 @@ class BBOXType(SpatialOpsType):
             return BBOXType.subclass(*args_, **kwargs_)
         else:
             return BBOXType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_PropertyName(self): return self.PropertyName
-    def set_PropertyName(self, PropertyName): self.PropertyName = PropertyName
-    def get_Box(self): return self.Box
-    def set_Box(self, Box): self.Box = Box
+
+    def get_PropertyName(self):
+        return self.PropertyName
+
+    def set_PropertyName(self, PropertyName):
+        self.PropertyName = PropertyName
+
+    def get_Box(self):
+        return self.Box
+
+    def set_Box(self, Box):
+        self.Box = Box
+
     def hasContent_(self):
         if (
-            self.PropertyName is not None or
-            self.Box is not None or
-            super(BBOXType, self).hasContent_()
+                            self.PropertyName is not None or
+                            self.Box is not None or
+                    super(BBOXType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='BBOXType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='BBOXType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('BBOXType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -8193,28 +10456,36 @@ class BBOXType(SpatialOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='BBOXType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BBOXType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BBOXType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='BBOXType'):
-        super(BBOXType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='BBOXType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='BBOXType', fromsubclass_=False, pretty_print=True):
-        super(BBOXType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(BBOXType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                               name_='BBOXType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='BBOXType', fromsubclass_=False,
+                       pretty_print=True):
+        super(BBOXType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                             pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.PropertyName is not None:
-            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName', pretty_print=pretty_print)
+            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName',
+                                     pretty_print=pretty_print)
         if self.Box is not None:
             self.Box.export(outfile, level, namespace_='gml:', name_='Box', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -8222,8 +10493,10 @@ class BBOXType(SpatialOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(BBOXType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
@@ -8236,18 +10509,22 @@ class BBOXType(SpatialOpsType):
             self.Box = obj_
             obj_.original_tagname_ = 'Box'
         super(BBOXType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class BBOXType
 
 
 class DistanceBufferType(SpatialOpsType):
     subclass = None
     superclass = SpatialOpsType
+
     def __init__(self, PropertyName=None, _Geometry=None, Distance=None):
         self.original_tagname_ = None
         super(DistanceBufferType, self).__init__()
         self.PropertyName = PropertyName
         self._Geometry = _Geometry
         self.Distance = Distance
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -8258,24 +10535,41 @@ class DistanceBufferType(SpatialOpsType):
             return DistanceBufferType.subclass(*args_, **kwargs_)
         else:
             return DistanceBufferType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_PropertyName(self): return self.PropertyName
-    def set_PropertyName(self, PropertyName): self.PropertyName = PropertyName
-    def get__Geometry(self): return self._Geometry
-    def set__Geometry(self, _Geometry): self._Geometry = _Geometry
-    def get_Distance(self): return self.Distance
-    def set_Distance(self, Distance): self.Distance = Distance
+
+    def get_PropertyName(self):
+        return self.PropertyName
+
+    def set_PropertyName(self, PropertyName):
+        self.PropertyName = PropertyName
+
+    def get__Geometry(self):
+        return self._Geometry
+
+    def set__Geometry(self, _Geometry):
+        self._Geometry = _Geometry
+
+    def get_Distance(self):
+        return self.Distance
+
+    def set_Distance(self, Distance):
+        self.Distance = Distance
+
     def hasContent_(self):
         if (
-            self.PropertyName is not None or
-            self._Geometry is not None or
-            self.Distance is not None or
-            super(DistanceBufferType, self).hasContent_()
+                                self.PropertyName is not None or
+                                self._Geometry is not None or
+                            self.Distance is not None or
+                    super(DistanceBufferType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='DistanceBufferType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='DistanceBufferType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('DistanceBufferType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -8286,30 +10580,39 @@ class DistanceBufferType(SpatialOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='DistanceBufferType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='DistanceBufferType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='DistanceBufferType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='DistanceBufferType'):
-        super(DistanceBufferType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='DistanceBufferType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='DistanceBufferType', fromsubclass_=False, pretty_print=True):
-        super(DistanceBufferType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='DistanceBufferType'):
+        super(DistanceBufferType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                         name_='DistanceBufferType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='DistanceBufferType',
+                       fromsubclass_=False, pretty_print=True):
+        super(DistanceBufferType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                       pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.PropertyName is not None:
-            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName', pretty_print=pretty_print)
+            self.PropertyName.export(outfile, level, namespace_='ogc:', name_='PropertyName',
+                                     pretty_print=pretty_print)
         if self._Geometry is not None:
             self._Geometry.export(outfile, level, namespace_, name_='_Geometry', pretty_print=pretty_print)
         if self.Distance is not None:
             self.Distance.export(outfile, level, namespace_, name_='Distance', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -8317,8 +10620,10 @@ class DistanceBufferType(SpatialOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(DistanceBufferType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
@@ -8440,12 +10745,15 @@ class DistanceBufferType(SpatialOpsType):
             self.Distance = obj_
             obj_.original_tagname_ = 'Distance'
         super(DistanceBufferType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class DistanceBufferType
 
 
 class DistanceType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, units=None, valueOf_=None, mixedclass_=None, content_=None):
         self.original_tagname_ = None
         self.units = _cast(None, units)
@@ -8459,6 +10767,7 @@ class DistanceType(GeneratedsSuper):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -8469,19 +10778,31 @@ class DistanceType(GeneratedsSuper):
             return DistanceType.subclass(*args_, **kwargs_)
         else:
             return DistanceType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_units(self): return self.units
-    def set_units(self, units): self.units = units
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_units(self):
+        return self.units
+
+    def set_units(self, units):
+        self.units = units
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_
+                1 if type(self.valueOf_) in [int, float] else self.valueOf_
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='DistanceType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='DistanceType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('DistanceType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -8492,47 +10813,57 @@ class DistanceType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='DistanceType')
         outfile.write('>')
         self.exportChildren(outfile, level + 1, namespace_, name_, pretty_print=pretty_print)
         outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='DistanceType'):
         if self.units is not None and 'units' not in already_processed:
             already_processed.add('units')
-            outfile.write(' units=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.units), input_name='units')), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='DistanceType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' units=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.units), input_name='units')),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='DistanceType', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('units', node)
         if value is not None and 'units' not in already_processed:
             already_processed.add('units')
             self.units = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
         pass
+
+
 # end class DistanceType
 
 
 class BinaryLogicOpType(LogicOpsType):
     subclass = None
     superclass = LogicOpsType
+
     def __init__(self, comparisonOps=None, spatialOps=None, logicOps=None):
         self.original_tagname_ = None
         super(BinaryLogicOpType, self).__init__()
@@ -8548,6 +10879,7 @@ class BinaryLogicOpType(LogicOpsType):
             self.logicOps = []
         else:
             self.logicOps = logicOps
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -8558,33 +10890,68 @@ class BinaryLogicOpType(LogicOpsType):
             return BinaryLogicOpType.subclass(*args_, **kwargs_)
         else:
             return BinaryLogicOpType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_comparisonOps(self): return self.comparisonOps
-    def set_comparisonOps(self, comparisonOps): self.comparisonOps = comparisonOps
-    def add_comparisonOps(self, value): self.comparisonOps.append(value)
-    def insert_comparisonOps_at(self, index, value): self.comparisonOps.insert(index, value)
-    def replace_comparisonOps_at(self, index, value): self.comparisonOps[index] = value
-    def get_spatialOps(self): return self.spatialOps
-    def set_spatialOps(self, spatialOps): self.spatialOps = spatialOps
-    def add_spatialOps(self, value): self.spatialOps.append(value)
-    def insert_spatialOps_at(self, index, value): self.spatialOps.insert(index, value)
-    def replace_spatialOps_at(self, index, value): self.spatialOps[index] = value
-    def get_logicOps(self): return self.logicOps
-    def set_logicOps(self, logicOps): self.logicOps = logicOps
-    def add_logicOps(self, value): self.logicOps.append(value)
-    def insert_logicOps_at(self, index, value): self.logicOps.insert(index, value)
-    def replace_logicOps_at(self, index, value): self.logicOps[index] = value
+
+    def get_comparisonOps(self):
+        return self.comparisonOps
+
+    def set_comparisonOps(self, comparisonOps):
+        self.comparisonOps = comparisonOps
+
+    def add_comparisonOps(self, value):
+        self.comparisonOps.append(value)
+
+    def insert_comparisonOps_at(self, index, value):
+        self.comparisonOps.insert(index, value)
+
+    def replace_comparisonOps_at(self, index, value):
+        self.comparisonOps[index] = value
+
+    def get_spatialOps(self):
+        return self.spatialOps
+
+    def set_spatialOps(self, spatialOps):
+        self.spatialOps = spatialOps
+
+    def add_spatialOps(self, value):
+        self.spatialOps.append(value)
+
+    def insert_spatialOps_at(self, index, value):
+        self.spatialOps.insert(index, value)
+
+    def replace_spatialOps_at(self, index, value):
+        self.spatialOps[index] = value
+
+    def get_logicOps(self):
+        return self.logicOps
+
+    def set_logicOps(self, logicOps):
+        self.logicOps = logicOps
+
+    def add_logicOps(self, value):
+        self.logicOps.append(value)
+
+    def insert_logicOps_at(self, index, value):
+        self.logicOps.insert(index, value)
+
+    def replace_logicOps_at(self, index, value):
+        self.logicOps[index] = value
+
     def hasContent_(self):
         if (
-            self.comparisonOps or
-            self.spatialOps or
-            self.logicOps or
-            super(BinaryLogicOpType, self).hasContent_()
+                            self.comparisonOps or
+                            self.spatialOps or
+                        self.logicOps or
+                    super(BinaryLogicOpType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='BinaryLogicOpType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='BinaryLogicOpType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('BinaryLogicOpType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -8595,30 +10962,39 @@ class BinaryLogicOpType(LogicOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='BinaryLogicOpType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BinaryLogicOpType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BinaryLogicOpType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='BinaryLogicOpType'):
-        super(BinaryLogicOpType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='BinaryLogicOpType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='BinaryLogicOpType', fromsubclass_=False, pretty_print=True):
-        super(BinaryLogicOpType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='BinaryLogicOpType'):
+        super(BinaryLogicOpType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                        name_='BinaryLogicOpType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='BinaryLogicOpType',
+                       fromsubclass_=False, pretty_print=True):
+        super(BinaryLogicOpType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                      pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for comparisonOps_ in self.comparisonOps:
-            comparisonOps_.export(outfile, level, namespace_, name_='comparisonOps', pretty_print=pretty_print)
+            comparisonOps_.export(outfile, level, namespace_, name_='comparisonOps',
+                                  pretty_print=pretty_print)
         for spatialOps_ in self.spatialOps:
             spatialOps_.export(outfile, level, namespace_, name_='spatialOps', pretty_print=pretty_print)
         for logicOps_ in self.logicOps:
             logicOps_.export(outfile, level, namespace_, name_='logicOps', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -8626,8 +11002,10 @@ class BinaryLogicOpType(LogicOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(BinaryLogicOpType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'comparisonOps':
             type_name_ = child_.attrib.get(
@@ -8802,18 +11180,22 @@ class BinaryLogicOpType(LogicOpsType):
             self.logicOps.append(obj_)
             obj_.original_tagname_ = 'Not'
         super(BinaryLogicOpType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class BinaryLogicOpType
 
 
 class UnaryLogicOpType(LogicOpsType):
     subclass = None
     superclass = LogicOpsType
+
     def __init__(self, comparisonOps=None, spatialOps=None, logicOps=None):
         self.original_tagname_ = None
         super(UnaryLogicOpType, self).__init__()
         self.comparisonOps = comparisonOps
         self.spatialOps = spatialOps
         self.logicOps = logicOps
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -8824,24 +11206,41 @@ class UnaryLogicOpType(LogicOpsType):
             return UnaryLogicOpType.subclass(*args_, **kwargs_)
         else:
             return UnaryLogicOpType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_comparisonOps(self): return self.comparisonOps
-    def set_comparisonOps(self, comparisonOps): self.comparisonOps = comparisonOps
-    def get_spatialOps(self): return self.spatialOps
-    def set_spatialOps(self, spatialOps): self.spatialOps = spatialOps
-    def get_logicOps(self): return self.logicOps
-    def set_logicOps(self, logicOps): self.logicOps = logicOps
+
+    def get_comparisonOps(self):
+        return self.comparisonOps
+
+    def set_comparisonOps(self, comparisonOps):
+        self.comparisonOps = comparisonOps
+
+    def get_spatialOps(self):
+        return self.spatialOps
+
+    def set_spatialOps(self, spatialOps):
+        self.spatialOps = spatialOps
+
+    def get_logicOps(self):
+        return self.logicOps
+
+    def set_logicOps(self, logicOps):
+        self.logicOps = logicOps
+
     def hasContent_(self):
         if (
-            self.comparisonOps is not None or
-            self.spatialOps is not None or
-            self.logicOps is not None or
-            super(UnaryLogicOpType, self).hasContent_()
+                                self.comparisonOps is not None or
+                                self.spatialOps is not None or
+                            self.logicOps is not None or
+                    super(UnaryLogicOpType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='UnaryLogicOpType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='UnaryLogicOpType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('UnaryLogicOpType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -8852,30 +11251,39 @@ class UnaryLogicOpType(LogicOpsType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='UnaryLogicOpType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='UnaryLogicOpType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='UnaryLogicOpType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='UnaryLogicOpType'):
-        super(UnaryLogicOpType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='UnaryLogicOpType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='UnaryLogicOpType', fromsubclass_=False, pretty_print=True):
-        super(UnaryLogicOpType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='UnaryLogicOpType'):
+        super(UnaryLogicOpType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                       name_='UnaryLogicOpType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='UnaryLogicOpType', fromsubclass_=False,
+                       pretty_print=True):
+        super(UnaryLogicOpType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                     pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.comparisonOps is not None:
-            self.comparisonOps.export(outfile, level, namespace_, name_='comparisonOps', pretty_print=pretty_print)
+            self.comparisonOps.export(outfile, level, namespace_, name_='comparisonOps',
+                                      pretty_print=pretty_print)
         if self.spatialOps is not None:
             self.spatialOps.export(outfile, level, namespace_, name_='spatialOps', pretty_print=pretty_print)
         if self.logicOps is not None:
             self.logicOps.export(outfile, level, namespace_, name_='logicOps', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -8883,8 +11291,10 @@ class UnaryLogicOpType(LogicOpsType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(UnaryLogicOpType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'comparisonOps':
             type_name_ = child_.attrib.get(
@@ -9059,12 +11469,15 @@ class UnaryLogicOpType(LogicOpsType):
             self.logicOps = obj_
             obj_.original_tagname_ = 'Not'
         super(UnaryLogicOpType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class UnaryLogicOpType
 
 
 class ExpressionType(GeneratedsSuper):
     subclass = None
     superclass = None
+
     def __init__(self, valueOf_=None, mixedclass_=None, content_=None, extensiontype_=None):
         self.original_tagname_ = None
         self.valueOf_ = valueOf_
@@ -9078,6 +11491,7 @@ class ExpressionType(GeneratedsSuper):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -9088,19 +11502,31 @@ class ExpressionType(GeneratedsSuper):
             return ExpressionType.subclass(*args_, **kwargs_)
         else:
             return ExpressionType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
-    def get_extensiontype_(self): return self.extensiontype_
-    def set_extensiontype_(self, extensiontype_): self.extensiontype_ = extensiontype_
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
+    def get_extensiontype_(self):
+        return self.extensiontype_
+
+    def set_extensiontype_(self, extensiontype_):
+        self.extensiontype_ = extensiontype_
+
     def hasContent_(self):
         if (
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_
+                1 if type(self.valueOf_) in [int, float] else self.valueOf_
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='ExpressionType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='ExpressionType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('ExpressionType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9111,49 +11537,58 @@ class ExpressionType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='ExpressionType')
         outfile.write('>')
         self.exportChildren(outfile, level + 1, namespace_, name_, pretty_print=pretty_print)
         outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='ExpressionType'):
         if self.extensiontype_ is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             outfile.write(' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
             outfile.write(' xsi:type="%s"' % self.extensiontype_)
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='ExpressionType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='ExpressionType', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('xsi:type', node)
         if value is not None and 'xsi:type' not in already_processed:
             already_processed.add('xsi:type')
             self.extensiontype_ = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
         pass
+
+
 # end class ExpressionType
 
 
 class BinaryOperatorType(ExpressionType):
     subclass = None
     superclass = ExpressionType
+
     def __init__(self, expression=None, valueOf_=None, mixedclass_=None, content_=None):
         self.original_tagname_ = None
         super(BinaryOperatorType, self).__init__(valueOf_, mixedclass_, content_, )
@@ -9171,6 +11606,7 @@ class BinaryOperatorType(ExpressionType):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -9181,24 +11617,43 @@ class BinaryOperatorType(ExpressionType):
             return BinaryOperatorType.subclass(*args_, **kwargs_)
         else:
             return BinaryOperatorType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_expression(self): return self.expression
-    def set_expression(self, expression): self.expression = expression
-    def add_expression(self, value): self.expression.append(value)
-    def insert_expression_at(self, index, value): self.expression.insert(index, value)
-    def replace_expression_at(self, index, value): self.expression[index] = value
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
+
+    def add_expression(self, value):
+        self.expression.append(value)
+
+    def insert_expression_at(self, index, value):
+        self.expression.insert(index, value)
+
+    def replace_expression_at(self, index, value):
+        self.expression[index] = value
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            self.expression or
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_ or
-            super(BinaryOperatorType, self).hasContent_()
+                    self.expression or
+                    1 if type(self.valueOf_) in [int, float] else self.valueOf_ or
+                    super(BinaryOperatorType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='BinaryOperatorType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='BinaryOperatorType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('BinaryOperatorType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9209,37 +11664,47 @@ class BinaryOperatorType(ExpressionType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='BinaryOperatorType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BinaryOperatorType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BinaryOperatorType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='BinaryOperatorType'):
-        super(BinaryOperatorType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='BinaryOperatorType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='BinaryOperatorType', fromsubclass_=False, pretty_print=True):
-        super(BinaryOperatorType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='BinaryOperatorType'):
+        super(BinaryOperatorType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                         name_='BinaryOperatorType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='BinaryOperatorType',
+                       fromsubclass_=False, pretty_print=True):
+        super(BinaryOperatorType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                       pretty_print=pretty_print)
         if not fromsubclass_:
             for item_ in self.content_:
                 item_.export(outfile, level, item_.name, namespace_, pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(BinaryOperatorType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'expression':
             type_name_ = child_.attrib.get(
@@ -9259,93 +11724,96 @@ class BinaryOperatorType(ExpressionType):
                 raise NotImplementedError(
                     'Class not implemented for <expression> element')
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'expression', obj_)
+                                    MixedContainer.TypeNone, 'expression', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_expression'):
-              self.add_expression(obj_.value)
+                self.add_expression(obj_.value)
             elif hasattr(self, 'set_expression'):
-              self.set_expression(obj_.value)
+                self.set_expression(obj_.value)
         elif nodeName_ == 'Add':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Add', obj_)
+                                    MixedContainer.TypeNone, 'Add', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Add'):
-              self.add_Add(obj_.value)
+                self.add_Add(obj_.value)
             elif hasattr(self, 'set_Add'):
-              self.set_Add(obj_.value)
+                self.set_Add(obj_.value)
         elif nodeName_ == 'Sub':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Sub', obj_)
+                                    MixedContainer.TypeNone, 'Sub', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Sub'):
-              self.add_Sub(obj_.value)
+                self.add_Sub(obj_.value)
             elif hasattr(self, 'set_Sub'):
-              self.set_Sub(obj_.value)
+                self.set_Sub(obj_.value)
         elif nodeName_ == 'Mul':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Mul', obj_)
+                                    MixedContainer.TypeNone, 'Mul', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Mul'):
-              self.add_Mul(obj_.value)
+                self.add_Mul(obj_.value)
             elif hasattr(self, 'set_Mul'):
-              self.set_Mul(obj_.value)
+                self.set_Mul(obj_.value)
         elif nodeName_ == 'Div':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Div', obj_)
+                                    MixedContainer.TypeNone, 'Div', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Div'):
-              self.add_Div(obj_.value)
+                self.add_Div(obj_.value)
             elif hasattr(self, 'set_Div'):
-              self.set_Div(obj_.value)
+                self.set_Div(obj_.value)
         elif nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'PropertyName', obj_)
+                                    MixedContainer.TypeNone, 'PropertyName', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_PropertyName'):
-              self.add_PropertyName(obj_.value)
+                self.add_PropertyName(obj_.value)
             elif hasattr(self, 'set_PropertyName'):
-              self.set_PropertyName(obj_.value)
+                self.set_PropertyName(obj_.value)
         elif nodeName_ == 'Function':
             obj_ = FunctionType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Function', obj_)
+                                    MixedContainer.TypeNone, 'Function', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Function'):
-              self.add_Function(obj_.value)
+                self.add_Function(obj_.value)
             elif hasattr(self, 'set_Function'):
-              self.set_Function(obj_.value)
+                self.set_Function(obj_.value)
         elif nodeName_ == 'Literal':
             obj_ = LiteralType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Literal', obj_)
+                                    MixedContainer.TypeNone, 'Literal', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Literal'):
-              self.add_Literal(obj_.value)
+                self.add_Literal(obj_.value)
             elif hasattr(self, 'set_Literal'):
-              self.set_Literal(obj_.value)
+                self.set_Literal(obj_.value)
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
         super(BinaryOperatorType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class BinaryOperatorType
 
 
 class FunctionType(ExpressionType):
     subclass = None
     superclass = ExpressionType
+
     def __init__(self, name=None, expression=None, valueOf_=None, mixedclass_=None, content_=None):
         self.original_tagname_ = None
         super(FunctionType, self).__init__(valueOf_, mixedclass_, content_, )
@@ -9364,6 +11832,7 @@ class FunctionType(ExpressionType):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -9374,26 +11843,49 @@ class FunctionType(ExpressionType):
             return FunctionType.subclass(*args_, **kwargs_)
         else:
             return FunctionType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_expression(self): return self.expression
-    def set_expression(self, expression): self.expression = expression
-    def add_expression(self, value): self.expression.append(value)
-    def insert_expression_at(self, index, value): self.expression.insert(index, value)
-    def replace_expression_at(self, index, value): self.expression[index] = value
-    def get_name(self): return self.name
-    def set_name(self, name): self.name = name
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_expression(self):
+        return self.expression
+
+    def set_expression(self, expression):
+        self.expression = expression
+
+    def add_expression(self, value):
+        self.expression.append(value)
+
+    def insert_expression_at(self, index, value):
+        self.expression.insert(index, value)
+
+    def replace_expression_at(self, index, value):
+        self.expression[index] = value
+
+    def get_name(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            self.expression or
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_ or
-            super(FunctionType, self).hasContent_()
+                    self.expression or
+                    1 if type(self.valueOf_) in [int, float] else self.valueOf_ or
+                    super(FunctionType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='FunctionType', namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='FunctionType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" ',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('FunctionType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9404,44 +11896,54 @@ class FunctionType(ExpressionType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='FunctionType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FunctionType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FunctionType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='FunctionType'):
-        super(FunctionType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='FunctionType')
+        super(FunctionType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                   name_='FunctionType')
         if self.name is not None and 'name' not in already_processed:
             already_processed.add('name')
-            outfile.write(' name=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.name), input_name='name')), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='FunctionType', fromsubclass_=False, pretty_print=True):
-        super(FunctionType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write(' name=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.name), input_name='name')),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='FunctionType', fromsubclass_=False,
+                       pretty_print=True):
+        super(FunctionType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                 pretty_print=pretty_print)
         if not fromsubclass_:
             for item_ in self.content_:
                 item_.export(outfile, level, item_.name, namespace_, pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('name', node)
         if value is not None and 'name' not in already_processed:
             already_processed.add('name')
             self.name = value
         super(FunctionType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'expression':
             type_name_ = child_.attrib.get(
@@ -9461,93 +11963,96 @@ class FunctionType(ExpressionType):
                 raise NotImplementedError(
                     'Class not implemented for <expression> element')
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'expression', obj_)
+                                    MixedContainer.TypeNone, 'expression', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_expression'):
-              self.add_expression(obj_.value)
+                self.add_expression(obj_.value)
             elif hasattr(self, 'set_expression'):
-              self.set_expression(obj_.value)
+                self.set_expression(obj_.value)
         elif nodeName_ == 'Add':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Add', obj_)
+                                    MixedContainer.TypeNone, 'Add', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Add'):
-              self.add_Add(obj_.value)
+                self.add_Add(obj_.value)
             elif hasattr(self, 'set_Add'):
-              self.set_Add(obj_.value)
+                self.set_Add(obj_.value)
         elif nodeName_ == 'Sub':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Sub', obj_)
+                                    MixedContainer.TypeNone, 'Sub', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Sub'):
-              self.add_Sub(obj_.value)
+                self.add_Sub(obj_.value)
             elif hasattr(self, 'set_Sub'):
-              self.set_Sub(obj_.value)
+                self.set_Sub(obj_.value)
         elif nodeName_ == 'Mul':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Mul', obj_)
+                                    MixedContainer.TypeNone, 'Mul', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Mul'):
-              self.add_Mul(obj_.value)
+                self.add_Mul(obj_.value)
             elif hasattr(self, 'set_Mul'):
-              self.set_Mul(obj_.value)
+                self.set_Mul(obj_.value)
         elif nodeName_ == 'Div':
             obj_ = BinaryOperatorType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Div', obj_)
+                                    MixedContainer.TypeNone, 'Div', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Div'):
-              self.add_Div(obj_.value)
+                self.add_Div(obj_.value)
             elif hasattr(self, 'set_Div'):
-              self.set_Div(obj_.value)
+                self.set_Div(obj_.value)
         elif nodeName_ == 'PropertyName':
             obj_ = PropertyNameType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'PropertyName', obj_)
+                                    MixedContainer.TypeNone, 'PropertyName', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_PropertyName'):
-              self.add_PropertyName(obj_.value)
+                self.add_PropertyName(obj_.value)
             elif hasattr(self, 'set_PropertyName'):
-              self.set_PropertyName(obj_.value)
+                self.set_PropertyName(obj_.value)
         elif nodeName_ == 'Function':
             obj_ = FunctionType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Function', obj_)
+                                    MixedContainer.TypeNone, 'Function', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Function'):
-              self.add_Function(obj_.value)
+                self.add_Function(obj_.value)
             elif hasattr(self, 'set_Function'):
-              self.set_Function(obj_.value)
+                self.set_Function(obj_.value)
         elif nodeName_ == 'Literal':
             obj_ = LiteralType.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, 'Literal', obj_)
+                                    MixedContainer.TypeNone, 'Literal', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_Literal'):
-              self.add_Literal(obj_.value)
+                self.add_Literal(obj_.value)
             elif hasattr(self, 'set_Literal'):
-              self.set_Literal(obj_.value)
+                self.set_Literal(obj_.value)
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
         super(FunctionType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class FunctionType
 
 
 class LiteralType(ExpressionType):
     subclass = None
     superclass = ExpressionType
+
     def __init__(self, anytypeobjs_=None, valueOf_=None, mixedclass_=None, content_=None):
         self.original_tagname_ = None
         super(LiteralType, self).__init__(valueOf_, mixedclass_, content_, )
@@ -9562,6 +12067,7 @@ class LiteralType(ExpressionType):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -9572,21 +12078,33 @@ class LiteralType(ExpressionType):
             return LiteralType.subclass(*args_, **kwargs_)
         else:
             return LiteralType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_anytypeobjs_(self): return self.anytypeobjs_
-    def set_anytypeobjs_(self, anytypeobjs_): self.anytypeobjs_ = anytypeobjs_
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_anytypeobjs_(self):
+        return self.anytypeobjs_
+
+    def set_anytypeobjs_(self, anytypeobjs_):
+        self.anytypeobjs_ = anytypeobjs_
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            self.anytypeobjs_ is not None or
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_ or
-            super(LiteralType, self).hasContent_()
+                        self.anytypeobjs_ is not None or
+                    1 if type(self.valueOf_) in [int, float] else self.valueOf_ or
+                    super(LiteralType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LiteralType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LiteralType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LiteralType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9597,59 +12115,71 @@ class LiteralType(ExpressionType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LiteralType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LiteralType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LiteralType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LiteralType'):
-        super(LiteralType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='LiteralType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LiteralType', fromsubclass_=False, pretty_print=True):
-        super(LiteralType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(LiteralType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                  name_='LiteralType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LiteralType', fromsubclass_=False,
+                       pretty_print=True):
+        super(LiteralType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                pretty_print=pretty_print)
         if not fromsubclass_:
             for item_ in self.content_:
                 item_.export(outfile, level, item_.name, namespace_, pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(LiteralType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == '':
             obj_ = __ANY__.factory()
             obj_.build(child_)
             obj_ = self.mixedclass_(MixedContainer.CategoryComplex,
-                MixedContainer.TypeNone, '', obj_)
+                                    MixedContainer.TypeNone, '', obj_)
             self.content_.append(obj_)
             if hasattr(self, 'add_'):
-              self.add_(obj_.value)
+                self.add_(obj_.value)
             elif hasattr(self, 'set_'):
-              self.set_(obj_.value)
+                self.set_(obj_.value)
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
         super(LiteralType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class LiteralType
 
 
 class PropertyNameType(ExpressionType):
     subclass = None
     superclass = ExpressionType
+
     def __init__(self, valueOf_=None, mixedclass_=None, content_=None):
         self.original_tagname_ = None
         super(PropertyNameType, self).__init__(valueOf_, mixedclass_, content_, )
@@ -9663,6 +12193,7 @@ class PropertyNameType(ExpressionType):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -9673,18 +12204,26 @@ class PropertyNameType(ExpressionType):
             return PropertyNameType.subclass(*args_, **kwargs_)
         else:
             return PropertyNameType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_ or
-            super(PropertyNameType, self).hasContent_()
+                1 if type(self.valueOf_) in [int, float] else self.valueOf_ or
+                    super(PropertyNameType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PropertyNameType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PropertyNameType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PropertyNameType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9695,38 +12234,49 @@ class PropertyNameType(ExpressionType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PropertyNameType')
         outfile.write('>')
         self.exportChildren(outfile, level + 1, namespace_, name_, pretty_print=pretty_print)
         outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PropertyNameType'):
-        super(PropertyNameType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='PropertyNameType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PropertyNameType', fromsubclass_=False, pretty_print=True):
-        super(PropertyNameType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='PropertyNameType'):
+        super(PropertyNameType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                       name_='PropertyNameType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PropertyNameType', fromsubclass_=False,
+                       pretty_print=True):
+        super(PropertyNameType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                     pretty_print=pretty_print)
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(PropertyNameType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
         super(PropertyNameType, self).buildChildren(child_, node, nodeName_, True)
         pass
+
+
 # end class PropertyNameType
 
 
@@ -9736,10 +12286,12 @@ class AbstractGeometryType(GeneratedsSuper):
     be associated with a spatial reference system."""
     subclass = None
     superclass = None
+
     def __init__(self, gid=None, srsName=None):
         self.original_tagname_ = None
         self.gid = _cast(None, gid)
         self.srsName = _cast(None, srsName)
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -9750,11 +12302,21 @@ class AbstractGeometryType(GeneratedsSuper):
             return AbstractGeometryType.subclass(*args_, **kwargs_)
         else:
             return AbstractGeometryType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_gid(self): return self.gid
-    def set_gid(self, gid): self.gid = gid
-    def get_srsName(self): return self.srsName
-    def set_srsName(self, srsName): self.srsName = srsName
+
+    def get_gid(self):
+        return self.gid
+
+    def set_gid(self, gid):
+        self.gid = gid
+
+    def get_srsName(self):
+        return self.srsName
+
+    def set_srsName(self, srsName):
+        self.srsName = srsName
+
     def hasContent_(self):
         if (
 
@@ -9762,7 +12324,9 @@ class AbstractGeometryType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='AbstractGeometryType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='AbstractGeometryType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('AbstractGeometryType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9773,24 +12337,30 @@ class AbstractGeometryType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='AbstractGeometryType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AbstractGeometryType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AbstractGeometryType',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='AbstractGeometryType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='AbstractGeometryType'):
         if self.gid is not None and 'gid' not in already_processed:
             already_processed.add('gid')
-            outfile.write(' gid=%s' % (quote_attrib(self.gid), ))
+            outfile.write(' gid=%s' % (quote_attrib(self.gid),))
         if self.srsName is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
-            outfile.write(' srsName=%s' % (quote_attrib(self.srsName), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractGeometryType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' srsName=%s' % (quote_attrib(self.srsName),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractGeometryType',
+                       fromsubclass_=False, pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -9798,6 +12368,7 @@ class AbstractGeometryType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('gid', node)
         if value is not None and 'gid' not in already_processed:
@@ -9807,8 +12378,11 @@ class AbstractGeometryType(GeneratedsSuper):
         if value is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
             self.srsName = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class AbstractGeometryType
 
 
@@ -9817,10 +12391,12 @@ class AbstractGeometryCollectionBaseType(GeneratedsSuper):
     srsName attribute mandatory."""
     subclass = None
     superclass = None
+
     def __init__(self, gid=None, srsName=None):
         self.original_tagname_ = None
         self.gid = _cast(None, gid)
         self.srsName = _cast(None, srsName)
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -9831,11 +12407,21 @@ class AbstractGeometryCollectionBaseType(GeneratedsSuper):
             return AbstractGeometryCollectionBaseType.subclass(*args_, **kwargs_)
         else:
             return AbstractGeometryCollectionBaseType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_gid(self): return self.gid
-    def set_gid(self, gid): self.gid = gid
-    def get_srsName(self): return self.srsName
-    def set_srsName(self, srsName): self.srsName = srsName
+
+    def get_gid(self):
+        return self.gid
+
+    def set_gid(self, gid):
+        self.gid = gid
+
+    def get_srsName(self):
+        return self.srsName
+
+    def set_srsName(self, srsName):
+        self.srsName = srsName
+
     def hasContent_(self):
         if (
 
@@ -9843,7 +12429,9 @@ class AbstractGeometryCollectionBaseType(GeneratedsSuper):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='AbstractGeometryCollectionBaseType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='AbstractGeometryCollectionBaseType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('AbstractGeometryCollectionBaseType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9854,24 +12442,31 @@ class AbstractGeometryCollectionBaseType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='AbstractGeometryCollectionBaseType')
+        self.exportAttributes(outfile, level, already_processed, namespace_,
+                              name_='AbstractGeometryCollectionBaseType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AbstractGeometryCollectionBaseType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:',
+                                name_='AbstractGeometryCollectionBaseType', pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='AbstractGeometryCollectionBaseType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='AbstractGeometryCollectionBaseType'):
         if self.gid is not None and 'gid' not in already_processed:
             already_processed.add('gid')
-            outfile.write(' gid=%s' % (quote_attrib(self.gid), ))
+            outfile.write(' gid=%s' % (quote_attrib(self.gid),))
         if self.srsName is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
-            outfile.write(' srsName=%s' % (quote_attrib(self.srsName), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractGeometryCollectionBaseType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' srsName=%s' % (quote_attrib(self.srsName),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractGeometryCollectionBaseType',
+                       fromsubclass_=False, pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -9879,6 +12474,7 @@ class AbstractGeometryCollectionBaseType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('gid', node)
         if value is not None and 'gid' not in already_processed:
@@ -9888,8 +12484,11 @@ class AbstractGeometryCollectionBaseType(GeneratedsSuper):
         if value is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
             self.srsName = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class AbstractGeometryCollectionBaseType
 
 
@@ -9901,7 +12500,9 @@ class GeometryAssociationType(GeneratedsSuper):
     schema fragment that constrains the target instance."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, _Geometry=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, _Geometry=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -9912,6 +12513,7 @@ class GeometryAssociationType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self._Geometry = _Geometry
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -9922,33 +12524,73 @@ class GeometryAssociationType(GeneratedsSuper):
             return GeometryAssociationType.subclass(*args_, **kwargs_)
         else:
             return GeometryAssociationType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get__Geometry(self): return self._Geometry
-    def set__Geometry(self, _Geometry): self._Geometry = _Geometry
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get__Geometry(self):
+        return self._Geometry
+
+    def set__Geometry(self, _Geometry):
+        self._Geometry = _Geometry
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self._Geometry is not None
+                    self._Geometry is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='GeometryAssociationType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='GeometryAssociationType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('GeometryAssociationType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -9959,48 +12601,54 @@ class GeometryAssociationType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='GeometryAssociationType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GeometryAssociationType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GeometryAssociationType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='GeometryAssociationType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='GeometryAssociationType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='GeometryAssociationType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='GeometryAssociationType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self._Geometry is not None:
             self._Geometry.export(outfile, level, namespace_, name_='_Geometry', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -10008,6 +12656,7 @@ class GeometryAssociationType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -10041,6 +12690,7 @@ class GeometryAssociationType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == '_Geometry':
             type_name_ = child_.attrib.get(
@@ -10151,6 +12801,8 @@ class GeometryAssociationType(GeneratedsSuper):
             obj_.build(child_)
             self._Geometry = obj_
             obj_.original_tagname_ = 'MultiPolygon'
+
+
 # end class GeometryAssociationType
 
 
@@ -10158,7 +12810,9 @@ class PointMemberType(GeneratedsSuper):
     """Restricts the geometry member to being a Point instance."""
     subclass = None
     superclass = None
-    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, remoteSchema=None, Point=None):
+
+    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None,
+                 remoteSchema=None, Point=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.href = _cast(None, href)
@@ -10169,6 +12823,7 @@ class PointMemberType(GeneratedsSuper):
         self.actuate = _cast(None, actuate)
         self.remoteSchema = _cast(None, remoteSchema)
         self.Point = Point
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -10179,33 +12834,73 @@ class PointMemberType(GeneratedsSuper):
             return PointMemberType.subclass(*args_, **kwargs_)
         else:
             return PointMemberType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Point(self): return self.Point
-    def set_Point(self, Point): self.Point = Point
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
+
+    def get_Point(self):
+        return self.Point
+
+    def set_Point(self, Point):
+        self.Point = Point
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
     def hasContent_(self):
         if (
-            self.Point is not None
+                    self.Point is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PointMemberType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PointMemberType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PointMemberType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -10216,48 +12911,53 @@ class PointMemberType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PointMemberType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointMemberType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointMemberType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PointMemberType'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointMemberType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointMemberType', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Point is not None:
             self.Point.export(outfile, level, namespace_='gml:', name_='Point', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -10265,6 +12965,7 @@ class PointMemberType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -10298,12 +12999,15 @@ class PointMemberType(GeneratedsSuper):
         if value is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
             self.remoteSchema = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Point':
             obj_ = PointType.factory()
             obj_.build(child_)
             self.Point = obj_
             obj_.original_tagname_ = 'Point'
+
+
 # end class PointMemberType
 
 
@@ -10311,7 +13015,9 @@ class LineStringMemberType(GeneratedsSuper):
     """Restricts the geometry member to being a LineString instance."""
     subclass = None
     superclass = None
-    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, remoteSchema=None, LineString=None):
+
+    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None,
+                 remoteSchema=None, LineString=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.href = _cast(None, href)
@@ -10322,6 +13028,7 @@ class LineStringMemberType(GeneratedsSuper):
         self.actuate = _cast(None, actuate)
         self.remoteSchema = _cast(None, remoteSchema)
         self.LineString = LineString
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -10332,33 +13039,73 @@ class LineStringMemberType(GeneratedsSuper):
             return LineStringMemberType.subclass(*args_, **kwargs_)
         else:
             return LineStringMemberType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_LineString(self): return self.LineString
-    def set_LineString(self, LineString): self.LineString = LineString
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
+
+    def get_LineString(self):
+        return self.LineString
+
+    def set_LineString(self, LineString):
+        self.LineString = LineString
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
     def hasContent_(self):
         if (
-            self.LineString is not None
+                    self.LineString is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LineStringMemberType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LineStringMemberType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LineStringMemberType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -10369,48 +13116,55 @@ class LineStringMemberType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LineStringMemberType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LineStringMemberType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LineStringMemberType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LineStringMemberType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='LineStringMemberType'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LineStringMemberType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LineStringMemberType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.LineString is not None:
-            self.LineString.export(outfile, level, namespace_='gml:', name_='LineString', pretty_print=pretty_print)
+            self.LineString.export(outfile, level, namespace_='gml:', name_='LineString',
+                                   pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -10418,6 +13172,7 @@ class LineStringMemberType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -10451,12 +13206,15 @@ class LineStringMemberType(GeneratedsSuper):
         if value is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
             self.remoteSchema = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'LineString':
             obj_ = LineStringType.factory()
             obj_.build(child_)
             self.LineString = obj_
             obj_.original_tagname_ = 'LineString'
+
+
 # end class LineStringMemberType
 
 
@@ -10464,7 +13222,9 @@ class PolygonMemberType(GeneratedsSuper):
     """Restricts the geometry member to being a Polygon instance."""
     subclass = None
     superclass = None
-    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, remoteSchema=None, Polygon=None):
+
+    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None,
+                 remoteSchema=None, Polygon=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.href = _cast(None, href)
@@ -10475,6 +13235,7 @@ class PolygonMemberType(GeneratedsSuper):
         self.actuate = _cast(None, actuate)
         self.remoteSchema = _cast(None, remoteSchema)
         self.Polygon = Polygon
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -10485,33 +13246,73 @@ class PolygonMemberType(GeneratedsSuper):
             return PolygonMemberType.subclass(*args_, **kwargs_)
         else:
             return PolygonMemberType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Polygon(self): return self.Polygon
-    def set_Polygon(self, Polygon): self.Polygon = Polygon
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
+
+    def get_Polygon(self):
+        return self.Polygon
+
+    def set_Polygon(self, Polygon):
+        self.Polygon = Polygon
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
     def hasContent_(self):
         if (
-            self.Polygon is not None
+                    self.Polygon is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PolygonMemberType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PolygonMemberType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PolygonMemberType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -10522,48 +13323,54 @@ class PolygonMemberType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PolygonMemberType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PolygonMemberType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PolygonMemberType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PolygonMemberType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='PolygonMemberType'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PolygonMemberType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PolygonMemberType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Polygon is not None:
             self.Polygon.export(outfile, level, namespace_='gml:', name_='Polygon', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -10571,6 +13378,7 @@ class PolygonMemberType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -10604,12 +13412,15 @@ class PolygonMemberType(GeneratedsSuper):
         if value is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
             self.remoteSchema = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Polygon':
             obj_ = PolygonType.factory()
             obj_.build(child_)
             self.Polygon = obj_
             obj_.original_tagname_ = 'Polygon'
+
+
 # end class PolygonMemberType
 
 
@@ -10618,7 +13429,9 @@ class LinearRingMemberType(GeneratedsSuper):
     a LinearRing."""
     subclass = None
     superclass = None
-    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, remoteSchema=None, LinearRing=None):
+
+    def __init__(self, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None,
+                 remoteSchema=None, LinearRing=None):
         self.original_tagname_ = None
         self.type_ = _cast(None, type_)
         self.href = _cast(None, href)
@@ -10629,6 +13442,7 @@ class LinearRingMemberType(GeneratedsSuper):
         self.actuate = _cast(None, actuate)
         self.remoteSchema = _cast(None, remoteSchema)
         self.LinearRing = LinearRing
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -10639,33 +13453,73 @@ class LinearRingMemberType(GeneratedsSuper):
             return LinearRingMemberType.subclass(*args_, **kwargs_)
         else:
             return LinearRingMemberType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_LinearRing(self): return self.LinearRing
-    def set_LinearRing(self, LinearRing): self.LinearRing = LinearRing
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
+
+    def get_LinearRing(self):
+        return self.LinearRing
+
+    def set_LinearRing(self, LinearRing):
+        self.LinearRing = LinearRing
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
     def hasContent_(self):
         if (
-            self.LinearRing is not None
+                    self.LinearRing is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LinearRingMemberType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LinearRingMemberType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LinearRingMemberType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -10676,48 +13530,55 @@ class LinearRingMemberType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LinearRingMemberType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LinearRingMemberType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LinearRingMemberType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LinearRingMemberType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='LinearRingMemberType'):
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LinearRingMemberType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LinearRingMemberType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.LinearRing is not None:
-            self.LinearRing.export(outfile, level, namespace_='gml:', name_='LinearRing', pretty_print=pretty_print)
+            self.LinearRing.export(outfile, level, namespace_='gml:', name_='LinearRing',
+                                   pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -10725,6 +13586,7 @@ class LinearRingMemberType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('type', node)
         if value is not None and 'type' not in already_processed:
@@ -10758,12 +13620,15 @@ class LinearRingMemberType(GeneratedsSuper):
         if value is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
             self.remoteSchema = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'LinearRing':
             obj_ = LinearRingType.factory()
             obj_.build(child_)
             self.LinearRing = obj_
             obj_.original_tagname_ = 'LinearRing'
+
+
 # end class LinearRingMemberType
 
 
@@ -10771,11 +13636,13 @@ class PointType(AbstractGeometryType):
     """A Point is defined by a single coordinate tuple."""
     subclass = None
     superclass = AbstractGeometryType
+
     def __init__(self, gid=None, srsName=None, coord=None, coordinates=None):
         self.original_tagname_ = None
         super(PointType, self).__init__(gid, srsName, )
         self.coord = coord
         self.coordinates = coordinates
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -10786,21 +13653,33 @@ class PointType(AbstractGeometryType):
             return PointType.subclass(*args_, **kwargs_)
         else:
             return PointType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_coord(self): return self.coord
-    def set_coord(self, coord): self.coord = coord
-    def get_coordinates(self): return self.coordinates
-    def set_coordinates(self, coordinates): self.coordinates = coordinates
+
+    def get_coord(self):
+        return self.coord
+
+    def set_coord(self, coord):
+        self.coord = coord
+
+    def get_coordinates(self):
+        return self.coordinates
+
+    def set_coordinates(self, coordinates):
+        self.coordinates = coordinates
+
     def hasContent_(self):
         if (
-            self.coord is not None or
-            self.coordinates is not None or
-            super(PointType, self).hasContent_()
+                            self.coord is not None or
+                            self.coordinates is not None or
+                    super(PointType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PointType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PointType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PointType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -10811,20 +13690,26 @@ class PointType(AbstractGeometryType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PointType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PointType'):
-        super(PointType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='PointType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointType', fromsubclass_=False, pretty_print=True):
-        super(PointType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(PointType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                name_='PointType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointType', fromsubclass_=False,
+                       pretty_print=True):
+        super(PointType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                              pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
@@ -10832,7 +13717,9 @@ class PointType(AbstractGeometryType):
         if self.coord is not None:
             self.coord.export(outfile, level, namespace_='gml:', name_='coord', pretty_print=pretty_print)
         if self.coordinates is not None:
-            self.coordinates.export(outfile, level, namespace_='gml:', name_='coordinates', pretty_print=pretty_print)
+            self.coordinates.export(outfile, level, namespace_='gml:', name_='coordinates',
+                                    pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -10840,8 +13727,10 @@ class PointType(AbstractGeometryType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(PointType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'coord':
             obj_ = CoordType.factory()
@@ -10854,6 +13743,8 @@ class PointType(AbstractGeometryType):
             self.coordinates = obj_
             obj_.original_tagname_ = 'coordinates'
         super(PointType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class PointType
 
 
@@ -10862,6 +13753,7 @@ class LineStringType(AbstractGeometryType):
     linear interpolation between them."""
     subclass = None
     superclass = AbstractGeometryType
+
     def __init__(self, gid=None, srsName=None, coord=None, coordinates=None):
         self.original_tagname_ = None
         super(LineStringType, self).__init__(gid, srsName, )
@@ -10870,6 +13762,7 @@ class LineStringType(AbstractGeometryType):
         else:
             self.coord = coord
         self.coordinates = coordinates
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -10880,24 +13773,42 @@ class LineStringType(AbstractGeometryType):
             return LineStringType.subclass(*args_, **kwargs_)
         else:
             return LineStringType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_coord(self): return self.coord
-    def set_coord(self, coord): self.coord = coord
-    def add_coord(self, value): self.coord.append(value)
-    def insert_coord_at(self, index, value): self.coord.insert(index, value)
-    def replace_coord_at(self, index, value): self.coord[index] = value
-    def get_coordinates(self): return self.coordinates
-    def set_coordinates(self, coordinates): self.coordinates = coordinates
+
+    def get_coord(self):
+        return self.coord
+
+    def set_coord(self, coord):
+        self.coord = coord
+
+    def add_coord(self, value):
+        self.coord.append(value)
+
+    def insert_coord_at(self, index, value):
+        self.coord.insert(index, value)
+
+    def replace_coord_at(self, index, value):
+        self.coord[index] = value
+
+    def get_coordinates(self):
+        return self.coordinates
+
+    def set_coordinates(self, coordinates):
+        self.coordinates = coordinates
+
     def hasContent_(self):
         if (
-            self.coord or
-            self.coordinates is not None or
-            super(LineStringType, self).hasContent_()
+                        self.coord or
+                            self.coordinates is not None or
+                    super(LineStringType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LineStringType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LineStringType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LineStringType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -10908,20 +13819,26 @@ class LineStringType(AbstractGeometryType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LineStringType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LineStringType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LineStringType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LineStringType'):
-        super(LineStringType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='LineStringType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LineStringType', fromsubclass_=False, pretty_print=True):
-        super(LineStringType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(LineStringType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                     name_='LineStringType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LineStringType', fromsubclass_=False,
+                       pretty_print=True):
+        super(LineStringType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                   pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
@@ -10929,7 +13846,9 @@ class LineStringType(AbstractGeometryType):
         for coord_ in self.coord:
             coord_.export(outfile, level, namespace_='gml:', name_='coord', pretty_print=pretty_print)
         if self.coordinates is not None:
-            self.coordinates.export(outfile, level, namespace_='gml:', name_='coordinates', pretty_print=pretty_print)
+            self.coordinates.export(outfile, level, namespace_='gml:', name_='coordinates',
+                                    pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -10937,8 +13856,10 @@ class LineStringType(AbstractGeometryType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(LineStringType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'coord':
             obj_ = CoordType.factory()
@@ -10951,6 +13872,8 @@ class LineStringType(AbstractGeometryType):
             self.coordinates = obj_
             obj_.original_tagname_ = 'coordinates'
         super(LineStringType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class LineStringType
 
 
@@ -10960,6 +13883,7 @@ class LinearRingType(AbstractGeometryType):
     coordinates must be coincident."""
     subclass = None
     superclass = AbstractGeometryType
+
     def __init__(self, gid=None, srsName=None, coord=None, coordinates=None):
         self.original_tagname_ = None
         super(LinearRingType, self).__init__(gid, srsName, )
@@ -10968,6 +13892,7 @@ class LinearRingType(AbstractGeometryType):
         else:
             self.coord = coord
         self.coordinates = coordinates
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -10978,24 +13903,42 @@ class LinearRingType(AbstractGeometryType):
             return LinearRingType.subclass(*args_, **kwargs_)
         else:
             return LinearRingType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_coord(self): return self.coord
-    def set_coord(self, coord): self.coord = coord
-    def add_coord(self, value): self.coord.append(value)
-    def insert_coord_at(self, index, value): self.coord.insert(index, value)
-    def replace_coord_at(self, index, value): self.coord[index] = value
-    def get_coordinates(self): return self.coordinates
-    def set_coordinates(self, coordinates): self.coordinates = coordinates
+
+    def get_coord(self):
+        return self.coord
+
+    def set_coord(self, coord):
+        self.coord = coord
+
+    def add_coord(self, value):
+        self.coord.append(value)
+
+    def insert_coord_at(self, index, value):
+        self.coord.insert(index, value)
+
+    def replace_coord_at(self, index, value):
+        self.coord[index] = value
+
+    def get_coordinates(self):
+        return self.coordinates
+
+    def set_coordinates(self, coordinates):
+        self.coordinates = coordinates
+
     def hasContent_(self):
         if (
-            self.coord or
-            self.coordinates is not None or
-            super(LinearRingType, self).hasContent_()
+                        self.coord or
+                            self.coordinates is not None or
+                    super(LinearRingType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LinearRingType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LinearRingType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LinearRingType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11006,20 +13949,26 @@ class LinearRingType(AbstractGeometryType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LinearRingType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LinearRingType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LinearRingType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LinearRingType'):
-        super(LinearRingType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='LinearRingType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LinearRingType', fromsubclass_=False, pretty_print=True):
-        super(LinearRingType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(LinearRingType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                     name_='LinearRingType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LinearRingType', fromsubclass_=False,
+                       pretty_print=True):
+        super(LinearRingType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                   pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
@@ -11027,7 +13976,9 @@ class LinearRingType(AbstractGeometryType):
         for coord_ in self.coord:
             coord_.export(outfile, level, namespace_='gml:', name_='coord', pretty_print=pretty_print)
         if self.coordinates is not None:
-            self.coordinates.export(outfile, level, namespace_='gml:', name_='coordinates', pretty_print=pretty_print)
+            self.coordinates.export(outfile, level, namespace_='gml:', name_='coordinates',
+                                    pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11035,8 +13986,10 @@ class LinearRingType(AbstractGeometryType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(LinearRingType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'coord':
             obj_ = CoordType.factory()
@@ -11049,6 +14002,8 @@ class LinearRingType(AbstractGeometryType):
             self.coordinates = obj_
             obj_.original_tagname_ = 'coordinates'
         super(LinearRingType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class LinearRingType
 
 
@@ -11057,6 +14012,7 @@ class BoxType(AbstractGeometryType):
     tuples."""
     subclass = None
     superclass = AbstractGeometryType
+
     def __init__(self, gid=None, srsName=None, coord=None, coordinates=None):
         self.original_tagname_ = None
         super(BoxType, self).__init__(gid, srsName, )
@@ -11065,6 +14021,7 @@ class BoxType(AbstractGeometryType):
         else:
             self.coord = coord
         self.coordinates = coordinates
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11075,24 +14032,42 @@ class BoxType(AbstractGeometryType):
             return BoxType.subclass(*args_, **kwargs_)
         else:
             return BoxType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_coord(self): return self.coord
-    def set_coord(self, coord): self.coord = coord
-    def add_coord(self, value): self.coord.append(value)
-    def insert_coord_at(self, index, value): self.coord.insert(index, value)
-    def replace_coord_at(self, index, value): self.coord[index] = value
-    def get_coordinates(self): return self.coordinates
-    def set_coordinates(self, coordinates): self.coordinates = coordinates
+
+    def get_coord(self):
+        return self.coord
+
+    def set_coord(self, coord):
+        self.coord = coord
+
+    def add_coord(self, value):
+        self.coord.append(value)
+
+    def insert_coord_at(self, index, value):
+        self.coord.insert(index, value)
+
+    def replace_coord_at(self, index, value):
+        self.coord[index] = value
+
+    def get_coordinates(self):
+        return self.coordinates
+
+    def set_coordinates(self, coordinates):
+        self.coordinates = coordinates
+
     def hasContent_(self):
         if (
-            self.coord or
-            self.coordinates is not None or
-            super(BoxType, self).hasContent_()
+                        self.coord or
+                            self.coordinates is not None or
+                    super(BoxType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='BoxType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='BoxType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('BoxType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11103,20 +14078,25 @@ class BoxType(AbstractGeometryType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='BoxType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BoxType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BoxType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='BoxType'):
         super(BoxType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='BoxType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='BoxType', fromsubclass_=False, pretty_print=True):
-        super(BoxType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='BoxType', fromsubclass_=False,
+                       pretty_print=True):
+        super(BoxType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                            pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
@@ -11124,7 +14104,9 @@ class BoxType(AbstractGeometryType):
         for coord_ in self.coord:
             coord_.export(outfile, level, namespace_='gml:', name_='coord', pretty_print=pretty_print)
         if self.coordinates is not None:
-            self.coordinates.export(outfile, level, namespace_='gml:', name_='coordinates', pretty_print=pretty_print)
+            self.coordinates.export(outfile, level, namespace_='gml:', name_='coordinates',
+                                    pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11132,8 +14114,10 @@ class BoxType(AbstractGeometryType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(BoxType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'coord':
             obj_ = CoordType.factory()
@@ -11146,6 +14130,8 @@ class BoxType(AbstractGeometryType):
             self.coordinates = obj_
             obj_.original_tagname_ = 'coordinates'
         super(BoxType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class BoxType
 
 
@@ -11154,6 +14140,7 @@ class PolygonType(AbstractGeometryType):
     boundaries which are in turn defined by LinearRings."""
     subclass = None
     superclass = AbstractGeometryType
+
     def __init__(self, gid=None, srsName=None, outerBoundaryIs=None, innerBoundaryIs=None):
         self.original_tagname_ = None
         super(PolygonType, self).__init__(gid, srsName, )
@@ -11162,6 +14149,7 @@ class PolygonType(AbstractGeometryType):
             self.innerBoundaryIs = []
         else:
             self.innerBoundaryIs = innerBoundaryIs
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11172,24 +14160,42 @@ class PolygonType(AbstractGeometryType):
             return PolygonType.subclass(*args_, **kwargs_)
         else:
             return PolygonType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_outerBoundaryIs(self): return self.outerBoundaryIs
-    def set_outerBoundaryIs(self, outerBoundaryIs): self.outerBoundaryIs = outerBoundaryIs
-    def get_innerBoundaryIs(self): return self.innerBoundaryIs
-    def set_innerBoundaryIs(self, innerBoundaryIs): self.innerBoundaryIs = innerBoundaryIs
-    def add_innerBoundaryIs(self, value): self.innerBoundaryIs.append(value)
-    def insert_innerBoundaryIs_at(self, index, value): self.innerBoundaryIs.insert(index, value)
-    def replace_innerBoundaryIs_at(self, index, value): self.innerBoundaryIs[index] = value
+
+    def get_outerBoundaryIs(self):
+        return self.outerBoundaryIs
+
+    def set_outerBoundaryIs(self, outerBoundaryIs):
+        self.outerBoundaryIs = outerBoundaryIs
+
+    def get_innerBoundaryIs(self):
+        return self.innerBoundaryIs
+
+    def set_innerBoundaryIs(self, innerBoundaryIs):
+        self.innerBoundaryIs = innerBoundaryIs
+
+    def add_innerBoundaryIs(self, value):
+        self.innerBoundaryIs.append(value)
+
+    def insert_innerBoundaryIs_at(self, index, value):
+        self.innerBoundaryIs.insert(index, value)
+
+    def replace_innerBoundaryIs_at(self, index, value):
+        self.innerBoundaryIs[index] = value
+
     def hasContent_(self):
         if (
-            self.outerBoundaryIs is not None or
-            self.innerBoundaryIs or
-            super(PolygonType, self).hasContent_()
+                            self.outerBoundaryIs is not None or
+                        self.innerBoundaryIs or
+                    super(PolygonType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PolygonType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PolygonType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PolygonType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11200,28 +14206,37 @@ class PolygonType(AbstractGeometryType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PolygonType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PolygonType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PolygonType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PolygonType'):
-        super(PolygonType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='PolygonType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PolygonType', fromsubclass_=False, pretty_print=True):
-        super(PolygonType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+        super(PolygonType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                  name_='PolygonType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PolygonType', fromsubclass_=False,
+                       pretty_print=True):
+        super(PolygonType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.outerBoundaryIs is not None:
-            self.outerBoundaryIs.export(outfile, level, namespace_='gml:', name_='outerBoundaryIs', pretty_print=pretty_print)
+            self.outerBoundaryIs.export(outfile, level, namespace_='gml:', name_='outerBoundaryIs',
+                                        pretty_print=pretty_print)
         for innerBoundaryIs_ in self.innerBoundaryIs:
-            innerBoundaryIs_.export(outfile, level, namespace_='gml:', name_='innerBoundaryIs', pretty_print=pretty_print)
+            innerBoundaryIs_.export(outfile, level, namespace_='gml:', name_='innerBoundaryIs',
+                                    pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11229,8 +14244,10 @@ class PolygonType(AbstractGeometryType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(PolygonType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'outerBoundaryIs':
             obj_ = LinearRingMemberType.factory()
@@ -11243,6 +14260,8 @@ class PolygonType(AbstractGeometryType):
             self.innerBoundaryIs.append(obj_)
             obj_.original_tagname_ = 'innerBoundaryIs'
         super(PolygonType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class PolygonType
 
 
@@ -11253,6 +14272,7 @@ class GeometryCollectionType(AbstractGeometryCollectionBaseType):
     must instantiate--or derive from--this type."""
     subclass = None
     superclass = AbstractGeometryCollectionBaseType
+
     def __init__(self, gid=None, srsName=None, geometryMember=None):
         self.original_tagname_ = None
         super(GeometryCollectionType, self).__init__(gid, srsName, )
@@ -11260,6 +14280,7 @@ class GeometryCollectionType(AbstractGeometryCollectionBaseType):
             self.geometryMember = []
         else:
             self.geometryMember = geometryMember
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11270,21 +14291,35 @@ class GeometryCollectionType(AbstractGeometryCollectionBaseType):
             return GeometryCollectionType.subclass(*args_, **kwargs_)
         else:
             return GeometryCollectionType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_geometryMember(self): return self.geometryMember
-    def set_geometryMember(self, geometryMember): self.geometryMember = geometryMember
-    def add_geometryMember(self, value): self.geometryMember.append(value)
-    def insert_geometryMember_at(self, index, value): self.geometryMember.insert(index, value)
-    def replace_geometryMember_at(self, index, value): self.geometryMember[index] = value
+
+    def get_geometryMember(self):
+        return self.geometryMember
+
+    def set_geometryMember(self, geometryMember):
+        self.geometryMember = geometryMember
+
+    def add_geometryMember(self, value):
+        self.geometryMember.append(value)
+
+    def insert_geometryMember_at(self, index, value):
+        self.geometryMember.insert(index, value)
+
+    def replace_geometryMember_at(self, index, value):
+        self.geometryMember[index] = value
+
     def hasContent_(self):
         if (
-            self.geometryMember or
-            super(GeometryCollectionType, self).hasContent_()
+                    self.geometryMember or
+                    super(GeometryCollectionType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='GeometryCollectionType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='GeometryCollectionType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('GeometryCollectionType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11295,26 +14330,35 @@ class GeometryCollectionType(AbstractGeometryCollectionBaseType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='GeometryCollectionType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GeometryCollectionType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GeometryCollectionType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='GeometryCollectionType'):
-        super(GeometryCollectionType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='GeometryCollectionType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='GeometryCollectionType', fromsubclass_=False, pretty_print=True):
-        super(GeometryCollectionType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='GeometryCollectionType'):
+        super(GeometryCollectionType, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                             name_='GeometryCollectionType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='GeometryCollectionType',
+                       fromsubclass_=False, pretty_print=True):
+        super(GeometryCollectionType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                           pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for geometryMember_ in self.geometryMember:
-            geometryMember_.export(outfile, level, namespace_='gml:', name_='geometryMember', pretty_print=pretty_print)
+            geometryMember_.export(outfile, level, namespace_='gml:', name_='geometryMember',
+                                   pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11322,8 +14366,10 @@ class GeometryCollectionType(AbstractGeometryCollectionBaseType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(GeometryCollectionType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'geometryMember':
             obj_ = GeometryAssociationType.factory()
@@ -11361,6 +14407,8 @@ class GeometryCollectionType(AbstractGeometryCollectionBaseType):
             self.geometryMember.append(obj_)
             obj_.original_tagname_ = 'polygonMember'
         super(GeometryCollectionType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class GeometryCollectionType
 
 
@@ -11369,6 +14417,7 @@ class MultiPointType(GeneratedsSuper):
     pointMember elements."""
     subclass = None
     superclass = None
+
     def __init__(self, gid=None, srsName=None, pointMember=None):
         self.original_tagname_ = None
         self.gid = _cast(None, gid)
@@ -11377,6 +14426,7 @@ class MultiPointType(GeneratedsSuper):
             self.pointMember = []
         else:
             self.pointMember = pointMember
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11387,24 +14437,46 @@ class MultiPointType(GeneratedsSuper):
             return MultiPointType.subclass(*args_, **kwargs_)
         else:
             return MultiPointType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_pointMember(self): return self.pointMember
-    def set_pointMember(self, pointMember): self.pointMember = pointMember
-    def add_pointMember(self, value): self.pointMember.append(value)
-    def insert_pointMember_at(self, index, value): self.pointMember.insert(index, value)
-    def replace_pointMember_at(self, index, value): self.pointMember[index] = value
-    def get_gid(self): return self.gid
-    def set_gid(self, gid): self.gid = gid
-    def get_srsName(self): return self.srsName
-    def set_srsName(self, srsName): self.srsName = srsName
+
+    def get_pointMember(self):
+        return self.pointMember
+
+    def set_pointMember(self, pointMember):
+        self.pointMember = pointMember
+
+    def add_pointMember(self, value):
+        self.pointMember.append(value)
+
+    def insert_pointMember_at(self, index, value):
+        self.pointMember.insert(index, value)
+
+    def replace_pointMember_at(self, index, value):
+        self.pointMember[index] = value
+
+    def get_gid(self):
+        return self.gid
+
+    def set_gid(self, gid):
+        self.gid = gid
+
+    def get_srsName(self):
+        return self.srsName
+
+    def set_srsName(self, srsName):
+        self.srsName = srsName
+
     def hasContent_(self):
         if (
-            self.pointMember
+                self.pointMember
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='MultiPointType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='MultiPointType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('MultiPointType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11415,30 +14487,36 @@ class MultiPointType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='MultiPointType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiPointType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiPointType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='MultiPointType'):
         if self.gid is not None and 'gid' not in already_processed:
             already_processed.add('gid')
-            outfile.write(' gid=%s' % (quote_attrib(self.gid), ))
+            outfile.write(' gid=%s' % (quote_attrib(self.gid),))
         if self.srsName is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
-            outfile.write(' srsName=%s' % (quote_attrib(self.srsName), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiPointType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' srsName=%s' % (quote_attrib(self.srsName),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiPointType', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for pointMember_ in self.pointMember:
-            pointMember_.export(outfile, level, namespace_='gml:', name_='pointMember', pretty_print=pretty_print)
+            pointMember_.export(outfile, level, namespace_='gml:', name_='pointMember',
+                                pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11446,6 +14524,7 @@ class MultiPointType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('gid', node)
         if value is not None and 'gid' not in already_processed:
@@ -11455,12 +14534,15 @@ class MultiPointType(GeneratedsSuper):
         if value is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
             self.srsName = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'pointMember':
             obj_ = PointMemberType.factory()
             obj_.build(child_)
             self.pointMember.append(obj_)
             obj_.original_tagname_ = 'pointMember'
+
+
 # end class MultiPointType
 
 
@@ -11469,6 +14551,7 @@ class MultiLineStringType(GeneratedsSuper):
     through lineStringMember elements."""
     subclass = None
     superclass = None
+
     def __init__(self, gid=None, srsName=None, lineStringMember=None):
         self.original_tagname_ = None
         self.gid = _cast(None, gid)
@@ -11477,6 +14560,7 @@ class MultiLineStringType(GeneratedsSuper):
             self.lineStringMember = []
         else:
             self.lineStringMember = lineStringMember
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11487,24 +14571,46 @@ class MultiLineStringType(GeneratedsSuper):
             return MultiLineStringType.subclass(*args_, **kwargs_)
         else:
             return MultiLineStringType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_lineStringMember(self): return self.lineStringMember
-    def set_lineStringMember(self, lineStringMember): self.lineStringMember = lineStringMember
-    def add_lineStringMember(self, value): self.lineStringMember.append(value)
-    def insert_lineStringMember_at(self, index, value): self.lineStringMember.insert(index, value)
-    def replace_lineStringMember_at(self, index, value): self.lineStringMember[index] = value
-    def get_gid(self): return self.gid
-    def set_gid(self, gid): self.gid = gid
-    def get_srsName(self): return self.srsName
-    def set_srsName(self, srsName): self.srsName = srsName
+
+    def get_lineStringMember(self):
+        return self.lineStringMember
+
+    def set_lineStringMember(self, lineStringMember):
+        self.lineStringMember = lineStringMember
+
+    def add_lineStringMember(self, value):
+        self.lineStringMember.append(value)
+
+    def insert_lineStringMember_at(self, index, value):
+        self.lineStringMember.insert(index, value)
+
+    def replace_lineStringMember_at(self, index, value):
+        self.lineStringMember[index] = value
+
+    def get_gid(self):
+        return self.gid
+
+    def set_gid(self, gid):
+        self.gid = gid
+
+    def get_srsName(self):
+        return self.srsName
+
+    def set_srsName(self, srsName):
+        self.srsName = srsName
+
     def hasContent_(self):
         if (
-            self.lineStringMember
+                self.lineStringMember
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='MultiLineStringType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='MultiLineStringType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('MultiLineStringType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11515,30 +14621,37 @@ class MultiLineStringType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='MultiLineStringType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiLineStringType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiLineStringType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='MultiLineStringType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='MultiLineStringType'):
         if self.gid is not None and 'gid' not in already_processed:
             already_processed.add('gid')
-            outfile.write(' gid=%s' % (quote_attrib(self.gid), ))
+            outfile.write(' gid=%s' % (quote_attrib(self.gid),))
         if self.srsName is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
-            outfile.write(' srsName=%s' % (quote_attrib(self.srsName), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiLineStringType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' srsName=%s' % (quote_attrib(self.srsName),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiLineStringType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for lineStringMember_ in self.lineStringMember:
-            lineStringMember_.export(outfile, level, namespace_='gml:', name_='lineStringMember', pretty_print=pretty_print)
+            lineStringMember_.export(outfile, level, namespace_='gml:', name_='lineStringMember',
+                                     pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11546,6 +14659,7 @@ class MultiLineStringType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('gid', node)
         if value is not None and 'gid' not in already_processed:
@@ -11555,12 +14669,15 @@ class MultiLineStringType(GeneratedsSuper):
         if value is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
             self.srsName = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'lineStringMember':
             obj_ = LineStringMemberType.factory()
             obj_.build(child_)
             self.lineStringMember.append(obj_)
             obj_.original_tagname_ = 'lineStringMember'
+
+
 # end class MultiLineStringType
 
 
@@ -11569,6 +14686,7 @@ class MultiPolygonType(GeneratedsSuper):
     through polygonMember elements."""
     subclass = None
     superclass = None
+
     def __init__(self, gid=None, srsName=None, polygonMember=None):
         self.original_tagname_ = None
         self.gid = _cast(None, gid)
@@ -11577,6 +14695,7 @@ class MultiPolygonType(GeneratedsSuper):
             self.polygonMember = []
         else:
             self.polygonMember = polygonMember
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11587,24 +14706,46 @@ class MultiPolygonType(GeneratedsSuper):
             return MultiPolygonType.subclass(*args_, **kwargs_)
         else:
             return MultiPolygonType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_polygonMember(self): return self.polygonMember
-    def set_polygonMember(self, polygonMember): self.polygonMember = polygonMember
-    def add_polygonMember(self, value): self.polygonMember.append(value)
-    def insert_polygonMember_at(self, index, value): self.polygonMember.insert(index, value)
-    def replace_polygonMember_at(self, index, value): self.polygonMember[index] = value
-    def get_gid(self): return self.gid
-    def set_gid(self, gid): self.gid = gid
-    def get_srsName(self): return self.srsName
-    def set_srsName(self, srsName): self.srsName = srsName
+
+    def get_polygonMember(self):
+        return self.polygonMember
+
+    def set_polygonMember(self, polygonMember):
+        self.polygonMember = polygonMember
+
+    def add_polygonMember(self, value):
+        self.polygonMember.append(value)
+
+    def insert_polygonMember_at(self, index, value):
+        self.polygonMember.insert(index, value)
+
+    def replace_polygonMember_at(self, index, value):
+        self.polygonMember[index] = value
+
+    def get_gid(self):
+        return self.gid
+
+    def set_gid(self, gid):
+        self.gid = gid
+
+    def get_srsName(self):
+        return self.srsName
+
+    def set_srsName(self, srsName):
+        self.srsName = srsName
+
     def hasContent_(self):
         if (
-            self.polygonMember
+                self.polygonMember
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='MultiPolygonType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='MultiPolygonType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('MultiPolygonType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11615,30 +14756,37 @@ class MultiPolygonType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='MultiPolygonType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiPolygonType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiPolygonType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='MultiPolygonType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='MultiPolygonType'):
         if self.gid is not None and 'gid' not in already_processed:
             already_processed.add('gid')
-            outfile.write(' gid=%s' % (quote_attrib(self.gid), ))
+            outfile.write(' gid=%s' % (quote_attrib(self.gid),))
         if self.srsName is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
-            outfile.write(' srsName=%s' % (quote_attrib(self.srsName), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiPolygonType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' srsName=%s' % (quote_attrib(self.srsName),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiPolygonType', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for polygonMember_ in self.polygonMember:
-            polygonMember_.export(outfile, level, namespace_='gml:', name_='polygonMember', pretty_print=pretty_print)
+            polygonMember_.export(outfile, level, namespace_='gml:', name_='polygonMember',
+                                  pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11646,6 +14794,7 @@ class MultiPolygonType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('gid', node)
         if value is not None and 'gid' not in already_processed:
@@ -11655,12 +14804,15 @@ class MultiPolygonType(GeneratedsSuper):
         if value is not None and 'srsName' not in already_processed:
             already_processed.add('srsName')
             self.srsName = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'polygonMember':
             obj_ = PolygonMemberType.factory()
             obj_.build(child_)
             self.polygonMember.append(obj_)
             obj_.original_tagname_ = 'polygonMember'
+
+
 # end class MultiPolygonType
 
 
@@ -11668,11 +14820,13 @@ class CoordType(GeneratedsSuper):
     """Represents a coordinate tuple in one, two, or three dimensions."""
     subclass = None
     superclass = None
+
     def __init__(self, X=None, Y=None, Z=None):
         self.original_tagname_ = None
         self.X = X
         self.Y = Y
         self.Z = Z
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11683,23 +14837,39 @@ class CoordType(GeneratedsSuper):
             return CoordType.subclass(*args_, **kwargs_)
         else:
             return CoordType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_X(self): return self.X
-    def set_X(self, X): self.X = X
-    def get_Y(self): return self.Y
-    def set_Y(self, Y): self.Y = Y
-    def get_Z(self): return self.Z
-    def set_Z(self, Z): self.Z = Z
+
+    def get_X(self):
+        return self.X
+
+    def set_X(self, X):
+        self.X = X
+
+    def get_Y(self):
+        return self.Y
+
+    def set_Y(self, Y):
+        self.Y = Y
+
+    def get_Z(self):
+        return self.Z
+
+    def set_Z(self, Z):
+        self.Z = Z
+
     def hasContent_(self):
         if (
-            self.X is not None or
-            self.Y is not None or
-            self.Z is not None
+                            self.X is not None or
+                            self.Y is not None or
+                        self.Z is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='CoordType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='CoordType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('CoordType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11710,32 +14880,43 @@ class CoordType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='CoordType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='CoordType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='CoordType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='CoordType'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='CoordType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='CoordType', fromsubclass_=False,
+                       pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.X is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sX>%s</%sX>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.X), input_name='X')), namespace_, eol_))
+            outfile.write('<%sX>%s</%sX>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.X), input_name='X')),
+            namespace_, eol_))
         if self.Y is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sY>%s</%sY>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Y), input_name='Y')), namespace_, eol_))
+            outfile.write('<%sY>%s</%sY>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Y), input_name='Y')),
+            namespace_, eol_))
         if self.Z is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sZ>%s</%sZ>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Z), input_name='Z')), namespace_, eol_))
+            outfile.write('<%sZ>%s</%sZ>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.Z), input_name='Z')),
+            namespace_, eol_))
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11743,8 +14924,10 @@ class CoordType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'X':
             X_ = child_.text
@@ -11758,6 +14941,8 @@ class CoordType(GeneratedsSuper):
             Z_ = child_.text
             Z_ = self.gds_validate_string(Z_, node, 'Z')
             self.Z = Z_
+
+
 # end class CoordType
 
 
@@ -11770,12 +14955,14 @@ class CoordinatesType(GeneratedsSuper):
     usage."""
     subclass = None
     superclass = None
+
     def __init__(self, decimal='.', cs=',', ts=' ', valueOf_=None):
         self.original_tagname_ = None
         self.decimal = _cast(None, decimal)
         self.cs = _cast(None, cs)
         self.ts = _cast(None, ts)
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11786,23 +14973,43 @@ class CoordinatesType(GeneratedsSuper):
             return CoordinatesType.subclass(*args_, **kwargs_)
         else:
             return CoordinatesType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_decimal(self): return self.decimal
-    def set_decimal(self, decimal): self.decimal = decimal
-    def get_cs(self): return self.cs
-    def set_cs(self, cs): self.cs = cs
-    def get_ts(self): return self.ts
-    def set_ts(self, ts): self.ts = ts
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_decimal(self):
+        return self.decimal
+
+    def set_decimal(self, decimal):
+        self.decimal = decimal
+
+    def get_cs(self):
+        return self.cs
+
+    def set_cs(self, cs):
+        self.cs = cs
+
+    def get_ts(self):
+        return self.ts
+
+    def set_ts(self, ts):
+        self.ts = ts
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_
+                1 if type(self.valueOf_) in [int, float] else self.valueOf_
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='CoordinatesType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='CoordinatesType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('CoordinatesType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11813,28 +15020,33 @@ class CoordinatesType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='CoordinatesType')
         if self.hasContent_():
             outfile.write('>')
             outfile.write(self.convert_unicode(self.valueOf_))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='CoordinatesType', pretty_print=pretty_print)
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='CoordinatesType',
+                                pretty_print=pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='CoordinatesType'):
         if self.decimal != "." and 'decimal' not in already_processed:
             already_processed.add('decimal')
-            outfile.write(' decimal=%s' % (quote_attrib(self.decimal), ))
+            outfile.write(' decimal=%s' % (quote_attrib(self.decimal),))
         if self.cs != "," and 'cs' not in already_processed:
             already_processed.add('cs')
-            outfile.write(' cs=%s' % (quote_attrib(self.cs), ))
+            outfile.write(' cs=%s' % (quote_attrib(self.cs),))
         if self.ts != " " and 'ts' not in already_processed:
             already_processed.add('ts')
-            outfile.write(' ts=%s' % (quote_attrib(self.ts), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='CoordinatesType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' ts=%s' % (quote_attrib(self.ts),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='CoordinatesType', fromsubclass_=False,
+                       pretty_print=True):
         pass
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11843,6 +15055,7 @@ class CoordinatesType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('decimal', node)
         if value is not None and 'decimal' not in already_processed:
@@ -11856,8 +15069,11 @@ class CoordinatesType(GeneratedsSuper):
         if value is not None and 'ts' not in already_processed:
             already_processed.add('ts')
             self.ts = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         pass
+
+
 # end class CoordinatesType
 
 
@@ -11868,12 +15084,14 @@ class AbstractFeatureType(GeneratedsSuper):
     possess an identifying attribute ('fid')."""
     subclass = None
     superclass = None
+
     def __init__(self, fid=None, description=None, name=None, boundedBy=None):
         self.original_tagname_ = None
         self.fid = _cast(None, fid)
         self.description = description
         self.name = name
         self.boundedBy = boundedBy
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11884,25 +15102,45 @@ class AbstractFeatureType(GeneratedsSuper):
             return AbstractFeatureType.subclass(*args_, **kwargs_)
         else:
             return AbstractFeatureType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_description(self): return self.description
-    def set_description(self, description): self.description = description
-    def get_name(self): return self.name
-    def set_name(self, name): self.name = name
-    def get_boundedBy(self): return self.boundedBy
-    def set_boundedBy(self, boundedBy): self.boundedBy = boundedBy
-    def get_fid(self): return self.fid
-    def set_fid(self, fid): self.fid = fid
+
+    def get_description(self):
+        return self.description
+
+    def set_description(self, description):
+        self.description = description
+
+    def get_name(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
+
+    def get_boundedBy(self):
+        return self.boundedBy
+
+    def set_boundedBy(self, boundedBy):
+        self.boundedBy = boundedBy
+
+    def get_fid(self):
+        return self.fid
+
+    def set_fid(self, fid):
+        self.fid = fid
+
     def hasContent_(self):
         if (
-            self.description is not None or
-            self.name is not None or
-            self.boundedBy is not None
+                            self.description is not None or
+                            self.name is not None or
+                        self.boundedBy is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='AbstractFeatureType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='AbstractFeatureType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('AbstractFeatureType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -11913,33 +15151,44 @@ class AbstractFeatureType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='AbstractFeatureType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AbstractFeatureType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AbstractFeatureType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='AbstractFeatureType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='AbstractFeatureType'):
         if self.fid is not None and 'fid' not in already_processed:
             already_processed.add('fid')
-            outfile.write(' fid=%s' % (quote_attrib(self.fid), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractFeatureType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' fid=%s' % (quote_attrib(self.fid),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractFeatureType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.description is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sdescription>%s</%sdescription>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.description), input_name='description')), namespace_, eol_))
+            outfile.write('<%sdescription>%s</%sdescription>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.description), input_name='description')), namespace_,
+                                                                   eol_))
         if self.name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sname>%s</%sname>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.name), input_name='name')), namespace_, eol_))
+            outfile.write('<%sname>%s</%sname>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.name), input_name='name')),
+            namespace_, eol_))
         if self.boundedBy is not None:
-            self.boundedBy.export(outfile, level, namespace_='gml:', name_='boundedBy', pretty_print=pretty_print)
+            self.boundedBy.export(outfile, level, namespace_='gml:', name_='boundedBy',
+                                  pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -11947,11 +15196,13 @@ class AbstractFeatureType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('fid', node)
         if value is not None and 'fid' not in already_processed:
             already_processed.add('fid')
             self.fid = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'description':
             description_ = child_.text
@@ -11966,6 +15217,8 @@ class AbstractFeatureType(GeneratedsSuper):
             obj_.build(child_)
             self.boundedBy = obj_
             obj_.original_tagname_ = 'boundedBy'
+
+
 # end class AbstractFeatureType
 
 
@@ -11974,12 +15227,14 @@ class AbstractFeatureCollectionBaseType(GeneratedsSuper):
     for a feature collection."""
     subclass = None
     superclass = None
+
     def __init__(self, fid=None, description=None, name=None, boundedBy=None):
         self.original_tagname_ = None
         self.fid = _cast(None, fid)
         self.description = description
         self.name = name
         self.boundedBy = boundedBy
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -11990,25 +15245,45 @@ class AbstractFeatureCollectionBaseType(GeneratedsSuper):
             return AbstractFeatureCollectionBaseType.subclass(*args_, **kwargs_)
         else:
             return AbstractFeatureCollectionBaseType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_description(self): return self.description
-    def set_description(self, description): self.description = description
-    def get_name(self): return self.name
-    def set_name(self, name): self.name = name
-    def get_boundedBy(self): return self.boundedBy
-    def set_boundedBy(self, boundedBy): self.boundedBy = boundedBy
-    def get_fid(self): return self.fid
-    def set_fid(self, fid): self.fid = fid
+
+    def get_description(self):
+        return self.description
+
+    def set_description(self, description):
+        self.description = description
+
+    def get_name(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
+
+    def get_boundedBy(self):
+        return self.boundedBy
+
+    def set_boundedBy(self, boundedBy):
+        self.boundedBy = boundedBy
+
+    def get_fid(self):
+        return self.fid
+
+    def set_fid(self, fid):
+        self.fid = fid
+
     def hasContent_(self):
         if (
-            self.description is not None or
-            self.name is not None or
-            self.boundedBy is not None
+                            self.description is not None or
+                            self.name is not None or
+                        self.boundedBy is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='AbstractFeatureCollectionBaseType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='AbstractFeatureCollectionBaseType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('AbstractFeatureCollectionBaseType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -12019,33 +15294,45 @@ class AbstractFeatureCollectionBaseType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='AbstractFeatureCollectionBaseType')
+        self.exportAttributes(outfile, level, already_processed, namespace_,
+                              name_='AbstractFeatureCollectionBaseType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AbstractFeatureCollectionBaseType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:',
+                                name_='AbstractFeatureCollectionBaseType', pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='AbstractFeatureCollectionBaseType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='AbstractFeatureCollectionBaseType'):
         if self.fid is not None and 'fid' not in already_processed:
             already_processed.add('fid')
-            outfile.write(' fid=%s' % (quote_attrib(self.fid), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractFeatureCollectionBaseType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' fid=%s' % (quote_attrib(self.fid),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractFeatureCollectionBaseType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.description is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sdescription>%s</%sdescription>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.description), input_name='description')), namespace_, eol_))
+            outfile.write('<%sdescription>%s</%sdescription>%s' % (namespace_, self.gds_encode(
+                self.gds_format_string(quote_xml(self.description), input_name='description')), namespace_,
+                                                                   eol_))
         if self.name is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%sname>%s</%sname>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.name), input_name='name')), namespace_, eol_))
+            outfile.write('<%sname>%s</%sname>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.name), input_name='name')),
+            namespace_, eol_))
         if self.boundedBy is not None:
-            self.boundedBy.export(outfile, level, namespace_='gml:', name_='boundedBy', pretty_print=pretty_print)
+            self.boundedBy.export(outfile, level, namespace_='gml:', name_='boundedBy',
+                                  pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -12053,11 +15340,13 @@ class AbstractFeatureCollectionBaseType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('fid', node)
         if value is not None and 'fid' not in already_processed:
             already_processed.add('fid')
             self.fid = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'description':
             description_ = child_.text
@@ -12072,6 +15361,8 @@ class AbstractFeatureCollectionBaseType(GeneratedsSuper):
             obj_.build(child_)
             self.boundedBy = obj_
             obj_.original_tagname_ = 'boundedBy'
+
+
 # end class AbstractFeatureCollectionBaseType
 
 
@@ -12079,6 +15370,7 @@ class AbstractFeatureCollectionType(AbstractFeatureCollectionBaseType):
     """A feature collection contains zero or more featureMember elements."""
     subclass = None
     superclass = AbstractFeatureCollectionBaseType
+
     def __init__(self, fid=None, description=None, name=None, boundedBy=None, featureMember=None):
         self.original_tagname_ = None
         super(AbstractFeatureCollectionType, self).__init__(fid, description, name, boundedBy, )
@@ -12086,6 +15378,7 @@ class AbstractFeatureCollectionType(AbstractFeatureCollectionBaseType):
             self.featureMember = []
         else:
             self.featureMember = featureMember
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -12096,21 +15389,35 @@ class AbstractFeatureCollectionType(AbstractFeatureCollectionBaseType):
             return AbstractFeatureCollectionType.subclass(*args_, **kwargs_)
         else:
             return AbstractFeatureCollectionType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_featureMember(self): return self.featureMember
-    def set_featureMember(self, featureMember): self.featureMember = featureMember
-    def add_featureMember(self, value): self.featureMember.append(value)
-    def insert_featureMember_at(self, index, value): self.featureMember.insert(index, value)
-    def replace_featureMember_at(self, index, value): self.featureMember[index] = value
+
+    def get_featureMember(self):
+        return self.featureMember
+
+    def set_featureMember(self, featureMember):
+        self.featureMember = featureMember
+
+    def add_featureMember(self, value):
+        self.featureMember.append(value)
+
+    def insert_featureMember_at(self, index, value):
+        self.featureMember.insert(index, value)
+
+    def replace_featureMember_at(self, index, value):
+        self.featureMember[index] = value
+
     def hasContent_(self):
         if (
-            self.featureMember or
-            super(AbstractFeatureCollectionType, self).hasContent_()
+                    self.featureMember or
+                    super(AbstractFeatureCollectionType, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='AbstractFeatureCollectionType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='AbstractFeatureCollectionType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('AbstractFeatureCollectionType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -12121,26 +15428,37 @@ class AbstractFeatureCollectionType(AbstractFeatureCollectionBaseType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='AbstractFeatureCollectionType')
+        self.exportAttributes(outfile, level, already_processed, namespace_,
+                              name_='AbstractFeatureCollectionType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AbstractFeatureCollectionType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='AbstractFeatureCollectionType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='AbstractFeatureCollectionType'):
-        super(AbstractFeatureCollectionType, self).exportAttributes(outfile, level, already_processed, namespace_, name_='AbstractFeatureCollectionType')
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractFeatureCollectionType', fromsubclass_=False, pretty_print=True):
-        super(AbstractFeatureCollectionType, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='AbstractFeatureCollectionType'):
+        super(AbstractFeatureCollectionType, self).exportAttributes(outfile, level, already_processed,
+                                                                    namespace_,
+                                                                    name_='AbstractFeatureCollectionType')
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='AbstractFeatureCollectionType',
+                       fromsubclass_=False, pretty_print=True):
+        super(AbstractFeatureCollectionType, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                                  pretty_print=pretty_print)
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         for featureMember_ in self.featureMember:
-            featureMember_.export(outfile, level, namespace_='gml:', name_='featureMember', pretty_print=pretty_print)
+            featureMember_.export(outfile, level, namespace_='gml:', name_='featureMember',
+                                  pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -12148,8 +15466,10 @@ class AbstractFeatureCollectionType(AbstractFeatureCollectionBaseType):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         super(AbstractFeatureCollectionType, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'featureMember':
             obj_ = FeatureAssociationType.factory()
@@ -12157,6 +15477,8 @@ class AbstractFeatureCollectionType(AbstractFeatureCollectionBaseType):
             self.featureMember.append(obj_)
             obj_.original_tagname_ = 'featureMember'
         super(AbstractFeatureCollectionType, self).buildChildren(child_, node, nodeName_, True)
+
+
 # end class AbstractFeatureCollectionType
 
 
@@ -12166,7 +15488,9 @@ class GeometryPropertyType(GeneratedsSuper):
     that refers to a remote geometry element."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, _Geometry=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, _Geometry=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -12177,6 +15501,7 @@ class GeometryPropertyType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self._Geometry = _Geometry
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -12187,33 +15512,73 @@ class GeometryPropertyType(GeneratedsSuper):
             return GeometryPropertyType.subclass(*args_, **kwargs_)
         else:
             return GeometryPropertyType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get__Geometry(self): return self._Geometry
-    def set__Geometry(self, _Geometry): self._Geometry = _Geometry
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get__Geometry(self):
+        return self._Geometry
+
+    def set__Geometry(self, _Geometry):
+        self._Geometry = _Geometry
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self._Geometry is not None
+                    self._Geometry is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='GeometryPropertyType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='GeometryPropertyType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('GeometryPropertyType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -12224,48 +15589,54 @@ class GeometryPropertyType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='GeometryPropertyType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GeometryPropertyType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='GeometryPropertyType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='GeometryPropertyType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='GeometryPropertyType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='GeometryPropertyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='GeometryPropertyType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self._Geometry is not None:
             self._Geometry.export(outfile, level, namespace_, name_='_Geometry', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -12273,6 +15644,7 @@ class GeometryPropertyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -12306,6 +15678,7 @@ class GeometryPropertyType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == '_Geometry':
             type_name_ = child_.attrib.get(
@@ -12416,6 +15789,8 @@ class GeometryPropertyType(GeneratedsSuper):
             obj_.build(child_)
             self._Geometry = obj_
             obj_.original_tagname_ = 'MultiPolygon'
+
+
 # end class GeometryPropertyType
 
 
@@ -12429,7 +15804,9 @@ class FeatureAssociationType(GeneratedsSuper):
     schema fragment that constrains the target instance."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, _Feature=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, _Feature=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -12440,6 +15817,7 @@ class FeatureAssociationType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self._Feature = _Feature
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -12450,33 +15828,73 @@ class FeatureAssociationType(GeneratedsSuper):
             return FeatureAssociationType.subclass(*args_, **kwargs_)
         else:
             return FeatureAssociationType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get__Feature(self): return self._Feature
-    def set__Feature(self, _Feature): self._Feature = _Feature
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get__Feature(self):
+        return self._Feature
+
+    def set__Feature(self, _Feature):
+        self._Feature = _Feature
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self._Feature is not None
+                    self._Feature is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='FeatureAssociationType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='FeatureAssociationType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('FeatureAssociationType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -12487,48 +15905,54 @@ class FeatureAssociationType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='FeatureAssociationType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FeatureAssociationType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='FeatureAssociationType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='FeatureAssociationType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='FeatureAssociationType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='FeatureAssociationType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='FeatureAssociationType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self._Feature is not None:
             self._Feature.export(outfile, level, namespace_, name_='_Feature', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -12536,6 +15960,7 @@ class FeatureAssociationType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -12569,6 +15994,7 @@ class FeatureAssociationType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == '_Feature':
             type_name_ = child_.attrib.get(
@@ -12627,6 +16053,8 @@ class FeatureAssociationType(GeneratedsSuper):
                     'Class not implemented for <_FeatureCollection> element')
             self._Feature = obj_
             obj_.original_tagname_ = '_FeatureCollection'
+
+
 # end class FeatureAssociationType
 
 
@@ -12634,11 +16062,13 @@ class BoundingShapeType(GeneratedsSuper):
     """Bounding shapes--a Box or a null element are currently allowed."""
     subclass = None
     superclass = None
+
     def __init__(self, Box=None, null=None):
         self.original_tagname_ = None
         self.Box = Box
         self.null = null
         self.validate_NullType(self.null)
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -12649,11 +16079,21 @@ class BoundingShapeType(GeneratedsSuper):
             return BoundingShapeType.subclass(*args_, **kwargs_)
         else:
             return BoundingShapeType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Box(self): return self.Box
-    def set_Box(self, Box): self.Box = Box
-    def get_null(self): return self.null
-    def set_null(self, null): self.null = null
+
+    def get_Box(self):
+        return self.Box
+
+    def set_Box(self, Box):
+        self.Box = Box
+
+    def get_null(self):
+        return self.null
+
+    def set_null(self, null):
+        self.null = null
+
     def validate_NullType(self, value):
         # Validate type NullType, a restriction on string.
         if value is not None and Validate_simpletypes_:
@@ -12665,16 +16105,20 @@ class BoundingShapeType(GeneratedsSuper):
                     enumeration_respectee = True
                     break
             if not enumeration_respectee:
-                warnings_.warn('Value "%(value)s" does not match xsd enumeration restriction on NullType' % {"value" : value.encode("utf-8")} )
+                warnings_.warn('Value "%(value)s" does not match xsd enumeration restriction on NullType' % {
+                    "value": value.encode("utf-8")})
+
     def hasContent_(self):
         if (
-            self.Box is not None or
-            self.null is not None
+                        self.Box is not None or
+                        self.null is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='BoundingShapeType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='BoundingShapeType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('BoundingShapeType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -12685,19 +16129,24 @@ class BoundingShapeType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='BoundingShapeType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BoundingShapeType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='BoundingShapeType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='BoundingShapeType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='BoundingShapeType'):
         pass
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='BoundingShapeType', fromsubclass_=False, pretty_print=True):
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='BoundingShapeType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
@@ -12706,7 +16155,10 @@ class BoundingShapeType(GeneratedsSuper):
             self.Box.export(outfile, level, namespace_='gml:', name_='Box', pretty_print=pretty_print)
         if self.null is not None:
             showIndent(outfile, level, pretty_print)
-            outfile.write('<%snull>%s</%snull>%s' % (namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.null), input_name='null')), namespace_, eol_))
+            outfile.write('<%snull>%s</%snull>%s' % (
+            namespace_, self.gds_encode(self.gds_format_string(quote_xml(self.null), input_name='null')),
+            namespace_, eol_))
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -12714,8 +16166,10 @@ class BoundingShapeType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         pass
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Box':
             obj_ = BoxType.factory()
@@ -12728,6 +16182,8 @@ class BoundingShapeType(GeneratedsSuper):
             self.null = null_
             # validate type NullType
             self.validate_NullType(self.null)
+
+
 # end class BoundingShapeType
 
 
@@ -12736,7 +16192,9 @@ class PointPropertyType(GeneratedsSuper):
     centerOf properties."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, Point=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, Point=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -12747,6 +16205,7 @@ class PointPropertyType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self.Point = Point
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -12757,33 +16216,73 @@ class PointPropertyType(GeneratedsSuper):
             return PointPropertyType.subclass(*args_, **kwargs_)
         else:
             return PointPropertyType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Point(self): return self.Point
-    def set_Point(self, Point): self.Point = Point
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get_Point(self):
+        return self.Point
+
+    def set_Point(self, Point):
+        self.Point = Point
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self.Point is not None
+                    self.Point is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PointPropertyType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PointPropertyType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PointPropertyType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -12794,48 +16293,54 @@ class PointPropertyType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PointPropertyType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointPropertyType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PointPropertyType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PointPropertyType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='PointPropertyType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointPropertyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PointPropertyType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Point is not None:
             self.Point.export(outfile, level, namespace_='gml:', name_='Point', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -12843,6 +16348,7 @@ class PointPropertyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -12876,12 +16382,15 @@ class PointPropertyType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Point':
             obj_ = PointType.factory()
             obj_.build(child_)
             self.Point = obj_
             obj_.original_tagname_ = 'Point'
+
+
 # end class PointPropertyType
 
 
@@ -12890,7 +16399,9 @@ class PolygonPropertyType(GeneratedsSuper):
     properties."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, Polygon=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, Polygon=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -12901,6 +16412,7 @@ class PolygonPropertyType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self.Polygon = Polygon
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -12911,33 +16423,73 @@ class PolygonPropertyType(GeneratedsSuper):
             return PolygonPropertyType.subclass(*args_, **kwargs_)
         else:
             return PolygonPropertyType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_Polygon(self): return self.Polygon
-    def set_Polygon(self, Polygon): self.Polygon = Polygon
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get_Polygon(self):
+        return self.Polygon
+
+    def set_Polygon(self, Polygon):
+        self.Polygon = Polygon
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self.Polygon is not None
+                    self.Polygon is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='PolygonPropertyType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='PolygonPropertyType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('PolygonPropertyType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -12948,48 +16500,54 @@ class PolygonPropertyType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='PolygonPropertyType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PolygonPropertyType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='PolygonPropertyType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='PolygonPropertyType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='PolygonPropertyType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='PolygonPropertyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='PolygonPropertyType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.Polygon is not None:
             self.Polygon.export(outfile, level, namespace_='gml:', name_='Polygon', pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -12997,6 +16555,7 @@ class PolygonPropertyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -13030,12 +16589,15 @@ class PolygonPropertyType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'Polygon':
             obj_ = PolygonType.factory()
             obj_.build(child_)
             self.Polygon = obj_
             obj_.original_tagname_ = 'Polygon'
+
+
 # end class PolygonPropertyType
 
 
@@ -13044,7 +16606,9 @@ class LineStringPropertyType(GeneratedsSuper):
     properties."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, LineString=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, LineString=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -13055,6 +16619,7 @@ class LineStringPropertyType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self.LineString = LineString
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -13065,33 +16630,73 @@ class LineStringPropertyType(GeneratedsSuper):
             return LineStringPropertyType.subclass(*args_, **kwargs_)
         else:
             return LineStringPropertyType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_LineString(self): return self.LineString
-    def set_LineString(self, LineString): self.LineString = LineString
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get_LineString(self):
+        return self.LineString
+
+    def set_LineString(self, LineString):
+        self.LineString = LineString
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self.LineString is not None
+                    self.LineString is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='LineStringPropertyType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='LineStringPropertyType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('LineStringPropertyType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -13102,48 +16707,55 @@ class LineStringPropertyType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='LineStringPropertyType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LineStringPropertyType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='LineStringPropertyType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='LineStringPropertyType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='LineStringPropertyType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='LineStringPropertyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='LineStringPropertyType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.LineString is not None:
-            self.LineString.export(outfile, level, namespace_='gml:', name_='LineString', pretty_print=pretty_print)
+            self.LineString.export(outfile, level, namespace_='gml:', name_='LineString',
+                                   pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -13151,6 +16763,7 @@ class LineStringPropertyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -13184,12 +16797,15 @@ class LineStringPropertyType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'LineString':
             obj_ = LineStringType.factory()
             obj_.build(child_)
             self.LineString = obj_
             obj_.original_tagname_ = 'LineString'
+
+
 # end class LineStringPropertyType
 
 
@@ -13199,7 +16815,9 @@ class MultiPointPropertyType(GeneratedsSuper):
     multiPosition, multiCenterOf."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, MultiPoint=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, MultiPoint=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -13210,6 +16828,7 @@ class MultiPointPropertyType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self.MultiPoint = MultiPoint
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -13220,33 +16839,73 @@ class MultiPointPropertyType(GeneratedsSuper):
             return MultiPointPropertyType.subclass(*args_, **kwargs_)
         else:
             return MultiPointPropertyType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_MultiPoint(self): return self.MultiPoint
-    def set_MultiPoint(self, MultiPoint): self.MultiPoint = MultiPoint
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get_MultiPoint(self):
+        return self.MultiPoint
+
+    def set_MultiPoint(self, MultiPoint):
+        self.MultiPoint = MultiPoint
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self.MultiPoint is not None
+                    self.MultiPoint is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='MultiPointPropertyType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='MultiPointPropertyType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('MultiPointPropertyType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -13257,48 +16916,55 @@ class MultiPointPropertyType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='MultiPointPropertyType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiPointPropertyType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiPointPropertyType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='MultiPointPropertyType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='MultiPointPropertyType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiPointPropertyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiPointPropertyType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.MultiPoint is not None:
-            self.MultiPoint.export(outfile, level, namespace_='gml:', name_='MultiPoint', pretty_print=pretty_print)
+            self.MultiPoint.export(outfile, level, namespace_='gml:', name_='MultiPoint',
+                                   pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -13306,6 +16972,7 @@ class MultiPointPropertyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -13339,12 +17006,15 @@ class MultiPointPropertyType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'MultiPoint':
             obj_ = MultiPointType.factory()
             obj_.build(child_)
             self.MultiPoint = obj_
             obj_.original_tagname_ = 'MultiPoint'
+
+
 # end class MultiPointPropertyType
 
 
@@ -13354,7 +17024,9 @@ class MultiLineStringPropertyType(GeneratedsSuper):
     multiCenterLineOf."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, MultiLineString=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, MultiLineString=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -13365,6 +17037,7 @@ class MultiLineStringPropertyType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self.MultiLineString = MultiLineString
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -13375,33 +17048,73 @@ class MultiLineStringPropertyType(GeneratedsSuper):
             return MultiLineStringPropertyType.subclass(*args_, **kwargs_)
         else:
             return MultiLineStringPropertyType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_MultiLineString(self): return self.MultiLineString
-    def set_MultiLineString(self, MultiLineString): self.MultiLineString = MultiLineString
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get_MultiLineString(self):
+        return self.MultiLineString
+
+    def set_MultiLineString(self, MultiLineString):
+        self.MultiLineString = MultiLineString
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self.MultiLineString is not None
+                    self.MultiLineString is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='MultiLineStringPropertyType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='MultiLineStringPropertyType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('MultiLineStringPropertyType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -13412,48 +17125,56 @@ class MultiLineStringPropertyType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='MultiLineStringPropertyType')
+        self.exportAttributes(outfile, level, already_processed, namespace_,
+                              name_='MultiLineStringPropertyType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiLineStringPropertyType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiLineStringPropertyType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='MultiLineStringPropertyType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='MultiLineStringPropertyType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiLineStringPropertyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiLineStringPropertyType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.MultiLineString is not None:
-            self.MultiLineString.export(outfile, level, namespace_='gml:', name_='MultiLineString', pretty_print=pretty_print)
+            self.MultiLineString.export(outfile, level, namespace_='gml:', name_='MultiLineString',
+                                        pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -13461,6 +17182,7 @@ class MultiLineStringPropertyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -13494,12 +17216,15 @@ class MultiLineStringPropertyType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'MultiLineString':
             obj_ = MultiLineStringType.factory()
             obj_.build(child_)
             self.MultiLineString = obj_
             obj_.original_tagname_ = 'MultiLineString'
+
+
 # end class MultiLineStringPropertyType
 
 
@@ -13508,7 +17233,9 @@ class MultiPolygonPropertyType(GeneratedsSuper):
     geometric properties: multiCoverage, multiExtentOf."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, MultiPolygon=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, MultiPolygon=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -13519,6 +17246,7 @@ class MultiPolygonPropertyType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self.MultiPolygon = MultiPolygon
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -13529,33 +17257,73 @@ class MultiPolygonPropertyType(GeneratedsSuper):
             return MultiPolygonPropertyType.subclass(*args_, **kwargs_)
         else:
             return MultiPolygonPropertyType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_MultiPolygon(self): return self.MultiPolygon
-    def set_MultiPolygon(self, MultiPolygon): self.MultiPolygon = MultiPolygon
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get_MultiPolygon(self):
+        return self.MultiPolygon
+
+    def set_MultiPolygon(self, MultiPolygon):
+        self.MultiPolygon = MultiPolygon
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self.MultiPolygon is not None
+                    self.MultiPolygon is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='MultiPolygonPropertyType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='MultiPolygonPropertyType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('MultiPolygonPropertyType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -13566,48 +17334,55 @@ class MultiPolygonPropertyType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='MultiPolygonPropertyType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiPolygonPropertyType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiPolygonPropertyType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='MultiPolygonPropertyType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='MultiPolygonPropertyType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiPolygonPropertyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiPolygonPropertyType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.MultiPolygon is not None:
-            self.MultiPolygon.export(outfile, level, namespace_='gml:', name_='MultiPolygon', pretty_print=pretty_print)
+            self.MultiPolygon.export(outfile, level, namespace_='gml:', name_='MultiPolygon',
+                                     pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -13615,6 +17390,7 @@ class MultiPolygonPropertyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -13648,12 +17424,15 @@ class MultiPolygonPropertyType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'MultiPolygon':
             obj_ = MultiPolygonType.factory()
             obj_.build(child_)
             self.MultiPolygon = obj_
             obj_.original_tagname_ = 'MultiPolygon'
+
+
 # end class MultiPolygonPropertyType
 
 
@@ -13661,7 +17440,9 @@ class MultiGeometryPropertyType(GeneratedsSuper):
     """Encapsulates a MultiGeometry element."""
     subclass = None
     superclass = None
-    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None, show=None, actuate=None, MultiGeometry=None):
+
+    def __init__(self, remoteSchema=None, type_=None, href=None, role=None, arcrole=None, title=None,
+                 show=None, actuate=None, MultiGeometry=None):
         self.original_tagname_ = None
         self.remoteSchema = _cast(None, remoteSchema)
         self.type_ = _cast(None, type_)
@@ -13672,6 +17453,7 @@ class MultiGeometryPropertyType(GeneratedsSuper):
         self.show = _cast(None, show)
         self.actuate = _cast(None, actuate)
         self.MultiGeometry = MultiGeometry
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -13682,33 +17464,73 @@ class MultiGeometryPropertyType(GeneratedsSuper):
             return MultiGeometryPropertyType.subclass(*args_, **kwargs_)
         else:
             return MultiGeometryPropertyType(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_MultiGeometry(self): return self.MultiGeometry
-    def set_MultiGeometry(self, MultiGeometry): self.MultiGeometry = MultiGeometry
-    def get_remoteSchema(self): return self.remoteSchema
-    def set_remoteSchema(self, remoteSchema): self.remoteSchema = remoteSchema
-    def get_type(self): return self.type_
-    def set_type(self, type_): self.type_ = type_
-    def get_href(self): return self.href
-    def set_href(self, href): self.href = href
-    def get_role(self): return self.role
-    def set_role(self, role): self.role = role
-    def get_arcrole(self): return self.arcrole
-    def set_arcrole(self, arcrole): self.arcrole = arcrole
-    def get_title(self): return self.title
-    def set_title(self, title): self.title = title
-    def get_show(self): return self.show
-    def set_show(self, show): self.show = show
-    def get_actuate(self): return self.actuate
-    def set_actuate(self, actuate): self.actuate = actuate
+
+    def get_MultiGeometry(self):
+        return self.MultiGeometry
+
+    def set_MultiGeometry(self, MultiGeometry):
+        self.MultiGeometry = MultiGeometry
+
+    def get_remoteSchema(self):
+        return self.remoteSchema
+
+    def set_remoteSchema(self, remoteSchema):
+        self.remoteSchema = remoteSchema
+
+    def get_type(self):
+        return self.type_
+
+    def set_type(self, type_):
+        self.type_ = type_
+
+    def get_href(self):
+        return self.href
+
+    def set_href(self, href):
+        self.href = href
+
+    def get_role(self):
+        return self.role
+
+    def set_role(self, role):
+        self.role = role
+
+    def get_arcrole(self):
+        return self.arcrole
+
+    def set_arcrole(self, arcrole):
+        self.arcrole = arcrole
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def get_show(self):
+        return self.show
+
+    def set_show(self, show):
+        self.show = show
+
+    def get_actuate(self):
+        return self.actuate
+
+    def set_actuate(self, actuate):
+        self.actuate = actuate
+
     def hasContent_(self):
         if (
-            self.MultiGeometry is not None
+                    self.MultiGeometry is not None
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='MultiGeometryPropertyType', namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='MultiGeometryPropertyType',
+               namespacedef_='xmlns:sld="http://www.opengis.net/sld"', pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('MultiGeometryPropertyType')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -13719,48 +17541,56 @@ class MultiGeometryPropertyType(GeneratedsSuper):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
-        self.exportAttributes(outfile, level, already_processed, namespace_, name_='MultiGeometryPropertyType')
+        self.exportAttributes(outfile, level, already_processed, namespace_,
+                              name_='MultiGeometryPropertyType')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiGeometryPropertyType', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='MultiGeometryPropertyType',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
-    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='MultiGeometryPropertyType'):
+            outfile.write('/>%s' % (eol_,))
+
+    def exportAttributes(self, outfile, level, already_processed, namespace_='sld:',
+                         name_='MultiGeometryPropertyType'):
         if self.remoteSchema is not None and 'remoteSchema' not in already_processed:
             already_processed.add('remoteSchema')
-            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema), ))
+            outfile.write(' remoteSchema=%s' % (quote_attrib(self.remoteSchema),))
         if self.type_ is not None and 'type_' not in already_processed:
             already_processed.add('type_')
-            outfile.write(' type=%s' % (quote_attrib(self.type_), ))
+            outfile.write(' type=%s' % (quote_attrib(self.type_),))
         if self.href is not None and 'href' not in already_processed:
             already_processed.add('href')
-            outfile.write(' href=%s' % (quote_attrib(self.href), ))
+            outfile.write(' href=%s' % (quote_attrib(self.href),))
         if self.role is not None and 'role' not in already_processed:
             already_processed.add('role')
-            outfile.write(' role=%s' % (quote_attrib(self.role), ))
+            outfile.write(' role=%s' % (quote_attrib(self.role),))
         if self.arcrole is not None and 'arcrole' not in already_processed:
             already_processed.add('arcrole')
-            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole), ))
+            outfile.write(' arcrole=%s' % (quote_attrib(self.arcrole),))
         if self.title is not None and 'title' not in already_processed:
             already_processed.add('title')
-            outfile.write(' title=%s' % (quote_attrib(self.title), ))
+            outfile.write(' title=%s' % (quote_attrib(self.title),))
         if self.show is not None and 'show' not in already_processed:
             already_processed.add('show')
-            outfile.write(' show=%s' % (quote_attrib(self.show), ))
+            outfile.write(' show=%s' % (quote_attrib(self.show),))
         if self.actuate is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
-            outfile.write(' actuate=%s' % (quote_attrib(self.actuate), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiGeometryPropertyType', fromsubclass_=False, pretty_print=True):
+            outfile.write(' actuate=%s' % (quote_attrib(self.actuate),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='MultiGeometryPropertyType',
+                       fromsubclass_=False, pretty_print=True):
         if pretty_print:
             eol_ = '\n'
         else:
             eol_ = ''
         if self.MultiGeometry is not None:
-            self.MultiGeometry.export(outfile, level, namespace_='gml:', name_='MultiGeometry', pretty_print=pretty_print)
+            self.MultiGeometry.export(outfile, level, namespace_='gml:', name_='MultiGeometry',
+                                      pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
@@ -13768,6 +17598,7 @@ class MultiGeometryPropertyType(GeneratedsSuper):
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('remoteSchema', node)
         if value is not None and 'remoteSchema' not in already_processed:
@@ -13801,12 +17632,15 @@ class MultiGeometryPropertyType(GeneratedsSuper):
         if value is not None and 'actuate' not in already_processed:
             already_processed.add('actuate')
             self.actuate = value
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if nodeName_ == 'MultiGeometry':
             obj_ = GeometryCollectionType.factory()
             obj_.build(child_)
             self.MultiGeometry = obj_
             obj_.original_tagname_ = 'MultiGeometry'
+
+
 # end class MultiGeometryPropertyType
 
 
@@ -13817,6 +17651,7 @@ class CssParameter(ParameterValueType):
     value."""
     subclass = None
     superclass = ParameterValueType
+
     def __init__(self, expression=None, name=None, valueOf_=None, mixedclass_=None, content_=None):
         self.original_tagname_ = None
         super(CssParameter, self).__init__(expression, valueOf_, mixedclass_, content_, )
@@ -13831,6 +17666,7 @@ class CssParameter(ParameterValueType):
         else:
             self.content_ = content_
         self.valueOf_ = valueOf_
+
     def factory(*args_, **kwargs_):
         if CurrentSubclassModule_ is not None:
             subclass = getSubclassFromModule_(
@@ -13841,20 +17677,32 @@ class CssParameter(ParameterValueType):
             return CssParameter.subclass(*args_, **kwargs_)
         else:
             return CssParameter(*args_, **kwargs_)
+
     factory = staticmethod(factory)
-    def get_name(self): return self.name
-    def set_name(self, name): self.name = name
-    def get_valueOf_(self): return self.valueOf_
-    def set_valueOf_(self, valueOf_): self.valueOf_ = valueOf_
+
+    def get_name(self):
+        return self.name
+
+    def set_name(self, name):
+        self.name = name
+
+    def get_valueOf_(self):
+        return self.valueOf_
+
+    def set_valueOf_(self, valueOf_):
+        self.valueOf_ = valueOf_
+
     def hasContent_(self):
         if (
-            1 if type(self.valueOf_) in [int,float] else self.valueOf_ or
-            super(CssParameter, self).hasContent_()
+                1 if type(self.valueOf_) in [int, float] else self.valueOf_ or
+                    super(CssParameter, self).hasContent_()
         ):
             return True
         else:
             return False
-    def export(self, outfile, level, namespace_='sld:', name_='CssParameter', namespacedef_='', pretty_print=True):
+
+    def export(self, outfile, level, namespace_='sld:', name_='CssParameter', namespacedef_='',
+               pretty_print=True):
         imported_ns_def_ = GenerateDSNamespaceDefs_.get('CssParameter')
         if imported_ns_def_ is not None:
             namespacedef_ = imported_ns_def_
@@ -13865,48 +17713,60 @@ class CssParameter(ParameterValueType):
         if self.original_tagname_ is not None:
             name_ = self.original_tagname_
         showIndent(outfile, level, pretty_print)
-        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '',))
         already_processed = set()
         self.exportAttributes(outfile, level, already_processed, namespace_, name_='CssParameter')
         if self.hasContent_():
-            outfile.write('>%s' % (eol_, ))
-            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='CssParameter', pretty_print=pretty_print)
+            outfile.write('>%s' % (eol_,))
+            self.exportChildren(outfile, level + 1, namespace_='sld:', name_='CssParameter',
+                                pretty_print=pretty_print)
             showIndent(outfile, level, pretty_print)
             outfile.write('</%s%s>%s' % (namespace_, name_, eol_))
         else:
-            outfile.write('/>%s' % (eol_, ))
+            outfile.write('/>%s' % (eol_,))
+
     def exportAttributes(self, outfile, level, already_processed, namespace_='sld:', name_='CssParameter'):
-        super(CssParameter, self).exportAttributes(outfile, level, already_processed, namespace_, name_='CssParameter')
+        super(CssParameter, self).exportAttributes(outfile, level, already_processed, namespace_,
+                                                   name_='CssParameter')
         if self.name is not None and 'name' not in already_processed:
             already_processed.add('name')
-            outfile.write(' name=%s' % (self.gds_encode(self.gds_format_string(quote_attrib(self.name), input_name='name')), ))
-    def exportChildren(self, outfile, level, namespace_='sld:', name_='CssParameter', fromsubclass_=False, pretty_print=True):
-        super(CssParameter, self).exportChildren(outfile, level, namespace_, name_, True, pretty_print=pretty_print)
+            outfile.write(' name=%s' % (
+            self.gds_encode(self.gds_format_string(quote_attrib(self.name), input_name='name')),))
+
+    def exportChildren(self, outfile, level, namespace_='sld:', name_='CssParameter', fromsubclass_=False,
+                       pretty_print=True):
+        super(CssParameter, self).exportChildren(outfile, level, namespace_, name_, True,
+                                                 pretty_print=pretty_print)
+
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
         self.valueOf_ = get_all_text_(node)
         if node.text is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', node.text)
+                                    MixedContainer.TypeNone, '', node.text)
             self.content_.append(obj_)
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_)
         return self
+
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('name', node)
         if value is not None and 'name' not in already_processed:
             already_processed.add('name')
             self.name = value
         super(CssParameter, self).buildAttributes(node, attrs, already_processed)
+
     def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
         if not fromsubclass_ and child_.tail is not None:
             obj_ = self.mixedclass_(MixedContainer.CategoryText,
-                MixedContainer.TypeNone, '', child_.tail)
+                                    MixedContainer.TypeNone, '', child_.tail)
             self.content_.append(obj_)
         super(CssParameter, self).buildChildren(child_, node, nodeName_, True)
         pass
+
+
 # end class CssParameter
 
 
@@ -14016,7 +17876,6 @@ GDSClassesMapping = {
     'spatialOps': SpatialOpsType,
     'title': titleEltType,
 }
-
 
 USAGE_TEXT = """
 Usage: python <Parser>.py [ -s ] <in_xml_file>
@@ -14135,9 +17994,8 @@ def main():
 
 
 if __name__ == '__main__':
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     main()
-
 
 __all__ = [
     "AVERAGE",

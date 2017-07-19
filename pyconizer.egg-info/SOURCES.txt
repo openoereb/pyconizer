@@ -1,7 +1,8 @@
 CHANGES.txt
 MANIFEST.in
 README.txt
-setup.py
+pytest.ini
+requirements.txt
 pyconizer/__init__.py
 pyconizer.egg-info/PKG-INFO
 pyconizer.egg-info/SOURCES.txt
@@ -11,6 +12,12 @@ pyconizer.egg-info/not-zip-safe
 pyconizer.egg-info/requires.txt
 pyconizer.egg-info/top_level.txt
 pyconizer/lib/__init__.py
-pyconizer/lib/sld_api/__init__.py
-pyconizer/lib/sld_api/sld_1.0.0.py
-pyconizer/lib/sld_api/sld_1.0.0_sub_classes.py
+pyconizer/lib/url.py
+pyconizer/lib/api/__init__.py
+pyconizer/lib/api/structure.py
+pyconizer/lib/api/image/__init__.py
+pyconizer/lib/api/sld/__init__.py
+pyconizer/lib/api/sld/v1_0_0/__init__.py
+pyconizer/lib/api/sld/v1_0_0/classes.py
+pyconizer/lib/api/sld/v1_0_0/sub_classes.py
+pyconizer/lib/api/svg/__init__.py
