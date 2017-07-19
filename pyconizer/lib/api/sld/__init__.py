@@ -28,18 +28,18 @@ def FactoryFromString(sld_content):
     return parsed_sld
 
 
-def Factory(sld_file_path):
-    """
-
-    Args:
-        sld_file_path (str): The SLD file to check for version and parse with the found module.
-
-    Returns:
-        pyconizer.lib.api.sld.v1_0_0.classes.StyledLayerDescriptor: The complete objectified representation
-            of the SLD.
-    """
-    content = open(sld_file_path).read()
-    return FactoryFromString(content)
+# def Factory(sld_file_path):
+#     """
+#
+#     Args:
+#         sld_file_path (str): The SLD file to check for version and parse with the found module.
+#
+#     Returns:
+#         pyconizer.lib.api.sld.v1_0_0.classes.StyledLayerDescriptor: The complete objectified representation
+#             of the SLD.
+#     """
+#     content = open(sld_file_path).read()
+#     return FactoryFromString(content)
 
 
 def check_xml_version(sld_content):

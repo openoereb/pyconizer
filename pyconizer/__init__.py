@@ -8,80 +8,6 @@ from pyconizer.lib.api.sld import load_sld_content, extract_rules
 from pyconizer.lib.api.structure import Configuration, write, read, persist_layer_path, write_rule, \
     persist_mapping
 
-# config = [
-#     {
-#         'url': 'https://wms.geo.admin.ch/?',
-#         'layer': 'ch.bav.kataster-belasteter-standorte-oev.oereb',
-#         'get_styles': {
-#             'request': 'GetStyles',
-#             'service': 'WMS',
-#             'srs': 'EPSG:2056',
-#             'version': '1.1.1'
-#         },
-#         'get_legend': {
-#             'image_format': 'image/png',
-#             'request': 'GetLegendGraphic',
-#             'service': 'WMS',
-#             'version': '1.1.1',
-#             'width': 72,
-#             'height': 36
-#         }
-#     }, {
-#         'url': 'http://geowms.bl.ch/?',
-#         'layer': 'liegenschaft',
-#         'get_styles': {
-#             'request': 'GetStyles',
-#             'service': 'WMS',
-#             'srs': 'EPSG:2056',
-#             'version': '1.1.1'
-#         },
-#         'get_legend': {
-#             'image_format': 'image/png',
-#             'request': 'GetLegendGraphic',
-#             'service': 'WMS',
-#             'version': '1.1.1',
-#             'width': 72,
-#             'height': 36
-#         }
-#     }, {
-#         'url': 'http://geowms.bl.ch/?',
-#         'layer': 'np_nur_grundnutzung_group',
-#         'get_styles': {
-#             'request': 'GetStyles',
-#             'service': 'WMS',
-#             'srs': 'EPSG:2056',
-#             'version': '1.1.1'
-#         },
-#         'get_legend': {
-#             'image_format': 'image/png',
-#             'request': 'GetLegendGraphic',
-#             'service': 'WMS',
-#             'version': '1.1.1',
-#             'width': 72,
-#             'height': 36
-#         }
-#     }, {
-#         'url': 'http://geowms.bl.ch/?',
-#         'layer': 'grundkarte_farbig_group',
-#         'get_styles': {
-#             'request': 'GetStyles',
-#             'service': 'WMS',
-#             'srs': 'EPSG:2056',
-#             'version': '1.1.1'
-#         },
-#         'get_legend': {
-#             'image_format': 'image/png',
-#             'request': 'GetLegendGraphic',
-#             'service': 'WMS',
-#             'version': '1.1.1',
-#             'width': 72,
-#             'height': 36
-#         }
-#     }
-# ]
-#
-# path = '/tmp/iconizer/icons/'
-
 
 def create_icons_from_scratch(configuration, path, file_name='mapping.json', json_only=True):
     """
@@ -111,7 +37,7 @@ def create_icons_from_scratch(configuration, path, file_name='mapping.json', jso
     write(path, configuration, file_name=file_name, json_only=json_only)
 
 
-def update_icon_content(path, layer_name, mapping_file_name='mapping.json', json_only=True):
+def update_icon_content_by_layer_name(path, layer_name, mapping_file_name='mapping.json', json_only=True):
     """
     This function updates all icon contents in an existing structure. The update is filtered by the
     layer_name to update only the wanted layer.
@@ -141,7 +67,7 @@ def update_icon_content(path, layer_name, mapping_file_name='mapping.json', json
     print 'No layer with name "{0}" was found'.format(layer_name)
 
 
-def delete(path, layer_name, mapping_file_name='mapping.json', json_only=True):
+def delete_from_structure_by_layer_name(path, layer_name, mapping_file_name='mapping.json', json_only=True):
     """
     Deletes a layer from the structure. If the json_only parameter is set to False, it is done also in the
     structures file system representation.
@@ -177,7 +103,7 @@ def get_icon(path, layer_name, class_name, mapping_file_name='mapping.json'):
         path (str): The root path which all the files will be created in.
         layer_name (str): This must be the layer name fitting one of the names in the JSON configuration. It
             must not be the name of some named layer.
-        class_name (str): The class name which is used to extract the icon.
+        class_name (unicode): The class name which is used to extract the icon.
         mapping_file_name (str): The name of the mapping file which is expected to be existing inside of the
             path.
 
