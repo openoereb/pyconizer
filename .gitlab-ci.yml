@@ -11,7 +11,6 @@ stages:
 before_script:
 - python -V
 - pip install -r requirements.txt
-- pip install future
 - git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 
 test:2.7:
@@ -20,6 +19,7 @@ test:2.7:
   allow_failure: false
   script:
   - flake8
+  - pip install future
   - py.test -vv --cov-config .coveragerc --cov pyconizer tests
 
 test:3.4:
@@ -28,6 +28,7 @@ test:3.4:
   allow_failure: false
   script:
   - flake8
+  - pip install future
   - py.test -vv --cov-config .coveragerc --cov pyconizer tests
 
 test:3.5:
@@ -36,6 +37,7 @@ test:3.5:
   allow_failure: false
   script:
   - flake8
+  - pip install future
   - py.test -vv --cov-config .coveragerc --cov pyconizer tests
 
 test:3.6:
@@ -48,6 +50,7 @@ test:3.6:
   allow_failure: false
   script:
   - flake8
+  - pip install future
   - py.test -vv --cov-config .coveragerc --cov pyconizer tests
 
 sphinx:
