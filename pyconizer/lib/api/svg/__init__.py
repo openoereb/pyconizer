@@ -1,27 +1,10 @@
 # -*- coding: utf-8 -*-
-import uuid
-
 from mako.template import Template
 from pyramid.path import AssetResolver
 
 square_points = "28,28 28,32 32,32 32,28 28,28"
 polygon_points = "10,10 10,54 54,54 54,10 10,10"
 line_points = "54,54 10,10"
-
-
-def set_file_name(rule):
-    """
-    Create a filename. If a name is existent already, it will be reused. Mime type is always svg/xml.
-
-    Args:
-        rule (pyconizer.lib.api.structure.Rule): The rule to which the file name should be applied.
-    """
-    if rule.file_name is None:
-        unique = uuid.uuid4()
-    rule.set_file_name('{file_name}.{mime_type}'.format(
-        file_name=unique,
-        mime_type='svg'
-    ))
 
 
 def process_fill_styling(symbolizer):
