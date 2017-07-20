@@ -5,5 +5,4 @@ pyflakes
 flake8
 pycodestyle
 McCabe
-future
 -e .
