@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import pytest
 from pyconizer.lib.api.sld import FactoryFromString, extract_rules
 
@@ -44,7 +45,7 @@ def test_factory_from_string_wrong_sld_version():
                   "nator>100000000.000000</MaxScaleDenominator>\n<PolygonSymbolizer>\n<Stroke>\n<CssParamet" \
                   "er name=\"stroke\">#000000</CssParameter>\n<CssParameter name=\"stroke-width\">1.00</Css" \
                   "Parameter>\n</Stroke>\n</PolygonSymbolizer>\n</Rule>\n</FeatureTypeStyle>\n</UserStyle>" \
-                  "\n</NamedLayer>\n</StyledLayerDescriptor>\n\n"
+                  "\n</NamedLayer>\n</StyledLayerDescriptor>\n\n".encode('utf-16be')
     with pytest.raises(LookupError):
         FactoryFromString(sld_content)
 
@@ -89,7 +90,7 @@ def test_extract_rules_no_filter_but_name():
                   "nator>100000000.000000</MaxScaleDenominator>\n<PolygonSymbolizer>\n<Stroke>\n<CssParamet" \
                   "er name=\"stroke\">#000000</CssParameter>\n<CssParameter name=\"stroke-width\">1.00</Css" \
                   "Parameter>\n</Stroke>\n</PolygonSymbolizer>\n</Rule>\n</FeatureTypeStyle>\n</UserStyle>" \
-                  "\n</NamedLayer>\n</StyledLayerDescriptor>\n\n"
+                  "\n</NamedLayer>\n</StyledLayerDescriptor>\n\n".encode('utf-16be')
     layers = extract_rules(sld_content)
     assert len(layers[0].rules) == 6
 
@@ -134,6 +135,6 @@ def test_extract_rules_no_name_but_filter():
                   "nator>100000000.000000</MaxScaleDenominator>\n<PolygonSymbolizer>\n<Stroke>\n<CssParamet" \
                   "er name=\"stroke\">#000000</CssParameter>\n<CssParameter name=\"stroke-width\">1.00</Css" \
                   "Parameter>\n</Stroke>\n</PolygonSymbolizer>\n</Rule>\n</FeatureTypeStyle>\n</UserStyle>" \
-                  "\n</NamedLayer>\n</StyledLayerDescriptor>\n\n"
+                  "\n</NamedLayer>\n</StyledLayerDescriptor>\n\n".encode('utf-16be')
     layers = extract_rules(sld_content)
     assert len(layers[0].rules) == 6
