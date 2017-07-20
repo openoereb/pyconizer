@@ -1,14 +1,5 @@
 pyramid_iconizer README
 ==================
 
-Getting Started
----------------
-
-- cd <directory containing this file>
-
-- $VENV/bin/pip install -e .
-
-- $VENV/bin/initialize_pyramid_iconizer_db development.ini
-
-- $VENV/bin/pserve development.ini
-
+A small lib to create legend icons from WMS. It supports creation of image files. It also supports creation
+of SVG but in a very first development state in the moment only.

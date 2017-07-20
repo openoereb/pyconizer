@@ -6,3 +6,5 @@ pyconizer.egg-info
 coverage_report
 *.py[cod]
 doc/build
+build
+dist
