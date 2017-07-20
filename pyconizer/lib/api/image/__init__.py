@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 import imghdr
 import uuid
-from urllib2 import urlopen
+
+# python 3 compatibility
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib import urlopen
 
 
 def set_file_name(rule):

@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from urllib import urlencode
-from urlparse import urlsplit, parse_qs, urlunsplit
+
+# python 3 compatibility
+try:
+    from urlparse import urlsplit, parse_qs, urlunsplit
+except ImportError:
+    from urllib.parse import urlsplit, parse_qs, urlunsplit
 
 
 def add_url_params(url, params):

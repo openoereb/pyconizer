@@ -113,7 +113,7 @@ def delete_from_structure_by_layer_name(path, layer_name, mapping_file_name='map
             shutil.rmtree(os.path.abspath('{path}/{layer}'.format(path=path, layer=layer_name)))
         persist_mapping(path, configuration)
     else:
-        print 'No layer with name "{0}" was found'.format(layer_name)
+        print('No layer with name "{0}" was found'.format(layer_name))
 
 
 def get_icon(path, layer_name, class_name, mapping_file_name='mapping.json'):
@@ -133,9 +133,9 @@ def get_icon(path, layer_name, class_name, mapping_file_name='mapping.json'):
     configuration = read(os.path.abspath('{path}/{mapping}'.format(path=path, mapping=mapping_file_name)))
     for layer in configuration.layers:
         if layer.name == layer_name:
-            print 'found the layer you where looking for:', layer.name
+            print('found the layer you where looking for:', layer.name)
             for named_layer in layer.get_legend.named_layers:
                 for rule in named_layer.rules:
                     if rule.class_name == class_name:
-                        print 'found the rule you where looking for:', class_name
+                        print('found the rule you where looking for:', class_name)
                         return base64.b64encode(rule.content)

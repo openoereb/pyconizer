@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as etree
-import StringIO
-from urllib2 import urlopen
 from pyconizer.lib.api.structure import Rule, NamedLayer
 from pyconizer.lib.api.svg import create_svg_icon
+
+# python 3 compatibility
+try:
+    import StringIO
+except ImportError:
+    from io import StringIO
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib import urlopen
 
 
 def FactoryFromString(sld_content):

@@ -621,8 +621,8 @@ def persist_layer_path(path, layer_name, named_layer_name, path_template='{path}
     )
     try:
         os.makedirs(combined_path)
-    except OSError, e:
-        print e
+    except OSError as e:
+        print(e)
     return combined_path
 
 
@@ -642,8 +642,8 @@ def persist_mapping(path, config, file_name='mapping.json'):
 
     try:
         os.makedirs(path)
-    except OSError, e:
-        print e
+    except OSError as e:
+        print(e)
     mapping_file = open(
         os.path.abspath('{root_dir}/{file_name}'.format(
             root_dir=path,
@@ -653,7 +653,7 @@ def persist_mapping(path, config, file_name='mapping.json'):
     )
     mapping_file.write(json.dumps(config.dict))
     mapping_file.close()
-    print 'json was created'
+    print('json was created')
 
 
 def write(path, config, file_name='mapping.json', images=False, svgs=False):
