@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+import base64
+import imghdr
 import os
 import datetime
 from pyconizer import create_icons_from_scratch, update_icon_content_by_layer_name, \
@@ -148,12 +151,9 @@ def test_delete_from_structure_by_incorrect_layer_name_json_and_images(test_path
 
 
 def test_get_icon(test_path, test_config):
-    expected_content = "iVBORw0KGgoAAAANSUhEUgAAAEgAAAAkCAYAAAAq23xmAAAAZklEQVRoge3asQ2AMBRDwT9lJoiYjhGDEq" \
-                       "AOLXJxxZNcX+2qPlr169Su2+Ydx5za9NgAAgQIEKDQAAECBAhQcIAAAQIEKDhAgAABAhQcIECAAAEKDhAg" \
-                       "QIAABQcIEKAfgFzwvhttARMi7HL4l9NsAAAAAElFTkSuQmCC"
     path = os.path.abspath('{root}/get_icon'.format(root=test_path))
-    create_icons_from_scratch(test_config, path)
+    create_icons_from_scratch(test_config, path, images=True)
     icon_content = get_icon(
-        path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', u'Belastet, untersuchungsbedürftig'
+        path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', 'Belastet, untersuchungsbedürftig'
     )
-    assert icon_content == expected_content.replace('\n', '')
+    assert imghdr.what(None, h=base64.b64decode(icon_content)) == 'png'

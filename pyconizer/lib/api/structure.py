@@ -4,7 +4,6 @@ import json
 import os
 
 from pyconizer.lib.api.image import download_all_legend_icons
-from pyconizer.lib import encode_correctly
 from pyconizer.lib.url import add_url_params
 
 
@@ -81,7 +80,7 @@ class Rule(object):
     def url(self, wms_root_url, named_layer_name):
         return add_url_params(wms_root_url, {
             'layer': named_layer_name,
-            'rule': self.class_name
+            'rule': self.class_name.encode('utf-8')
         })
 
     def create_rule_url(self, wms_root_url, named_layer_name):

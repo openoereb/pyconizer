@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 import imghdr
 import uuid
-
-# python 3 compatibility
-try:
-    from urllib2 import urlopen
-except ImportError:
-    from urllib import urlopen
+from future.moves.urllib.request import urlopen
 
 
 def set_file_name(rule):
@@ -39,6 +34,7 @@ def download_legend_icon(rule):
     """
     if rule.rule_url:
         print('process rule:', rule.class_name)
+        print(rule.rule_url)
         response = urlopen(rule.rule_url)
         rule.set_content(response.read())
         set_file_name(rule)

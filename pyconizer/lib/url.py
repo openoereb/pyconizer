@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-from urllib import urlencode
-
-# python 3 compatibility
-try:
-    from urlparse import urlsplit, parse_qs, urlunsplit
-except ImportError:
-    from urllib.parse import urlsplit, parse_qs, urlunsplit
+from __future__ import unicode_literals
+from future.moves.urllib.parse import urlencode, parse_qs, urlunsplit, urlsplit
 
 
 def add_url_params(url, params):
@@ -44,7 +39,7 @@ def add_split_url_params(parsed_url, new_params):
     query = {}
     query.update(params)
     for key, value in new_params.items():
-            query[key] = value
+        query[key] = value
 
     return urlunsplit((
         split_url.scheme, split_url.netloc, split_url.path,
