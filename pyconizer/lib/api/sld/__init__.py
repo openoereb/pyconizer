@@ -4,14 +4,11 @@ from pyconizer.lib.api.structure import Rule, NamedLayer
 from pyconizer.lib.api.svg import create_svg_icon
 
 # python 3 compatibility
+from future.moves.urllib.request import urlopen
 try:
-    import StringIO
+    from StringIO import StringIO
 except ImportError:
     from io import StringIO
-try:
-    from urllib2 import urlopen
-except ImportError:
-    from urllib import urlopen
 
 
 def FactoryFromString(sld_content):
@@ -32,7 +29,7 @@ def FactoryFromString(sld_content):
         found_version = classes
     else:
         raise LookupError('Version is not supported. Version of SLD was: {0}'.format(version))
-    output = StringIO.StringIO(sld_content)
+    output = StringIO(sld_content)
     parsed_sld = found_version.parse(output, parser)
     return parsed_sld
 
