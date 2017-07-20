@@ -1,9 +1,32 @@
 # -*- coding: utf-8 -*-
+import imghdr
+import uuid
 from urllib2 import urlopen
+
+
+def set_file_name(rule):
+    """
+    Create a filename depending on the content (mime type). If a name is existent already, it will be reused.
+    It might have some changes in the mime type of the content. This mime type will be changed if necessary.
+
+    Args:
+        rule (pyconizer.lib.api.structure.Rule): The rule to which the file name should be applied.
+    """
+    if rule.file_name:
+        print('use old file name')
+        unique = rule.file_name.split('.')[0]
+    else:
+        print('create new file name')
+        unique = uuid.uuid4()
+    rule.set_file_name('{file_name}.{mime_type}'.format(
+        file_name=unique,
+        mime_type=imghdr.what(None, h=rule.content)
+    ))
 
 
 def download_legend_icon(rule):
     """
+    Downloads the content of the icon from the url.
 
     Args:
         rule (pyconizer.lib.api.structure.Rule): The rule which icon should be downloaded.
@@ -13,6 +36,7 @@ def download_legend_icon(rule):
         print('process rule:', rule.class_name)
         response = urlopen(rule.rule_url)
         rule.set_content(response.read())
+        set_file_name(rule)
     else:
         print('no url was found on rule with class name:', rule.dict)
 

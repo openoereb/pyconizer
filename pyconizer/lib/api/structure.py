@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
-import imghdr
 import json
 import os
-import uuid
 
 from pyconizer.lib.api.image import download_all_legend_icons
 from pyconizer.lib import encode_correctly
@@ -13,13 +11,14 @@ from pyconizer.lib.url import add_url_params
 class Rule(object):
 
     def __init__(self, class_name=None, file_name=None, image=None, filter_class=None, url=None,
-                 content=None):
+                 content=None, svg=None):
         self._class_name = class_name
         self._file_name = file_name
         self._image = image
         self._filter_class = filter_class
         self._url = url
         self._content = content
+        self._svg = svg
 
     @property
     def dict(self):
@@ -29,7 +28,8 @@ class Rule(object):
             'image': self._image,
             'filter_class': self._filter_class,
             'url': self._url,
-            'content': base64.b64encode(self._content) if self._content is not None else None
+            'content': base64.b64encode(self._content) if self._content is not None else None,
+            'svg': self._svg
         }
 
     @classmethod
@@ -50,6 +50,25 @@ class Rule(object):
         return cls(**rule_configuration)
 
     @property
+    def svg(self):
+        """
+
+        Returns:
+            list of pyconizer.lib.api.sld.v1_0_0.classes.SymbolizerType: The symbolizers.
+        """
+        return self._svg
+
+    def set_svg(self, svg):
+        """
+        Set the symbolizers as SVG constructed from the SLD.
+
+        Args:
+            svg (str): The icon as a XML/SVG.
+        """
+
+        self._svg = svg
+
+    @property
     def class_name(self):
         return self._class_name
 
@@ -58,19 +77,6 @@ class Rule(object):
 
     def set_content(self, content):
         self._content = content
-        self._provide_file_name(content)
-
-    def _provide_file_name(self, content):
-        if self._file_name:
-            print 'use old file name'
-            unique = self._file_name.split('.')[0]
-        else:
-            print 'create new file name'
-            unique = uuid.uuid4()
-        self._file_name = '{file_name}.{mime_type}'.format(
-            file_name=unique,
-            mime_type=imghdr.what(None, h=content)
-        )
 
     def url(self, wms_root_url, named_layer_name):
         return add_url_params(wms_root_url, {
@@ -88,6 +94,9 @@ class Rule(object):
     @property
     def file_name(self):
         return self._file_name
+
+    def set_file_name(self, file_name):
+        self._file_name = file_name
 
     @property
     def content(self):
@@ -367,6 +376,16 @@ class GetLegend(object):
     def named_layers(self):
         return self._named_layers
 
+    def set_named_layers(self, named_layers):
+        """
+        Adds a bunch of layers to this instance if the name does not exist already.
+
+        Args:
+            named_layers (list of pyconizer.lib.api.structure.NamedLayer): Appends all passed named layers to
+                the instances list of named layers.
+        """
+        self._named_layers = named_layers
+
 
 class Layer(object):
 
@@ -537,11 +556,11 @@ def read(path):
     Returns:
         pyconizer.lib.api.structure.Configuration: The configuration instance.
     """
+    configuration = Configuration.from_dict(json.loads(open(path).read()))
+    return configuration
 
-    return Configuration.from_dict(json.loads(open(path).read()))
 
-
-def write_rule(path, rule):
+def write_rule_to_image_icon(path, rule):
     """
     Writes a single rules content to its file representation.
 
@@ -557,6 +576,25 @@ def write_rule(path, rule):
         ), 'wb'
     )
     icon_file.write(rule.content)
+    icon_file.close()
+
+
+def write_rule_to_svg_icon(path, rule):
+    """
+    Writes a single rules content to its file representation.
+
+    Args:
+        path (str): The path where the rule should be persisted.
+        rule (pyconizer.lib.api.structure.Rule): The rule which should be consisted.
+    """
+
+    icon_file = open(
+        '{combined_path}/{file_name}'.format(
+            combined_path=path,
+            file_name='{name}.svg'.format(name=rule.file_name.split('.')[0])
+        ), 'wb'
+    )
+    icon_file.write(rule.svg)
     icon_file.close()
 
 
@@ -618,7 +656,7 @@ def persist_mapping(path, config, file_name='mapping.json'):
     print 'json was created'
 
 
-def write(path, config, file_name='mapping.json', json_only=True):
+def write(path, config, file_name='mapping.json', images=False, svgs=False):
     """
     This is the persisting part of the structure. It the json_only parameter is set to False, there is also a
     folder structure created in file system containing the actual icon files. This is done inside the passed
@@ -632,14 +670,17 @@ def write(path, config, file_name='mapping.json', json_only=True):
         file_name (str): The name of the file which is used to save the configuration in. The files mime
             type is always json. The only thing you can change is the name if you don't like the name
             'mapping.json'.
-        json_only (bool): Switch to create only a JSON file. This might be useful for test use. This is
-            constructing the JSON from the passed configuration but do not downloads the image content.
+        images (bool): Switch to create also icon image files.
+        svgs (bool): Switch to create also icon svg files.
     """
     download_all_legend_icons(config)
-    if not json_only:
+    if images or svgs:
         for layer in config.layers:
             for named_layer in layer.get_legend.named_layers:
                 combined_path = persist_layer_path(path, layer.name, named_layer.name)
                 for rule in named_layer.rules:
-                    write_rule(combined_path, rule)
+                    if images:
+                        write_rule_to_image_icon(combined_path, rule)
+                    if svgs:
+                        write_rule_to_svg_icon(combined_path, rule)
     persist_mapping(path, config, file_name)

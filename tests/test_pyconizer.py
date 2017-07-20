@@ -12,9 +12,16 @@ def test_create_icons_from_scratch_json_only(test_path, test_config):
     assert os.path.isfile(os.path.abspath('{0}/mapping.json'.format(path)))
 
 
-def test_create_icons_from_scratch_json_and_icons(test_path, test_config):
-    path = os.path.abspath('{root}/json_and_icons'.format(root=test_path))
-    create_icons_from_scratch(test_config, path, json_only=False)
+def test_create_icons_from_scratch_json_and_images(test_path, test_config):
+    path = os.path.abspath('{root}/json_and_images'.format(root=test_path))
+    create_icons_from_scratch(test_config, path, images=True)
+    assert os.path.isfile(os.path.abspath('{0}/mapping.json'.format(path)))
+    assert os.path.isdir(os.path.abspath('{0}/ch.bav.kataster-belasteter-standorte-oev.oereb'.format(path)))
+
+
+def test_create_icons_from_scratch_json_and_images_and_svgs(test_path, test_config):
+    path = os.path.abspath('{root}/json_and_images_and_svgs'.format(root=test_path))
+    create_icons_from_scratch(test_config, path, images=True, svgs=True)
     assert os.path.isfile(os.path.abspath('{0}/mapping.json'.format(path)))
     assert os.path.isdir(os.path.abspath('{0}/ch.bav.kataster-belasteter-standorte-oev.oereb'.format(path)))
 
@@ -37,9 +44,9 @@ def test_update_icon_content_json_only_incorrect_layer_name(test_path, test_conf
     assert datetime.datetime.fromtimestamp(old_time) == datetime.datetime.fromtimestamp(new_time)
 
 
-def test_update_icon_content_json_and_icons(test_path, test_config):
-    path = os.path.abspath('{root}/update_json_and_icons'.format(root=test_path))
-    create_icons_from_scratch(test_config, path, json_only=False)
+def test_update_icon_content_json_and_images(test_path, test_config):
+    path = os.path.abspath('{root}/update_json_and_images'.format(root=test_path))
+    create_icons_from_scratch(test_config, path, images=True)
     old_time_json = os.path.getmtime(os.path.abspath('{0}/mapping.json'.format(path)))
     root_path = os.path.abspath('{0}/ch.bav.kataster-belasteter-standorte-oev.oereb'.format(path))
     files = [
@@ -50,7 +57,7 @@ def test_update_icon_content_json_and_icons(test_path, test_config):
     old_icon_times = []
     for file in files:
         old_icon_times.append(os.path.getmtime(file))
-    update_icon_content_by_layer_name(path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', json_only=False)
+    update_icon_content_by_layer_name(path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', images=True)
     new_time_json = os.path.getmtime(os.path.abspath('{0}/mapping.json'.format(path)))
     assert datetime.datetime.fromtimestamp(old_time_json) < datetime.datetime.fromtimestamp(new_time_json)
     files = [
@@ -83,11 +90,11 @@ def test_delete_from_structure_by_incorrect_layer_name_json_only(test_path, test
     assert len(config.layers) == 1
 
 
-def test_delete_from_structure_by_layer_name_json_and_icons(test_path, test_config):
-    path = os.path.abspath('{root}/delete_json_and_icons'.format(root=test_path))
-    create_icons_from_scratch(test_config, path, json_only=False)
+def test_delete_from_structure_by_layer_name_json_and_images(test_path, test_config):
+    path = os.path.abspath('{root}/delete_json_and_images'.format(root=test_path))
+    create_icons_from_scratch(test_config, path, images=True)
     delete_from_structure_by_layer_name(
-        path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', json_only=False
+        path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', images=True
     )
     config = read(os.path.abspath('{0}/mapping.json'.format(path)))
     assert len(config.layers) == 0
@@ -96,11 +103,11 @@ def test_delete_from_structure_by_layer_name_json_and_icons(test_path, test_conf
     )
 
 
-def test_delete_from_structure_by_incorrect_layer_name_json_and_icons(test_path, test_config):
-    path = os.path.abspath('{root}/delete_json_and_icons_incorrect_layer_name'.format(root=test_path))
-    create_icons_from_scratch(test_config, path, json_only=False)
+def test_delete_from_structure_by_incorrect_layer_name_json_and_images(test_path, test_config):
+    path = os.path.abspath('{root}/delete_json_and_images_incorrect_layer_name'.format(root=test_path))
+    create_icons_from_scratch(test_config, path, images=True)
     delete_from_structure_by_layer_name(
-        path, 'incorrect_layer_name', json_only=False
+        path, 'incorrect_layer_name', images=True
     )
     config = read(os.path.abspath('{0}/mapping.json'.format(path)))
     assert len(config.layers) == 1

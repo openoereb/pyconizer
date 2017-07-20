@@ -3,6 +3,7 @@ import xml.etree.ElementTree as etree
 import StringIO
 from urllib2 import urlopen
 from pyconizer.lib.api.structure import Rule, NamedLayer
+from pyconizer.lib.api.svg import create_svg_icon
 
 
 def FactoryFromString(sld_content):
@@ -95,17 +96,21 @@ def extract_rules(sld_content):
                 for rule in feature_type_style.Rule:
                     # only comparison ops are supported now, if rule has no filter => What is this????
                     if not rule.Filter and rule.Name:
-                        rules.append(Rule(class_name=rule.Name))
+                        structure_rule = Rule(class_name=rule.Name)
+                        structure_rule.set_svg(create_svg_icon(rule.Symbolizer))
+                        rules.append(structure_rule)
                     elif rule.Filter and not rule.Name:
-                        rules.append(
-                            Rule(filter_class=rule.Filter.comparisonOps.expression[1].get_valueOf_())
+                        structure_rule = Rule(
+                            filter_class=rule.Filter.comparisonOps.expression[1].get_valueOf_()
                         )
+                        structure_rule.set_svg(create_svg_icon(rule.Symbolizer))
+                        rules.append(structure_rule)
                     elif rule.Filter and rule.Name:
-                        rules.append(
-                            Rule(
-                                class_name=rule.Name,
-                                filter_class=rule.Filter.comparisonOps.expression[1].get_valueOf_()
-                            )
+                        structure_rule = Rule(
+                            class_name=rule.Name,
+                            filter_class=rule.Filter.comparisonOps.expression[1].get_valueOf_()
                         )
+                        structure_rule.set_svg(create_svg_icon(rule.Symbolizer))
+                        rules.append(structure_rule)
         layers.append(NamedLayer(name=named_layer_name, rules=rules))
     return layers
