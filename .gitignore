@@ -5,3 +5,4 @@ pyconizer.egg-info
 .cache
 coverage_report
 *.py[cod]
+doc/build
