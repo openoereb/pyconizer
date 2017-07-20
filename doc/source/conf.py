@@ -16,10 +16,8 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-import subprocess
 import sphinx_rtd_theme
 
 
@@ -156,7 +154,11 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (
-        master_doc, 'PYCONIZER', u'PYCONIZER Documentation', author, 'PYCONIZER', 'Simple tool to extract single legend symbols from a WMS.',
+        master_doc,
+        'PYCONIZER',
+        u'PYCONIZER Documentation',
+        author,
+        'PYCONIZER', 'Simple tool to extract single legend symbols from a WMS.',
         'Miscellaneous'
     ),
 ]
