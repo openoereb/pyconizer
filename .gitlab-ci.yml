@@ -19,7 +19,6 @@ test:2.7:
   allow_failure: false
   script:
   - flake8
-  - pip install future
   - py.test -vv --cov-config .coveragerc --cov pyconizer tests
 
 #test:3.4:
