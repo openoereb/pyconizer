@@ -44,9 +44,6 @@ def add_split_url_params(parsed_url, new_params):
     query = {}
     query.update(params)
     for key, value in new_params.items():
-        if isinstance(key, unicode):
-            query[key] = value.encode("utf-8")
-        else:
             query[key] = value
 
     return urlunsplit((

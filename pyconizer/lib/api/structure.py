@@ -81,7 +81,7 @@ class Rule(object):
     def url(self, wms_root_url, named_layer_name):
         return add_url_params(wms_root_url, {
             'layer': named_layer_name,
-            'rule': encode_correctly(self.class_name)
+            'rule': self.class_name
         })
 
     def create_rule_url(self, wms_root_url, named_layer_name):

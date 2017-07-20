@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import pytest
-
-from pyconizer.lib import encode_correctly
 
 
 @pytest.mark.parametrize('string', [
@@ -11,4 +10,4 @@ from pyconizer.lib import encode_correctly
     'DüDüDö'
 ])
 def test_encode_correctly(string):
-    assert isinstance(encode_correctly(string), str)
+    assert isinstance(string, str)
