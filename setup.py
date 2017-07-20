@@ -11,7 +11,8 @@ with open(os.path.join(here, 'CHANGES.txt')) as f:
 requires = [
     'pyramid_mako',
     'lxml',
-    'pyramid'
+    'pyramid',
+    'future'
     ]
 
 tests_require = [
