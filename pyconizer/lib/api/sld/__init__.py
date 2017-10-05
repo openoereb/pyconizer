@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as etree
+
+from pyconizer.lib.api.sld.v1_0_0.classes import PropertyIsLikeType
 from pyconizer.lib.api.structure import Rule, NamedLayer
 from pyconizer.lib.api.svg import create_svg_icon
 
@@ -111,9 +113,13 @@ def extract_rules(sld_content):
                         structure_rule.set_svg(create_svg_icon(rule.Symbolizer))
                         rules.append(structure_rule)
                     elif rule.Filter and rule.Name:
+                        if isinstance(rule.Filter.comparisonOps, PropertyIsLikeType):
+                            classifier = rule.Filter.comparisonOps.Literal.get_valueOf_()
+                        else:
+                            classifier = rule.Filter.comparisonOps.expression[1].get_valueOf_()
                         structure_rule = Rule(
                             class_name=rule.Name,
-                            filter_class=rule.Filter.comparisonOps.expression[1].get_valueOf_()
+                            filter_class=classifier
                         )
                         structure_rule.set_svg(create_svg_icon(rule.Symbolizer))
                         rules.append(structure_rule)
