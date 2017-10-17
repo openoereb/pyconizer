@@ -10,7 +10,8 @@ from pyconizer.lib.api.structure import Configuration, write, read, persist_laye
     write_rule_to_image_icon, write_rule_to_svg_icon
 
 
-def create_icons_from_scratch(configuration, path, file_name='mapping.json', images=False, svgs=False):
+def create_icons_from_scratch(configuration, path, file_name='mapping.json', images=False, svgs=False,
+                              encoding=None):
     """
     This is probably the starting point. If you use this package for the first time you might want use this.
 
@@ -22,6 +23,9 @@ def create_icons_from_scratch(configuration, path, file_name='mapping.json', ima
             'mapping.json'.
         images (bool): Switch to create also icon image files.
         svgs (bool): Switch to create also icon svg files.
+        encoding (str): The encoding which is used to encode the XML. Standard is None. This means the
+            encoding is taken from the XML content itself. Only use this parameter if your XML content has no
+            encoding set.
     """
 
     configuration = Configuration.from_dict(configuration)
@@ -32,14 +36,14 @@ def create_icons_from_scratch(configuration, path, file_name='mapping.json', ima
         layer.get_styles.set_content(sld_content)
 
         # add the empty structure of rules extracted from the SLD
-        named_layers = extract_rules(sld_content)
+        named_layers = extract_rules(sld_content, encoding=encoding)
         layer.get_legend.add_named_layers(named_layers)
         layer.get_legend.create_rule_urls(layer.url)
     write(path, configuration, file_name=file_name, images=images, svgs=svgs)
 
 
 def update_icon_content_by_layer_name(path, layer_name, mapping_file_name='mapping.json', images=False,
-                                      svgs=False):
+                                      svgs=False, encoding=None):
     """
     This function updates all icon contents in an existing structure. The update is filtered by the
     layer_name to update only the wanted layer.
@@ -52,6 +56,9 @@ def update_icon_content_by_layer_name(path, layer_name, mapping_file_name='mappi
             path.
         images (bool): Switch to create also icon image files.
         svgs (bool): Switch to create also icon svg files.
+        encoding (str): The encoding which is used to encode the XML. Standard is None. This means the
+            encoding is taken from the XML content itself. Only use this parameter if your XML content has no
+            encoding set.
     """
 
     configuration = read(os.path.abspath('{path}/{mapping}'.format(path=path, mapping=mapping_file_name)))
@@ -66,7 +73,7 @@ def update_icon_content_by_layer_name(path, layer_name, mapping_file_name='mappi
         found_layer.get_styles.set_content(sld_content)
 
         # add the empty structure of rules extracted from the SLD
-        named_layers = extract_rules(sld_content)
+        named_layers = extract_rules(sld_content, encoding=encoding)
 
         # remove layer from configuration before add a new one
         found_layer.get_legend.set_named_layers(named_layers)
