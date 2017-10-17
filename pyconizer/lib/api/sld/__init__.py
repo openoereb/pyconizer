@@ -13,17 +13,20 @@ except ImportError:
     from io import StringIO
 
 
-def FactoryFromString(sld_content):
+def FactoryFromString(sld_content, encoding=None):
     """
 
     Args:
         sld_content (str): The content of an SLD to check for version and parse with the found module.
+        encoding (str): The encoding which is used to encode the XML. Standard is None. This means the
+            encoding is taken from the XML content itself. Only use this parameter if your XML content has no
+            encoding set.
 
     Returns:
         pyconizer.lib.api.sld.v1_0_0.classes.StyledLayerDescriptor: The complete objectified representation
             of the SLD.
     """
-    parser = etree.XMLParser()
+    parser = etree.XMLParser(encoding=encoding)
     tree = etree.fromstring(sld_content, parser)
     version = tree.attrib.get('version')
     if version == '1.0.0':
@@ -82,18 +85,21 @@ def load_sld_content(url):
     return check_xml_version(response.read())
 
 
-def extract_rules(sld_content):
+def extract_rules(sld_content, encoding=None):
     """
     Extract all Rules with its name and classes.
 
     Args:
         sld_content (str): The SLD you want to split up in all its svg symbol definitions.
+        encoding (str): The encoding which is used to encode the XML. Standard is None. This means the
+            encoding is taken from the XML content itself. Only use this parameter if your XML content has no
+            encoding set.
 
     Returns:
         list of pyconizer.lib.api.structure.NamedLayer: A list of named layers and their image
             configs all wrapped in application structure.
     """
-    sld_content = FactoryFromString(sld_content)
+    sld_content = FactoryFromString(sld_content, encoding=encoding)
     layers = []
     for named_layer in sld_content.NamedLayer:
         named_layer_name = named_layer.Name
