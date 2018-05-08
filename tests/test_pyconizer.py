@@ -4,6 +4,8 @@ import base64
 import imghdr
 import os
 import datetime
+import time
+
 from pyconizer import create_icons_from_scratch, update_icon_content_by_layer_name, \
     delete_from_structure_by_layer_name, get_icon
 from pyconizer.lib.api.structure import read
@@ -33,6 +35,7 @@ def test_update_icon_content_json_only(test_path, test_config):
     path = os.path.abspath('{root}/update_json_only'.format(root=test_path))
     create_icons_from_scratch(test_config, path)
     old_time = os.path.getmtime(os.path.abspath('{0}/mapping.json'.format(path)))
+    time.sleep(0.1)
     update_icon_content_by_layer_name(path, 'ch.bav.kataster-belasteter-standorte-oev.oereb')
     new_time = os.path.getmtime(os.path.abspath('{0}/mapping.json'.format(path)))
     assert datetime.datetime.fromtimestamp(old_time) < datetime.datetime.fromtimestamp(new_time)
@@ -60,6 +63,7 @@ def test_update_icon_content_json_and_images(test_path, test_config):
     old_icon_times = []
     for file in files:
         old_icon_times.append(os.path.getmtime(file))
+    time.sleep(0.1)
     update_icon_content_by_layer_name(path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', images=True)
     new_time_json = os.path.getmtime(os.path.abspath('{0}/mapping.json'.format(path)))
     assert datetime.datetime.fromtimestamp(old_time_json) < datetime.datetime.fromtimestamp(new_time_json)
@@ -90,6 +94,7 @@ def test_update_icon_content_json_and_images_and_svgs(test_path, test_config):
     old_icon_times = []
     for file in files:
         old_icon_times.append(os.path.getmtime(file))
+    time.sleep(0.1)
     update_icon_content_by_layer_name(path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', images=True,
                                       svgs=True)
     new_time_json = os.path.getmtime(os.path.abspath('{0}/mapping.json'.format(path)))
