@@ -8,37 +8,17 @@ stages:
 - doc
 - deploy
 
-before_script:
-- python -V
-- pip install -r requirements.txt
-- git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
-
 test:2.7:
   stage: test
   image: python:2.7
   allow_failure: false
   script:
+  - python -V
+  - pip install -r requirements.txt
+  - git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
   - flake8
   - py.test -vv --cov-config .coveragerc --cov pyconizer tests
 
-#test:3.4:
-#  stage: test
-#  image: python:3.4
-#  allow_failure: false
-#  script:
-#  - flake8
-#  - pip install future
-#  - py.test -vv --cov-config .coveragerc --cov pyconizer tests
-#
-#test:3.5:
-#  stage: test
-#  image: python:3.5
-#  allow_failure: false
-#  script:
-#  - flake8
-#  - pip install future
-#  - py.test -vv --cov-config .coveragerc --cov pyconizer tests
-#
 #test:3.6:
 #  stage: test
 #  image: python:3.6
@@ -48,6 +28,9 @@ test:2.7:
 #    - "$CI_PROJECT_DIR/.pip-cache"
 #  allow_failure: false
 #  script:
+#  - python -V
+#  - pip install -r requirements.txt
+#  - git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 #  - flake8
 #  - pip install future
 #  - py.test -vv --cov-config .coveragerc --cov pyconizer tests
@@ -59,6 +42,8 @@ sphinx:
     paths:
     - "$CI_PROJECT_DIR/.pip-cache"
   script:
+  - python -V
+  - pip install -r requirements.txt
   - sphinx-versioning build doc/source doc/build/html
   artifacts:
     paths:
