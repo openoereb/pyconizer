@@ -8,3 +8,4 @@ coverage_report
 doc/build
 build
 dist
+.pytest_cache
