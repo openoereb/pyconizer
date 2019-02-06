@@ -71,6 +71,10 @@ class Rule(object):
     def class_name(self):
         return self._class_name
 
+    @property
+    def filter_class(self):
+        return self._filter_class
+        
     def set_url(self, url):
         self._url = url
 
