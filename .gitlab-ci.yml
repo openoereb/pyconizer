@@ -8,37 +8,17 @@ stages:
 - doc
 - deploy
 
-before_script:
-- python -V
-- pip install -r requirements.txt
-- git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
-
 test:2.7:
   stage: test
   image: python:2.7
   allow_failure: false
   script:
+  - python -V
+  - pip install -r requirements.txt
+  - git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
   - flake8
   - py.test -vv --cov-config .coveragerc --cov pyconizer tests
 
-#test:3.4:
-#  stage: test
-#  image: python:3.4
-#  allow_failure: false
-#  script:
-#  - flake8
-#  - pip install future
-#  - py.test -vv --cov-config .coveragerc --cov pyconizer tests
-#
-#test:3.5:
-#  stage: test
-#  image: python:3.5
-#  allow_failure: false
-#  script:
-#  - flake8
-#  - pip install future
-#  - py.test -vv --cov-config .coveragerc --cov pyconizer tests
-#
 #test:3.6:
 #  stage: test
 #  image: python:3.6
@@ -48,6 +28,9 @@ test:2.7:
 #    - "$CI_PROJECT_DIR/.pip-cache"
 #  allow_failure: false
 #  script:
+#  - python -V
+#  - pip install -r requirements.txt
+#  - git --no-pager diff --check `git log --oneline | tail -1 | cut --fields=1 --delimiter=' '`
 #  - flake8
 #  - pip install future
 #  - py.test -vv --cov-config .coveragerc --cov pyconizer tests
@@ -59,6 +42,8 @@ sphinx:
     paths:
     - "$CI_PROJECT_DIR/.pip-cache"
   script:
+  - python -V
+  - pip install -r requirements.txt
   - sphinx-versioning build doc/source doc/build/html
   artifacts:
     paths:
@@ -85,3 +70,22 @@ pages:
   only:
   - tags
   - master
+
+
+# Analyze code quality
+code_quality:
+  image: docker:stable
+  variables:
+    DOCKER_DRIVER: overlay2
+  allow_failure: true
+  services:
+    - docker:stable-dind
+  script:
+    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+    - docker run
+        --env SOURCE_CODE="$PWD"
+        --volume "$PWD":/code
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
+  artifacts:
+    paths: [gl-code-quality-report.json]
