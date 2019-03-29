@@ -74,7 +74,7 @@ class Rule(object):
     @property
     def filter_class(self):
         return self._filter_class
-        
+
     def set_url(self, url):
         self._url = url
 
