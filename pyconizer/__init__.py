@@ -144,6 +144,6 @@ def get_icon(path, layer_name, class_name, mapping_file_name='mapping.json'):
             print('found the layer you where looking for:', layer.name)
             for named_layer in layer.get_legend.named_layers:
                 for rule in named_layer.rules:
-                    if rule.class_name == class_name:
+                    if rule.class_name == class_name or rule.filter_class == class_name:
                         print('found the rule you where looking for:', class_name)
                         return base64.b64encode(rule.content)
