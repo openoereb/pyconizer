@@ -65,7 +65,7 @@ def check_xml_version(sld_content):
         str: The maybe updated xml string.
 
     """
-    if not str().startswith('<?xml '):
+    if not str(sld_content).lstrip().startswith('<?xml '):
         sld_content = '<?xml version="1.0" encoding="UTF-8" ?>\n{0}'.format(sld_content)
     return sld_content
 
