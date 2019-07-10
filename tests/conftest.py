@@ -29,3 +29,35 @@ def test_config():
             }
         }
     ]
+
+
+@pytest.fixture
+def read_test_factory_from_string_wrong_sld_version():
+    f = open('tests/resources/test_factory_from_string_wrong_sld_version.xml')
+    c = f.read()
+    f.close()
+    return c
+
+
+@pytest.fixture
+def read_test_extract_rules_no_filter_but_name():
+    f = open('tests/resources/test_extract_rules_no_filter_but_name.xml')
+    c = f.read()
+    f.close()
+    return c
+
+
+@pytest.fixture
+def read_test_extract_rules_no_name_but_filter():
+    f = open('tests/resources/test_extract_rules_no_name_but_filter.xml')
+    c = f.read()
+    f.close()
+    return c
+
+
+@pytest.fixture
+def read_test_extract_rules_no_encoding():
+    f = open('tests/resources/test_extract_rules_no_encoding.xml')
+    c = f.read()
+    f.close()
+    return c
