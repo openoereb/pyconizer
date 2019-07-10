@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
+import codecs
 
 
 @pytest.fixture
@@ -33,7 +34,7 @@ def test_config():
 
 @pytest.fixture
 def read_test_factory_from_string_wrong_sld_version():
-    f = open('tests/resources/test_factory_from_string_wrong_sld_version.xml')
+    f = codecs.open('tests/resources/test_factory_from_string_wrong_sld_version.xml', encoding='UTF-8')
     c = f.read()
     f.close()
     return c
@@ -41,7 +42,7 @@ def read_test_factory_from_string_wrong_sld_version():
 
 @pytest.fixture
 def read_test_extract_rules_no_filter_but_name():
-    f = open('tests/resources/test_extract_rules_no_filter_but_name.xml')
+    f = codecs.open('tests/resources/test_extract_rules_no_filter_but_name.xml', encoding='UTF-8')
     c = f.read()
     f.close()
     return c
@@ -49,7 +50,7 @@ def read_test_extract_rules_no_filter_but_name():
 
 @pytest.fixture
 def read_test_extract_rules_no_name_but_filter():
-    f = open('tests/resources/test_extract_rules_no_name_but_filter.xml')
+    f = codecs.open('tests/resources/test_extract_rules_no_name_but_filter.xml', encoding='UTF-8')
     c = f.read()
     f.close()
     return c
@@ -57,7 +58,7 @@ def read_test_extract_rules_no_name_but_filter():
 
 @pytest.fixture
 def read_test_extract_rules_no_encoding():
-    f = open('tests/resources/test_extract_rules_no_encoding.xml')
+    f = codecs.open('tests/resources/test_extract_rules_no_encoding.xml', 'rb', encoding='UTF-8')
     c = f.read()
     f.close()
     return c
