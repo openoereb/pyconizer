@@ -32,6 +32,9 @@ def FactoryFromString(sld_content, encoding=None):
     if version == '1.0.0':
         from pyconizer.lib.api.sld.v1_0_0 import classes
         found_version = classes
+    elif version == '1.1.0':
+        from pyconizer.lib.api.sld.v1_1_0 import classes
+        found_version = classes
     else:
         raise LookupError('Version is not supported. Version of SLD was: {0}'.format(version))
     output = StringIO(sld_content)
