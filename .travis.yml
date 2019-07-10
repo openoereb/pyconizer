@@ -14,7 +14,7 @@ install:
 script:
 - make git-attributes
 - make lint
-- make test
+- make tests
 deploy:
   - provider: pypi
     server: https://upload.pypi.org/legacy/
