@@ -1,6 +1,6 @@
 
 pyconizer documentation
-=========================================
+=======================
 
 .. toctree::
    :caption: Contents:

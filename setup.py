@@ -22,7 +22,7 @@ tests_require = [
 ]
 
 setup(name='pyconizer',
-      version='0.1.4',
+      version='0.1.5',
       description='pyconizer a small package to create svg legends out of WMS via SLD',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
