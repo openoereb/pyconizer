@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 from mako.template import Template
 from pyramid.path import AssetResolver
 
@@ -134,6 +135,8 @@ def create_svg_icon(symbolizers):
 
     # only add a svg path if it would have content
     if len(icon_paths) > 0:
+        if sys.version_info.major < 2:
+            icon_paths = map(bytes.decode, icon_paths)
         svg_content = svg_template.render(**{
             'geometry_tag': '\n'.join(icon_paths)
         })
