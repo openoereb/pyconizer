@@ -86,7 +86,7 @@ def load_sld_content(url):
     """
     response = urlopen(url)
     content = response.read()
-    return check_xml_version(content)
+    return content
 
 
 def extract_rules(sld_content, encoding=None):
