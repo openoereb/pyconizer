@@ -69,7 +69,7 @@ def check_xml_version(sld_content):
 
     """
     if not str(sld_content).lstrip().startswith('<?xml '):
-        sld_content = '<?xml version="1.0" encoding="UTF-8" ?>\n{0}'.format(sld_content)
+        sld_content = '<?xml version="1.0" encoding="UTF-8" ?>\n{0}'.format(str(sld_content))
     return sld_content
 
 
@@ -85,7 +85,8 @@ def load_sld_content(url):
 
     """
     response = urlopen(url)
-    return check_xml_version(response.read())
+    content = response.read()
+    return check_xml_version(content)
 
 
 def extract_rules(sld_content, encoding=None):
