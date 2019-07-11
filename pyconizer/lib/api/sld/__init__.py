@@ -89,7 +89,7 @@ def load_sld_content(url):
     response = urlopen(url)
     content = response.read()
     if python_3:
-        return content.decode('utf-8')
+        return content.encode('utf-8')
     else:
         return content
 
