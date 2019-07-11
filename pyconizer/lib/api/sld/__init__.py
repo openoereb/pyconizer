@@ -28,6 +28,8 @@ def FactoryFromString(sld_content, encoding=None):
         pyconizer.lib.api.sld.v1_0_0.classes.StyledLayerDescriptor: The complete objectified representation
             of the SLD.
     """
+    if python_3:
+        encoding = 'utf-8'
     parser = etree.XMLParser(encoding=encoding)
     tree = etree.fromstring(sld_content, parser)
     version = tree.attrib.get('version')
@@ -39,10 +41,11 @@ def FactoryFromString(sld_content, encoding=None):
         found_version = classes
     else:
         raise LookupError('Version is not supported. Version of SLD was: {0}'.format(version))
-    output = StringIO(sld_content)
     if python_3:
-        parsed_sld = found_version.parse(output.read(), parser)
+        output = StringIO(sld_content.encode('utf-8'))
+        parsed_sld = found_version.parse(output, parser)
     else:
+        output = StringIO(sld_content)
         parsed_sld = found_version.parse(output, parser)
     return parsed_sld
 
