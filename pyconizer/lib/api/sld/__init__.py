@@ -8,9 +8,11 @@ from pyconizer.lib.api.svg import create_svg_icon
 # python 3 compatibility
 from future.moves.urllib.request import urlopen
 try:
+    python_3 = False
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+    python_3 = True
 
 
 def FactoryFromString(sld_content, encoding=None):
@@ -38,7 +40,10 @@ def FactoryFromString(sld_content, encoding=None):
     else:
         raise LookupError('Version is not supported. Version of SLD was: {0}'.format(version))
     output = StringIO(sld_content)
-    parsed_sld = found_version.parse(output, parser)
+    if python_3:
+        parsed_sld = found_version.parse(output.read(), parser)
+    else:
+        parsed_sld = found_version.parse(output, parser)
     return parsed_sld
 
 
