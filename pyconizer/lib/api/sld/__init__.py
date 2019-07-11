@@ -6,13 +6,12 @@ from pyconizer.lib.api.structure import Rule, NamedLayer
 from pyconizer.lib.api.svg import create_svg_icon
 
 # python 3 compatibility
-from future.moves.urllib.request import urlopen
+from future.moves.urllib.request import urlopen, re
+
 try:
-    python_3 = False
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
-    python_3 = True
 
 
 def FactoryFromString(sld_content, encoding=None):
@@ -28,8 +27,6 @@ def FactoryFromString(sld_content, encoding=None):
         pyconizer.lib.api.sld.v1_0_0.classes.StyledLayerDescriptor: The complete objectified representation
             of the SLD.
     """
-    if python_3:
-        encoding = 'utf-8'
     parser = etree.XMLParser(encoding=encoding)
     tree = etree.fromstring(sld_content, parser)
     version = tree.attrib.get('version')
@@ -41,12 +38,19 @@ def FactoryFromString(sld_content, encoding=None):
         found_version = classes
     else:
         raise LookupError('Version is not supported. Version of SLD was: {0}'.format(version))
-    if python_3:
-        output = StringIO(sld_content.encode('utf-8'))
-        parsed_sld = found_version.parse(output, parser)
-    else:
-        output = StringIO(sld_content)
-        parsed_sld = found_version.parse(output, parser)
+    try:
+        # remove encoding tag because lxml won't accept it for
+        # unicode objects (Issue #78)
+        if isinstance(sld_content, bytes):
+            if sld_content.startswith(b'<?'):
+                sld_content = re.sub(b'^\<\?.*?\?\>', b'', sld_content, flags=re.DOTALL)
+        else:
+            if sld_content.startswith('<?'):
+                sld_content = re.sub(r'^\<\?.*?\?\>', '', sld_content, flags=re.DOTALL)
+    except Exception as e:
+        raise e
+    output = StringIO(sld_content)
+    parsed_sld = found_version.parse(output, parser)
     return parsed_sld
 
 
