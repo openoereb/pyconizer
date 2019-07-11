@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 import xml.etree.ElementTree as etree
 
 from pyconizer.lib.api.sld.v1_0_0.classes import PropertyIsLikeType
@@ -6,7 +8,7 @@ from pyconizer.lib.api.structure import Rule, NamedLayer
 from pyconizer.lib.api.svg import create_svg_icon
 
 # python 3 compatibility
-from future.moves.urllib.request import urlopen, re
+from future.moves.urllib.request import urlopen
 
 try:
     from StringIO import StringIO
