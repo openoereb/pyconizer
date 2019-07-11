@@ -12,8 +12,10 @@ from future.moves.urllib.request import urlopen
 
 try:
     from StringIO import StringIO
+    python_3 = False
 except ImportError:
     from io import StringIO
+    python_3 = True
 
 
 def FactoryFromString(sld_content, encoding=None):
@@ -86,7 +88,10 @@ def load_sld_content(url):
     """
     response = urlopen(url)
     content = response.read()
-    return content
+    if python_3:
+        return content.decode('utf-8')
+    else:
+        return content
 
 
 def extract_rules(sld_content, encoding=None):
