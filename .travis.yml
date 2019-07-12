@@ -6,15 +6,12 @@ matrix:
     env: PYTHON_VERSION=python2
   - python: '3.6'
     env: PYTHON_VERSION=python3
-services:
-- docker
 install:
 - make install
 script:
 - make git-attributes
 - make lint
 - make tests
-- '[ $TRAVIS_PYTHON_VERSION != "3.6" ] || make build-docker .'
 deploy:
   - provider: pypi
     server: https://upload.pypi.org/legacy/
