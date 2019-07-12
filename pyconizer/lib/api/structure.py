@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 import base64
 import json
 import os
@@ -21,13 +22,20 @@ class Rule(object):
 
     @property
     def dict(self):
+        if self._content is not None:
+            if sys.version_info.major > 2:
+                content = self._content.decode()
+            else:
+                content = self._content
+        else:
+            content = None
         return {
             'class_name': self._class_name,
             'file_name': self._file_name,
             'image': self._image,
             'filter_class': self._filter_class,
             'url': self._url,
-            'content': base64.b64encode(self._content) if self._content is not None else None,
+            'content': content,
             'svg': self._svg
         }
 
@@ -595,7 +603,7 @@ def write_rule_to_svg_icon(path, rule):
         '{combined_path}/{file_name}'.format(
             combined_path=path,
             file_name='{name}.svg'.format(name=rule.file_name.split('.')[0])
-        ), 'wb'
+        ), 'w'
     )
     icon_file.write(rule.svg)
     icon_file.close()

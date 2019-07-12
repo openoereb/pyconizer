@@ -137,4 +137,4 @@ def create_svg_icon(symbolizers):
         svg_content = svg_template.render(**{
             'geometry_tag': '\n'.join(str(v) for v in icon_paths)
         })
-        return svg_content
+        return svg_content.decode()

@@ -9,7 +9,7 @@
         <UserStyle>
             <FeatureTypeStyle>
                 <Rule>
-                    <Name>Belastet, keine sch\u00e4dlichen oder l\u00e4stigen Einwirkungen zu erwarten</Name>
+                    <Name>Belastet, keine schädlichen oder lästigen Einwirkungen zu erwarten</Name>
                     <MaxScaleDenominator>100000000.000000</MaxScaleDenominator>
                     <PolygonSymbolizer>
                         <Fill>
@@ -18,7 +18,7 @@
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
-                    <Name>Belastet, untersuchungsbed\u00fcrftig</Name>
+                    <Name>Belastet, untersuchungsbedürftig</Name>
                     <ogc:Filter>
                         <ogc:PropertyIsEqualTo>
                             <ogc:PropertyName>bgdi_class</ogc:PropertyName>
@@ -33,7 +33,7 @@
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
-                    <Name>Belastet, weder \u00fcberwachungs- noch sanierungsbed\u00fcrftig</Name>
+                    <Name>Belastet, weder überwachungs- noch sanierungsbedürftig</Name>
                     <ogc:Filter>
                         <ogc:PropertyIsEqualTo>
                             <ogc:PropertyName>bgdi_class</ogc:PropertyName>
@@ -48,7 +48,7 @@
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
-                    <Name>Belastet, \u00fcberwachungsbed\u00fcrftig</Name>
+                    <Name>Belastet, überwachungsbedürftig</Name>
                     <ogc:Filter>
                         <ogc:PropertyIsEqualTo>
                             <ogc:PropertyName>bgdi_class</ogc:PropertyName>
@@ -63,7 +63,7 @@
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
-                    <Name>Belastet, sanierungsbed\u00fcrftig</Name>
+                    <Name>Belastet, sanierungsbedürftig</Name>
                     <ogc:Filter>
                         <ogc:PropertyIsEqualTo>
                             <ogc:PropertyName>bgdi_class</ogc:PropertyName>
@@ -78,7 +78,7 @@
                     </PolygonSymbolizer>
                 </Rule>
                 <Rule>
-                    <Name>Belastet, Untersuchungsbed\u00fcrftigkeit noch nicht definiert</Name>
+                    <Name>Belastet, Untersuchungsbedürftigkeit noch nicht definiert</Name>
                     <ogc:Filter>
                         <ogc:PropertyIsEqualTo>
                             <ogc:PropertyName>bgdi_class</ogc:PropertyName>

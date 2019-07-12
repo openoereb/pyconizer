@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*
+import sys
 import pytest
-import codecs
 
 
 @pytest.fixture
@@ -34,7 +34,10 @@ def test_config():
 
 @pytest.fixture
 def read_test_factory_from_string_wrong_sld_version():
-    f = codecs.open('tests/resources/test_factory_from_string_wrong_sld_version.xml')
+    if sys.version_info.major > 2:
+        f = open('tests/resources/test_factory_from_string_wrong_sld_version.xml', encoding='utf-8')
+    else:
+        f = open('tests/resources/test_factory_from_string_wrong_sld_version.xml')
     c = f.read()
     f.close()
     return c
@@ -42,7 +45,10 @@ def read_test_factory_from_string_wrong_sld_version():
 
 @pytest.fixture
 def read_test_extract_rules_no_filter_but_name():
-    f = codecs.open('tests/resources/test_extract_rules_no_filter_but_name.xml')
+    if sys.version_info.major > 2:
+        f = open('tests/resources/test_extract_rules_no_filter_but_name.xml', encoding='utf-8')
+    else:
+        f = open('tests/resources/test_extract_rules_no_filter_but_name.xml')
     c = f.read()
     f.close()
     return c
@@ -50,7 +56,10 @@ def read_test_extract_rules_no_filter_but_name():
 
 @pytest.fixture
 def read_test_extract_rules_no_name_but_filter():
-    f = codecs.open('tests/resources/test_extract_rules_no_name_but_filter.xml')
+    if sys.version_info.major > 2:
+        f = open('tests/resources/test_extract_rules_no_name_but_filter.xml', encoding='utf-8')
+    else:
+        f = open('tests/resources/test_extract_rules_no_name_but_filter.xml')
     c = f.read()
     f.close()
     return c
@@ -58,7 +67,10 @@ def read_test_extract_rules_no_name_but_filter():
 
 @pytest.fixture
 def read_test_extract_rules_no_encoding():
-    f = codecs.open('tests/resources/test_extract_rules_no_encoding.xml')
+    if sys.version_info.major > 2:
+        f = open('tests/resources/test_extract_rules_no_encoding.xml', encoding='utf-8')
+    else:
+        f = open('tests/resources/test_extract_rules_no_encoding.xml')
     c = f.read()
     f.close()
     return c
