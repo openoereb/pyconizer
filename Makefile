@@ -46,9 +46,6 @@ $(SPHINXBUILD): .venv/requirements-timestamp
 doc: $(SPHINXBUILD)
 	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: checks
-checks: git-attributes lint coverage-html
-
 .PHONY: tests
 tests: .coverage
 
@@ -77,3 +74,10 @@ clean-all:
 .PHONY: deploy
 deploy:
 	$(VENV_BIN)python setup.py sdist bdist_wheel upload
+
+.PHONY: tox
+tox: .venv/requirements-timestamp tox.ini
+	$(VENV_BIN)tox --recreate --skip-missing-interpreters
+
+.PHONY: checks
+checks: git-attributes tox lint coverage-html
