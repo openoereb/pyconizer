@@ -1,17 +1,25 @@
 sudo: required
+
 language: python
+
 matrix:
   include:
   - python: '2.7'
     env: PYTHON_VERSION=python2
   - python: '3.6'
     env: PYTHON_VERSION=python3
+
 install:
 - make install
+
 script:
 - make git-attributes
 - make lint
 - make tests
+
+after_success:
+- git clean -x
+
 deploy:
   - provider: pypi
     server: https://upload.pypi.org/legacy/
@@ -24,4 +32,6 @@ deploy:
     on:
       tags: true
       repo: openoereb/pyconizer
-      python: '3.6'
+      python:
+        - '2.7'
+        - '3.6'
