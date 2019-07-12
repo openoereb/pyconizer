@@ -2,6 +2,7 @@
 
 - add support for SLD schema version 1.1.0
 - add travis for automated testing
+- solve several encoding issues regarding to python 3 compatibility
 
 0.1.4
 
