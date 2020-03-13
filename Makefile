@@ -50,7 +50,7 @@ doc: $(SPHINXBUILD)
 tests: .coverage
 
 .coverage: $(PYTHON_VENV) .coveragerc $(shell find -name "*.py" -print)
-	$(VENV_BIN)py.test$(PYTHON_BIN_POSTFIX) -vv --cov-config .coveragerc --cov-report term-missing:skip-covered --cov pyconizer tests
+	$(VENV_BIN)py.test$(PYTHON_BIN_POSTFIX) -vv --cov-config .coveragerc --capture=fd --cov-report term-missing:skip-covered --cov pyconizer tests
 
 .PHONY: lint
 lint: $(PYTHON_VENV)

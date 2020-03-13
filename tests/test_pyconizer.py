@@ -162,3 +162,9 @@ def test_get_icon(test_path, test_config):
         path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', 'Belastet, untersuchungsbedürftig'
     )
     assert imghdr.what(None, h=base64.b64decode(icon_content)) == 'png'
+
+
+def test_create_icons_from_scratch_json_only_qgis_server(test_path_qgis_server, test_config_qgis_server):
+    path = os.path.abspath('{root}/json_only'.format(root=test_path_qgis_server))
+    create_icons_from_scratch(test_config_qgis_server, path)
+    assert os.path.isfile(os.path.abspath('{0}/mapping.json'.format(path)))
