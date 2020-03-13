@@ -46,14 +46,11 @@ $(SPHINXBUILD): .venv/requirements-timestamp
 doc: $(SPHINXBUILD)
 	$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: checks
-checks: git-attributes lint coverage-html
-
 .PHONY: tests
 tests: .coverage
 
 .coverage: $(PYTHON_VENV) .coveragerc $(shell find -name "*.py" -print)
-	$(VENV_BIN)py.test$(PYTHON_BIN_POSTFIX) -vv --cov-config .coveragerc --cov-report term-missing:skip-covered --cov pyconizer tests
+	$(VENV_BIN)py.test$(PYTHON_BIN_POSTFIX) -vv --cov-config .coveragerc --capture=fd --cov-report term-missing:skip-covered --cov pyconizer tests
 
 .PHONY: lint
 lint: $(PYTHON_VENV)
@@ -77,3 +74,10 @@ clean-all:
 .PHONY: deploy
 deploy:
 	$(VENV_BIN)python setup.py sdist bdist_wheel upload
+
+.PHONY: tox
+tox: .venv/requirements-timestamp tox.ini
+	$(VENV_BIN)tox --recreate --skip-missing-interpreters
+
+.PHONY: checks
+checks: git-attributes tox lint coverage-html

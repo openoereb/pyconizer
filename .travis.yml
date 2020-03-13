@@ -1,0 +1,37 @@
+sudo: required
+
+language: python
+
+matrix:
+  include:
+  - python: '2.7'
+    env: PYTHON_VERSION=python2
+  - python: '3.6'
+    env: PYTHON_VERSION=python3
+
+install:
+- make install
+
+script:
+- make git-attributes
+- make lint
+- make tests
+
+after_success:
+- git clean -x
+
+deploy:
+  - provider: pypi
+    server: https://upload.pypi.org/legacy/
+    user: vvmruder
+    password:
+      secure: "5aCqqf/D97FIapKXBbjX98GZaL3eoCOZ5QYlJgGoyH5Hi3I5/d2ZifG+Q/uJH3pAFnTrE7pPFBz0rEwktSQNgEePxIO15Jb3nBgqdj4964VKj/4RuI/PfPEkvgGswfMDMJjybaoYvVpA+fEtcIiaETBy/p0CV0xwCoCxr6hsr7d297uYoaf6sJXubKtuVt9iTOYDVm8MmJSS28lxdG8uWziJyI6l04Dct4J6S+/+PffQA4JtO05pbBHiwPYmICqOWzDjGQv3WzF087EaL51R8W6aMRRx1wv7a3EaKGEtR8FNoKcoWW65/DoJtovtCigXDXGrJC7hAOsnEH4HW1x69VcRMOoStJ4ukFpAUEGWAvouMXuHHcIeoHTnPU1BTS0AS0VLHi6WIudJtC7M2wBxEfWMy+6PTwv1kPMVD+nofhWA7yTbtO8+g1PbYmo8B3ZpV2uQW8BcluZUelpQGaLxhzma4DGe8dtxCPd46PHp1jEUsKWiXh3iYFc84Ep+sbkPGZMNy6wR7IQTQ1o0XNC6JpG7LWT0GDG8l4tYF3hipnBoNbYXSLHyApEhPQLmj3QEWxThiY3cDapXRJFgH2u+pCYgrEbY79HBoVsZ26C94xWZgy9mahRA0TgwMQO4HwkcdV90UpCdR0VVdCaKd/R6PPERHBz9ZUMiWDoMyQed4Sg="
+    distributions: sdist bdist_wheel
+    skip_upload_docs: true
+    skip_cleanup: true
+    on:
+      tags: true
+      repo: openoereb/pyconizer
+      python:
+        - '2.7'
+        - '3.6'

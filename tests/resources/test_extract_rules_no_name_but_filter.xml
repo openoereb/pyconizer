@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld"
+                       xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
+                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+    <NamedLayer>
+        <Name>ch.bav.kataster-belasteter-standorte-oev.oereb_polygon</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>bgdi_class</ogc:PropertyName>
+                            <ogc:Literal>class01</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>100000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ffff00</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Belastet, untersuchungsbedürftig</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>bgdi_class</ogc:PropertyName>
+                            <ogc:Literal>class02</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>100000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#0066ff</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Belastet, weder überwachungs- noch sanierungsbedürftig</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>bgdi_class</ogc:PropertyName>
+                            <ogc:Literal>class03</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>100000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ffcc00</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Belastet, überwachungsbedürftig</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>bgdi_class</ogc:PropertyName>
+                            <ogc:Literal>class04</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>100000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ff6605</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Belastet, sanierungsbedürftig</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>bgdi_class</ogc:PropertyName>
+                            <ogc:Literal>class05</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>100000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#ff0000</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+                <Rule>
+                    <Name>Belastet, Untersuchungsbedürftigkeit noch nicht definiert</Name>
+                    <ogc:Filter>
+                        <ogc:PropertyIsEqualTo>
+                            <ogc:PropertyName>bgdi_class</ogc:PropertyName>
+                            <ogc:Literal>class06</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                    </ogc:Filter>
+                    <MaxScaleDenominator>100000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Fill>
+                            <CssParameter name="fill">#5f5f5f</CssParameter>
+                        </Fill>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+    <NamedLayer>
+        <Name>ch.bav.kataster-belasteter-standorte-oev.oereb_line</Name>
+        <UserStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <MaxScaleDenominator>100000000.000000</MaxScaleDenominator>
+                    <PolygonSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                            <CssParameter name="stroke-width">1.00</CssParameter>
+                        </Stroke>
+                    </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+        </UserStyle>
+    </NamedLayer>
+</StyledLayerDescriptor>

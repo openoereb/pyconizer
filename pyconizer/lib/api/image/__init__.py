@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import imghdr
 import uuid
 from future.moves.urllib.request import urlopen
@@ -36,7 +37,7 @@ def download_legend_icon(rule):
         print('process rule:', rule.class_name)
         print(rule.rule_url)
         response = urlopen(rule.rule_url)
-        rule.set_content(response.read())
+        rule.set_content(base64.b64encode(response.read()))
         set_file_name(rule)
     else:
         print('no url was found on rule with class name:', rule.dict)
