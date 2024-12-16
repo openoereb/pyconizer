@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import base64
-import imghdr
+import filetype
 import os
 import datetime
 import time
@@ -161,4 +161,4 @@ def test_get_icon(test_path, test_config):
     icon_content = get_icon(
         path, 'ch.bav.kataster-belasteter-standorte-oev.oereb', 'Belastet, untersuchungsbedürftig'
     )
-    assert imghdr.what(None, h=base64.b64decode(icon_content)) == 'png'
+    assert filetype.guess(icon_content).extension == 'png'
