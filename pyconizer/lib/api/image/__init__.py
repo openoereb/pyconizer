@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import imghdr
+import filetype
 import uuid
 from future.moves.urllib.request import urlopen
 
@@ -20,7 +20,7 @@ def set_file_name(rule):
         unique = uuid.uuid4()
     rule.set_file_name('{file_name}.{mime_type}'.format(
         file_name=unique,
-        mime_type=imghdr.what(None, h=rule.content)
+        mime_type=filetype.guess(rule.content).extension
     ))
 
 
